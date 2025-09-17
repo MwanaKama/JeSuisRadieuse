@@ -1,0 +1,259 @@
+import React, { useState } from 'react';
+import { Helmet } from 'react-helmet-async';
+import { ShoppingCart, Plus, Minus, Star, Leaf, Heart } from 'lucide-react';
+import StripeCheckout from '../components/StripeCheckout';
+
+const Boutique = () => {
+  const [cart, setCart] = useState<{[key: string]: number}>({});
+  const [showCheckout, setShowCheckout] = useState(false);
+
+  const tisanes = [
+    {
+      id: 'tisane-grossesse',
+      name: 'Tisane Grossesse Sérénité',
+      price: 24.90,
+      image: 'https://images.pexels.com/photos/4021775/pexels-photo-4021775.jpeg?auto=compress&cs=tinysrgb&w=800',
+      description: 'Mélange délicat de camomille, feuilles de framboisier et mélisse pour accompagner votre grossesse en douceur.',
+      benefits: ['Apaise les nausées', 'Favorise la détente', 'Riche en minéraux'],
+      ingredients: 'Camomille, feuilles de framboisier, mélisse, ortie',
+      weight: '100g'
+    },
+    {
+      id: 'tisane-allaitement',
+      name: 'Tisane Allaitement Douceur',
+      price: 26.90,
+      image: 'https://images.pexels.com/photos/6999024/pexels-photo-6999024.jpeg?auto=compress&cs=tinysrgb&w=800',
+      description: 'Synergie de fenouil, anis vert et galega pour soutenir naturellement l\'allaitement maternel.',
+      benefits: ['Stimule la lactation', 'Facilite la digestion', 'Goût doux et agréable'],
+      ingredients: 'Fenouil, anis vert, galega, verveine',
+      weight: '100g'
+    },
+    {
+      id: 'tisane-postpartum',
+      name: 'Tisane Post-partum Récupération',
+      price: 28.90,
+      image: 'https://images.pexels.com/photos/7283203/pexels-photo-7283203.jpeg?auto=compress&cs=tinysrgb&w=800',
+      description: 'Mélange reminéralisant d\'ortie, achillée millefeuille et rose pour une récupération optimale.',
+      benefits: ['Tonifie l\'organisme', 'Apporte fer et vitamines', 'Soutient la récupération'],
+      ingredients: 'Ortie, achillée millefeuille, pétales de rose, avoine',
+      weight: '100g'
+    },
+    {
+      id: 'tisane-feminin',
+      name: 'Tisane Cycle Féminin',
+      price: 25.90,
+      image: 'https://images.pexels.com/photos/6787202/pexels-photo-6787202.jpeg?auto=compress&cs=tinysrgb&w=800',
+      description: 'Harmonise le cycle féminin avec un mélange de sauge, achillée et calendula.',
+      benefits: ['Équilibre hormonal', 'Soulage les tensions', 'Régularise le cycle'],
+      ingredients: 'Sauge, achillée, calendula, mélisse',
+      weight: '100g'
+    }
+  ];
+
+  const addToCart = (productId: string) => {
+    setCart(prev => ({
+      ...prev,
+      [productId]: (prev[productId] || 0) + 1
+    }));
+  };
+
+  const removeFromCart = (productId: string) => {
+    setCart(prev => {
+      const newCart = { ...prev };
+      if (newCart[productId] > 1) {
+        newCart[productId] -= 1;
+      } else {
+        delete newCart[productId];
+      }
+      return newCart;
+    });
+  };
+
+  const getCartTotal = () => {
+    return Object.entries(cart).reduce((total, [productId, quantity]) => {
+      const product = tisanes.find(t => t.id === productId);
+      return total + (product ? product.price * quantity : 0);
+    }, 0);
+  };
+
+  const getCartItems = () => {
+    return Object.entries(cart).map(([productId, quantity]) => {
+      const product = tisanes.find(t => t.id === productId);
+      return product ? { ...product, quantity } : null;
+    }).filter(Boolean);
+  };
+
+  return (
+    <>
+      <Helmet>
+        <title>Boutique | Je suis Radieuse</title>
+        <meta name="description" content="Tisanes artisanales bio pour grossesse, allaitement et bien-être féminin. Mélanges traditionnels préparés avec soin." />
+        <meta name="keywords" content="tisanes grossesse, tisane allaitement, herboristerie femme, tisanes bio Paris" />
+      </Helmet>
+
+      <div className="min-h-screen bg-gradient-to-br from-pink-50 to-purple-50 py-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Header */}
+          <div className="text-center mb-16">
+            <h1 className="font-poppins text-4xl md:text-5xl font-bold text-purple-900 mb-6">
+              Boutique Tisanes
+            </h1>
+            <p className="font-inter text-lg text-gray-700 max-w-3xl mx-auto leading-relaxed">
+              Découvrez mes tisanes artisanales spécialement conçues pour accompagner 
+              chaque étape de votre parcours de femme avec douceur et bienfaisance.
+            </p>
+          </div>
+
+          {/* Products Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8 mb-12">
+            {tisanes.map((tisane) => (
+              <div key={tisane.id} className="bg-white rounded-3xl shadow-xl hover:shadow-2xl transition-all hover:scale-105 overflow-hidden">
+                <div className="h-64 overflow-hidden">
+                  <img 
+                    src={tisane.image} 
+                    alt={tisane.name}
+                    className="w-full h-full object-cover hover:scale-110 transition-transform duration-500"
+                  />
+                </div>
+                
+                <div className="p-8">
+                  <div className="flex items-start justify-between mb-4">
+                    <div>
+                      <h3 className="font-poppins text-xl font-bold text-purple-900 mb-2">
+                        {tisane.name}
+                      </h3>
+                      <div className="flex items-center space-x-2 text-sm text-gray-600 mb-2">
+                        <Leaf className="h-4 w-4 text-green-500" />
+                        <span>{tisane.weight}</span>
+                        <span>•</span>
+                        <span>Bio & Artisanal</span>
+                      </div>
+                    </div>
+                    <div className="text-2xl font-bold text-purple-700">
+                      {tisane.price.toFixed(2)}€
+                    </div>
+                  </div>
+                  
+                  <p className="font-inter text-gray-600 mb-4 leading-relaxed">
+                    {tisane.description}
+                  </p>
+                  
+                  <div className="mb-4">
+                    <h4 className="font-poppins font-semibold text-purple-900 mb-2">
+                      Bienfaits
+                    </h4>
+                    <ul className="space-y-1">
+                      {tisane.benefits.map((benefit, index) => (
+                        <li key={index} className="flex items-center space-x-2 text-sm text-gray-600">
+                          <Star className="h-3 w-3 text-pink-400" />
+                          <span>{benefit}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                  
+                  <div className="mb-6 text-xs text-gray-500">
+                    <strong>Ingrédients :</strong> {tisane.ingredients}
+                  </div>
+                  
+                  <div className="flex items-center justify-between">
+                    {cart[tisane.id] ? (
+                      <div className="flex items-center space-x-3">
+                        <button
+                          onClick={() => removeFromCart(tisane.id)}
+                          className="w-8 h-8 bg-gray-200 hover:bg-gray-300 rounded-full flex items-center justify-center transition-colors"
+                        >
+                          <Minus className="h-4 w-4" />
+                        </button>
+                        <span className="font-semibold text-purple-900 min-w-[2rem] text-center">
+                          {cart[tisane.id]}
+                        </span>
+                        <button
+                          onClick={() => addToCart(tisane.id)}
+                          className="w-8 h-8 bg-purple-600 hover:bg-purple-700 text-white rounded-full flex items-center justify-center transition-colors"
+                        >
+                          <Plus className="h-4 w-4" />
+                        </button>
+                      </div>
+                    ) : (
+                      <button
+                        onClick={() => addToCart(tisane.id)}
+                        className="flex-1 bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 text-white py-3 rounded-full font-semibold transition-all hover:shadow-lg flex items-center justify-center space-x-2"
+                      >
+                        <ShoppingCart className="h-4 w-4" />
+                        <span>Ajouter au panier</span>
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Cart Summary */}
+          {Object.keys(cart).length > 0 && (
+            <div className="bg-white rounded-3xl shadow-xl p-8 mb-8">
+              <h2 className="font-poppins text-2xl font-bold text-purple-900 mb-6 flex items-center">
+                <ShoppingCart className="h-6 w-6 mr-2" />
+                Votre panier
+              </h2>
+              
+              <div className="space-y-4 mb-6">
+                {getCartItems().map((item) => (
+                  <div key={item!.id} className="flex items-center justify-between py-2 border-b border-gray-100">
+                    <div className="flex-1">
+                      <h4 className="font-medium text-purple-900">{item!.name}</h4>
+                      <p className="text-sm text-gray-600">{item!.price.toFixed(2)}€ × {item!.quantity}</p>
+                    </div>
+                    <div className="font-semibold text-purple-700">
+                      {(item!.price * item!.quantity).toFixed(2)}€
+                    </div>
+                  </div>
+                ))}
+              </div>
+              
+              <div className="flex items-center justify-between mb-6 text-xl font-bold text-purple-900 border-t border-gray-200 pt-4">
+                <span>Total :</span>
+                <span>{getCartTotal().toFixed(2)}€</span>
+              </div>
+              
+              <button
+                onClick={() => setShowCheckout(true)}
+                className="w-full bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 text-white py-4 rounded-full font-poppins font-semibold text-lg transition-all hover:shadow-xl hover:scale-105"
+              >
+                Procéder au paiement
+              </button>
+            </div>
+          )}
+
+          {/* Info Section */}
+          <div className="bg-gradient-to-r from-purple-600 to-pink-500 rounded-3xl p-12 text-white text-center">
+            <Heart className="h-12 w-12 mx-auto mb-6" />
+            <h2 className="font-poppins text-3xl font-bold mb-4">
+              Préparées avec amour
+            </h2>
+            <p className="font-inter text-lg opacity-90 max-w-3xl mx-auto">
+              Toutes mes tisanes sont préparées artisanalement avec des plantes bio 
+              sélectionnées pour leurs propriétés thérapeutiques et leur qualité exceptionnelle.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {showCheckout && (
+        <StripeCheckout
+          items={getCartItems()}
+          total={getCartTotal()}
+          onClose={() => setShowCheckout(false)}
+          onSuccess={() => {
+            setCart({});
+            setShowCheckout(false);
+            alert('Commande confirmée ! Vous recevrez un email de confirmation.');
+          }}
+        />
+      )}
+    </>
+  );
+};
+
+export default Boutique;
