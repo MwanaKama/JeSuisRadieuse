@@ -6,7 +6,7 @@ const MentionsLegales: React.FC = () => {
   return (
     <>
       <Helmet>
-        <title>Mentions Légales | Je Suis Radieuse - Doula Paris</title>
+        <title>Je Suis Radieuse | Mentions Légales</title>
         <meta name="description" content="Mentions légales de Je Suis Radieuse, doula à Paris. Informations sur l'éditeur du site et propriété intellectuelle." />
       </Helmet>
 
