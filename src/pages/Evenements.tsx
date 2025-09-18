@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Calendar, Clock, MapPin, Users, Plus, Filter, Search } from 'lucide-react';
+import CalendlyButton from '../components/CalendlyButton';
 
 const Evenements = () => {
   const [filter, setFilter] = useState('tous');
@@ -11,19 +12,6 @@ const Evenements = () => {
   const events = [
     {
       id: 1,
-      title: 'Atelier Préparation à l\'Accouchement',
-      date: new Date('2024-12-15T10:00:00'),
-      endDate: new Date('2024-12-15T12:00:00'),
-      location: 'Cabinet Paris 11ème',
-      participants: 8,
-      maxParticipants: 10,
-      type: 'atelier',
-      status: 'passe',
-      description: 'Atelier collectif pour préparer sereinement l\'accouchement avec techniques de respiration et relaxation.',
-      price: 45
-    },
-    {
-      id: 2,
       title: 'Cercle de Parole Post-partum',
       date: new Date('2024-11-28T14:30:00'),
       endDate: new Date('2024-11-28T16:30:00'),
@@ -36,41 +24,28 @@ const Evenements = () => {
       price: 25
     },
     {
-      id: 3,
-      title: 'Formation Massage Bébé',
-      date: new Date('2025-01-20T10:00:00'),
-      endDate: new Date('2025-01-20T12:30:00'),
+      id: 2,
+      title: 'Atelier Préparation à l\'Accouchement',
+      date: new Date('2024-12-15T10:00:00'),
+      endDate: new Date('2024-12-15T12:00:00'),
       location: 'Cabinet Paris 11ème',
-      participants: 4,
-      maxParticipants: 6,
-      type: 'formation',
-      status: 'a-venir',
-      description: 'Apprenez les techniques de massage pour bébé, favorisant détente et complicité.',
-      price: 65
+      participants: 8,
+      maxParticipants: 10,
+      type: 'atelier',
+      status: 'passe',
+      description: 'Atelier collectif pour préparer sereinement l\'accouchement avec techniques de respiration et relaxation.',
+      price: 45
     },
     {
       id: 4,
-      title: 'Atelier Portage Physiologique',
-      date: new Date('2025-02-10T14:00:00'),
-      endDate: new Date('2025-02-10T16:00:00'),
-      location: 'Cabinet Paris 11ème',
-      participants: 2,
-      maxParticipants: 8,
-      type: 'atelier',
-      status: 'a-venir',
-      description: 'Découvrez les différents moyens de portage et leurs bienfaits pour bébé et parents.',
-      price: 50
-    },
-    {
-      id: 5,
       title: 'Conférence Allaitement Maternel',
-      date: new Date('2025-03-05T19:00:00'),
-      endDate: new Date('2025-03-05T21:00:00'),
+      date: new Date('2024-09-05T19:00:00'),
+      endDate: new Date('2024-09-05T21:00:00'),
       location: 'Maison de la Parentalité - Paris 12ème',
-      participants: 15,
+      participants: 22,
       maxParticipants: 25,
       type: 'conference',
-      status: 'a-venir',
+      status: 'passe',
       description: 'Conférence gratuite sur l\'allaitement maternel : conseils, difficultés et solutions.',
       price: 0
     }
@@ -230,13 +205,6 @@ const Evenements = () => {
                 </select>
               </div>
 
-              <button
-                onClick={() => setShowAddEvent(true)}
-                className="bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 text-white px-6 py-3 rounded-lg font-medium flex items-center space-x-2 transition-all"
-              >
-                <Plus className="h-5 w-5" />
-                <span>Ajouter un événement</span>
-              </button>
             </div>
           </div>
 
@@ -288,7 +256,7 @@ const Evenements = () => {
           </div>
 
           {/* Newsletter Signup */}
-          <div className="bg-gradient-to-r from-purple-600 to-pink-500 rounded-3xl p-12 text-center text-white">
+          <div className="bg-gradient-to-r from-purple-600 to-pink-500 rounded-3xl p-12 text-center text-white mb-8">
             <h2 className="font-poppins text-3xl font-bold mb-4">
               Ne ratez aucun événement
             </h2>
@@ -305,6 +273,15 @@ const Evenements = () => {
                 S'inscrire
               </button>
             </div>
+          </div>
+
+          {/* CTA Section */}
+          <div className="text-center">
+            <CalendlyButton 
+              text="Prendre un 1er RDV gratuit"
+              variant="secondary"
+              size="lg"
+            />
           </div>
         </div>
       </div>
