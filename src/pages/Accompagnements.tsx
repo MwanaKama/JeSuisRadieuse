@@ -1,6 +1,8 @@
 import { Helmet } from 'react-helmet-async';
 import { Baby, Heart, CheckCircle, Star } from 'lucide-react';
 import CalendlyButton from '../components/CalendlyButton';
+import Prenatale from '../images/prénatale.png';
+import PostPartum from '../images/post-partum.png';
 
 const Accompagnements = () => {
   const prenatalServices = [
@@ -139,10 +141,10 @@ const Accompagnements = () => {
               <div className="relative">
                 <div className="w-full h-96 bg-gradient-to-br from-pink-200 to-purple-300 rounded-3xl overflow-hidden shadow-2xl">
                   <img 
-                    src="/prénatale.png" 
-                    alt="Accompagnement prénatal doula"
-                    className="w-full h-full object-cover"
-                  />
+  src={Prenatale} 
+  alt="Accompagnement prénatal doula"
+  className="w-full h-full object-cover"
+/>
                 </div>
                 <div className="absolute -bottom-6 -right-6 w-24 h-24 bg-white rounded-full shadow-lg flex items-center justify-center">
                   <Baby className="h-12 w-12 text-purple-600" />
@@ -155,11 +157,11 @@ const Accompagnements = () => {
               {/* Image */}
               <div className="relative lg:order-first">
                 <div className="w-full h-96 bg-gradient-to-br from-purple-200 to-pink-300 rounded-3xl overflow-hidden shadow-2xl">
-                  <img 
-                    src="/post-partum.png" 
-                    alt="Soutien postnatal doula"
-                    className="w-full h-full object-cover"
-                  />
+                 <img 
+  src={PostPartum} 
+  alt="Soutien postnatal doula"
+  className="w-full h-full object-cover"
+/>
                 </div>
                 <div className="absolute -bottom-6 -left-6 w-24 h-24 bg-white rounded-full shadow-lg flex items-center justify-center">
                   <Heart className="h-12 w-12 text-purple-600" />
