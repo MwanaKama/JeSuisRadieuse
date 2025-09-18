@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, Calendar } from 'lucide-react';
+import Logo from '../images/Logo.png';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -59,10 +60,10 @@ const Header = () => {
             <div className="flex items-center">
               <Link to="/" className="flex items-center space-x-2 group">
                 <img 
-                  src="/logo.png" 
-                  alt="Je Suis Radieuse" 
-                  className="h-10 w-10 object-contain transition-transform duration-300 group-hover:scale-105" 
-                />
+  src={Logo} 
+  alt="Je Suis Radieuse" 
+  className="h-10 w-10 object-contain transition-transform duration-300 group-hover:scale-105" 
+/>
                 <span className="font-poppins text-xl font-semibold text-purple-800">
                   Je Suis Radieuse
                 </span>
