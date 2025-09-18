@@ -275,17 +275,6 @@ const Evenements = () => {
             </div>
           </div>
 
-          {/* CTA Section */}
-          <div className="text-center">
-            <CalendlyButton 
-              text="Prendre un 1er RDV gratuit"
-              variant="secondary"
-              size="lg"
-            />
-          </div>
-        </div>
-      </div>
-
       {/* Add Event Modal */}
       {showAddEvent && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
