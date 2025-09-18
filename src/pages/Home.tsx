@@ -130,9 +130,9 @@ const Home: React.FC = () => {
               <div className="relative">
                 <div className="w-full h-96 bg-gradient-to-br from-pink-200 to-purple-300 rounded-3xl overflow-hidden shadow-2xl">
                   <picture>
-                    <source srcSet="/images/accompagnement-bienveillant.png" type="image/png" />
+                    <source srcSet={`${process.env.PUBLIC_URL}/images/accompagnement-bienveillant.png`} type="image/png" />
                     <img
-                      src="/images/accompagnement-bienveillant.png"
+                      src={`${process.env.PUBLIC_URL}/images/accompagnement-bienveillant.png`}
                       alt="Accompagnement maternité bienveillant"
                       className="w-full h-full object-cover"
                       loading="lazy"
@@ -177,7 +177,7 @@ const Home: React.FC = () => {
           </div>
         </section>
 
-        {/* Testimonials */}
+        {/* Testimonials Section */}
         <section className="py-20 bg-gradient-to-br from-purple-50 to-pink-50">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-16">
@@ -191,7 +191,7 @@ const Home: React.FC = () => {
           </div>
         </section>
 
-        {/* Why Choose Me */}
+        {/* Why Choose Me Section */}
         <section className="py-20 bg-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
@@ -218,7 +218,7 @@ const Home: React.FC = () => {
               <div className="relative">
                 <div className="w-full h-96 bg-gradient-to-br from-pink-200 to-purple-300 rounded-3xl overflow-hidden shadow-2xl">
                   <img
-                    src="/images/choisir-doula.png"
+                    src={`${process.env.PUBLIC_URL}/images/choisir-doula.png`}
                     alt="Choisir une doula - accompagnement"
                     className="w-full h-full object-cover"
                     loading="lazy"
