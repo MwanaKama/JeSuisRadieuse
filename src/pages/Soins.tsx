@@ -27,14 +27,15 @@ const Soins = () => {
     'Stimulation de la circulation sanguine',
     'Soutien hormonal naturel',
     'Détente profonde et reconnexion',
-    'Préparation pré-conceptionnelle',
-    'Récupération post-partum'
+    'Préparation pré-conception',
+    'Récupération post-partum',
+    'Régulation du cycle menstruel'
   ];
 
   const rebozoBenefits = [
     'Détente musculaire profonde',
     'Réalignement du bassin',
-    'Massage thérapeutique traditionnel',
+    'Massage traditionnel',
     'Soulagement des tensions',
     'Accompagnement émotionnel',
     'Rituel de fermeture post-partum'
