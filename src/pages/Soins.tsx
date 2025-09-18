@@ -67,7 +67,7 @@ const Soins = () => {
   return (
     <>
       <Helmet>
-        <title>Soins | Je suis Radieuse</title>
+        <title>Je suis Radieuse | Soins</title>
         <meta
           name="description"
           content="Soins traditionnels pour femmes : Massage Rebozo et Yoni Steam. Bien-être féminin, récupération post-partum. Séances à Paris."
