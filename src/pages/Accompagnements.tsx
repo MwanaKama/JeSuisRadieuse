@@ -31,7 +31,6 @@ const Accompagnements = () => {
   const postnatalServices1 = [
     '1 visite de 4h à domicile par semaine',
     '6 séances pendant 6 semaines après la naissance',
-    '1 séance post-partum',
     'Permanence téléphonique 24h/24 7j/7',
     'Soutien à l\'allaitement maternel',
     'Conseils pour la maman',
