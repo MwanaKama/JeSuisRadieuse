@@ -263,7 +263,7 @@ const Boutique = () => {
                         className="flex-1 bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 text-white py-3 rounded-full font-semibold transition-all hover:shadow-lg flex items-center justify-center space-x-2"
                       >
                         <ShoppingCart className="h-4 w-4" />
-                        <span>Pré-commander</span>
+                        <span>Commander</span>
                       </button>
                     )}
                   </div>
