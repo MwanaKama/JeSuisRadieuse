@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
 import { Heart, Award, Users, Calendar, Star, BookOpen, ChevronDown, ChevronUp } from 'lucide-react';
+import MeImg from '../images/me.png';
+import Me1Img from '../images/me-1.png';
 
 const About = () => {
   const [expandedYear, setExpandedYear] = useState<string | null>("2022"); // Ouvrir 2022 par défaut
@@ -113,11 +115,11 @@ const About = () => {
             
             <div className="relative">
               <div className="w-full h-96 bg-gradient-to-br from-pink-200 to-purple-300 rounded-3xl overflow-hidden shadow-2xl">
-                <img 
-                  src="/me.png" // Image changée ici
-                  alt="Emilie - Doula certifiée"
-                  className="w-full h-full object-cover"
-                />
+               <img 
+  src={MeImg} 
+  alt="Emilie - Doula certifiée"
+  className="w-full h-full object-cover"
+/>
               </div>
               <div className="absolute -bottom-6 -right-6 w-24 h-24 bg-white rounded-full shadow-lg flex items-center justify-center">
                 <Heart className="h-12 w-12 text-pink-500" />
@@ -197,11 +199,11 @@ const About = () => {
               
               <div className="relative">
                 <div className="w-full h-80 bg-gradient-to-br from-purple-200 to-pink-300 rounded-3xl overflow-hidden shadow-lg">
-                  <img 
-                    src="/me-1.png" // Deuxième image changée ici
-                    alt="Formation professionnelle doula"
-                    className="w-full h-full object-cover"
-                  />
+                 <img 
+  src={Me1Img} 
+  alt="Formation professionnelle doula"
+  className="w-full h-full object-cover"
+/>
                 </div>
               </div>
             </div>
