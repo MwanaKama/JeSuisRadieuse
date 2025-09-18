@@ -11,7 +11,7 @@ const Boutique = () => {
     {
       id: 'tisane-grossesse',
       name: 'Tisane Grossesse Sérénité',
-      price: 24.90,
+      price: 15,
       image: 'https://images.pexels.com/photos/1793035/pexels-photo-1793035.jpeg?auto=compress&cs=tinysrgb&w=800',
       description: 'Mélange délicat de camomille, feuilles de framboisier et mélisse pour accompagner votre grossesse en douceur.',
       benefits: ['Apaise les nausées', 'Favorise la détente', 'Riche en minéraux'],
@@ -22,7 +22,7 @@ const Boutique = () => {
     {
       id: 'tisane-allaitement',
       name: 'Tisane Allaitement Douceur',
-      price: 26.90,
+      price: 15,
       image: 'https://images.pexels.com/photos/1793035/pexels-photo-1793035.jpeg?auto=compress&cs=tinysrgb&w=800',
       description: 'Synergie de fenouil, anis vert et galega pour soutenir naturellement l\'allaitement maternel.',
       benefits: ['Stimule la lactation', 'Facilite la digestion', 'Goût doux et agréable'],
@@ -33,7 +33,7 @@ const Boutique = () => {
     {
       id: 'tisane-postpartum',
       name: 'Tisane Post-partum Récupération',
-      price: 28.90,
+      price: 15,
       image: 'https://images.pexels.com/photos/1793035/pexels-photo-1793035.jpeg?auto=compress&cs=tinysrgb&w=800',
       description: 'Mélange reminéralisant d\'ortie, achillée millefeuille et rose pour une récupération optimale.',
       benefits: ['Tonifie l\'organisme', 'Apporte fer et vitamines', 'Soutient la récupération'],
@@ -44,7 +44,7 @@ const Boutique = () => {
     {
       id: 'tisane-feminin',
       name: 'Tisane Cycle Féminin',
-      price: 25.90,
+      price: 15,
       image: 'https://images.pexels.com/photos/1793035/pexels-photo-1793035.jpeg?auto=compress&cs=tinysrgb&w=800',
       description: 'Harmonise le cycle féminin avec un mélange de sauge, achillée et calendula.',
       benefits: ['Équilibre hormonal', 'Soulage les tensions', 'Régularise le cycle'],
