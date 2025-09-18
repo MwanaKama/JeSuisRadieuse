@@ -4,7 +4,18 @@ import { useNavigate } from 'react-router-dom';
 import { Heart, Star, ArrowRight, Baby, Sparkles, Loader } from 'lucide-react';
 import CalendlyButton from '../components/CalendlyButton';
 
-// Fallbacks pour les images externes
+// Import all images from src/images
+import Logo from '../images/Logo.png';
+import Hero from '../images/accompagnement-bienveillant.png';
+import Choose from '../images/choisir-doula.png';
+import Me1 from '../images/me-1.png';
+import Me from '../images/me.png';
+import PostPartum from '../images/post-partum.png';
+import Prenatale from '../images/prénatale.png';
+import Rebozo from '../images/rebozo.jpg';
+import YoniSteam from '../images/yoni-steam.png';
+
+// Fallbacks for safety (optional)
 const fallbackHero = 'https://images.pexels.com/photos/1296154/pexels-photo-1296154.jpeg?auto=compress&cs=tinysrgb&w=800';
 const fallbackChoose = 'https://images.pexels.com/photos/1308881/pexels-photo-1308881.jpeg?auto=compress&cs=tinysrgb&w=800';
 
@@ -129,17 +140,7 @@ const Home: React.FC = () => {
 
               <div className="relative">
                 <div className="w-full h-96 bg-gradient-to-br from-pink-200 to-purple-300 rounded-3xl overflow-hidden shadow-2xl">
-                  <picture>
-                    <source srcSet={`${process.env.PUBLIC_URL}/images/accompagnement-bienveillant.png`} type="image/png" />
-                    <img
-                      src={`${process.env.PUBLIC_URL}/images/accompagnement-bienveillant.png`}
-                      alt="Accompagnement maternité bienveillant"
-                      className="w-full h-full object-cover"
-                      loading="lazy"
-                      decoding="async"
-                      onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = fallbackHero; }}
-                    />
-                  </picture>
+                  <img src={Hero} alt="Accompagnement maternité bienveillant" className="w-full h-full object-cover" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = fallbackHero; }} />
                 </div>
                 <div className="absolute -bottom-6 -right-6 w-24 h-24 bg-white rounded-full shadow-lg flex items-center justify-center">
                   <Heart className="h-12 w-12 text-pink-500" />
@@ -154,7 +155,9 @@ const Home: React.FC = () => {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-16">
               <h2 className="font-poppins text-3xl md:text-4xl font-bold text-purple-900 mb-4">Mes accompagnements</h2>
-              <p className="font-inter text-lg text-gray-600 max-w-3xl mx-auto">Chaque femme est unique. Mes services s'adaptent à vos besoins spécifiques pour vous offrir le soutien dont vous avez besoin.</p>
+              <p className="font-inter text-lg text-gray-600 max-w-3xl mx-auto">
+                Chaque femme est unique. Mes services s'adaptent à vos besoins spécifiques pour vous offrir le soutien dont vous avez besoin.
+              </p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {services.map((service, index) => {
@@ -177,7 +180,35 @@ const Home: React.FC = () => {
           </div>
         </section>
 
-        {/* Testimonials Section */}
+        {/* Choose Section */}
+        <section className="py-20 bg-white">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+              <div>
+                <h2 className="font-poppins text-3xl md:text-4xl font-bold text-purple-900 mb-6">
+                  Pourquoi choisir un accompagnement doula ?
+                </h2>
+                <div className="space-y-6">
+                  {['Soutien émotionnel continu et bienveillant', 'Accompagnement personnalisé selon vos besoins', 'Techniques naturelles de bien-être et relaxation', 'Préparation complète à la parentalité', 'Respect de vos choix et valeurs'].map((benefit, idx) => (
+                    <div key={idx} className="flex items-start space-x-3">
+                      <div className="w-6 h-6 bg-gradient-to-br from-pink-200 to-purple-300 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                        <Star className="h-3 w-3 text-purple-700" />
+                      </div>
+                      <p className="font-inter text-gray-700">{benefit}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div className="relative">
+                <div className="w-full h-96 bg-gradient-to-br from-pink-200 to-purple-300 rounded-3xl overflow-hidden shadow-2xl">
+                  <img src={Choose} alt="Choisir une doula" className="w-full h-full object-cover" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = fallbackChoose; }} />
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Testimonials */}
         <section className="py-20 bg-gradient-to-br from-purple-50 to-pink-50">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-16">
@@ -187,46 +218,6 @@ const Home: React.FC = () => {
             <GoogleReviews />
             <div className="mt-12 text-center">
               <CalendlyButton text="Réserver maintenant" size="lg" variant="primary" className="px-8 py-4 rounded-full font-poppins font-semibold text-lg transition-all hover:shadow-xl hover:scale-105" />
-            </div>
-          </div>
-        </section>
-
-        {/* Why Choose Me Section */}
-        <section className="py-20 bg-white">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-              <div>
-                <h2 className="font-poppins text-3xl md:text-4xl font-bold text-purple-900 mb-6">Pourquoi choisir un accompagnement doula ?</h2>
-                <div className="space-y-6">
-                  {[
-                    'Soutien émotionnel continu et bienveillant',
-                    'Accompagnement personnalisé selon vos besoins',
-                    'Techniques naturelles de bien-être et relaxation',
-                    'Préparation complète à la parentalité',
-                    'Respect de vos choix et valeurs'
-                  ].map((benefit, index) => (
-                    <div key={index} className="flex items-start space-x-3">
-                      <div className="w-6 h-6 bg-gradient-to-br from-pink-200 to-purple-300 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-                        <Star className="h-3 w-3 text-purple-700" />
-                      </div>
-                      <p className="font-inter text-gray-700">{benefit}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div className="relative">
-                <div className="w-full h-96 bg-gradient-to-br from-pink-200 to-purple-300 rounded-3xl overflow-hidden shadow-2xl">
-                  <img
-                    src={`${process.env.PUBLIC_URL}/images/choisir-doula.png`}
-                    alt="Choisir une doula - accompagnement"
-                    className="w-full h-full object-cover"
-                    loading="lazy"
-                    decoding="async"
-                    onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = fallbackChoose; }}
-                  />
-                </div>
-              </div>
             </div>
           </div>
         </section>
