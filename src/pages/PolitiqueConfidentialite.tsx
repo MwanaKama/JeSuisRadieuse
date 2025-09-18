@@ -6,7 +6,7 @@ const PolitiqueConfidentialite: React.FC = () => {
   return (
     <>
       <Helmet>
-        <title>Politique de Confidentialité | Je Suis Radieuse - Doula Paris</title>
+        <title>Je Suis Radieuse | Politique de Confidentialité</title>
         <meta name="description" content="Politique de confidentialité de Je Suis Radieuse. Découvrez comment nous protégeons et utilisons vos données personnelles." />
       </Helmet>
 
