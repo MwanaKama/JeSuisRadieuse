@@ -57,7 +57,7 @@ const Accompagnements = () => {
   return (
     <>
       <Helmet>
-        <title>Accompagnements Grossesse & Post-partum | Je Suis Radieuse Doula Paris</title>
+        <title>Je Suis Radieuse | Accompagnements</title>
         <meta name="description" content="Accompagnement doula prénatal et postnatal à Paris. Préparation accouchement, soutien allaitement. Premier RDV gratuit." />
       </Helmet>
 
