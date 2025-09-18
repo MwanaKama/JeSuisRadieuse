@@ -11,7 +11,7 @@ const Boutique = () => {
     {
       id: 'tisane-grossesse',
       name: 'Tisane Grossesse Sérénité',
-      price: 15,
+      price: 24.90,
       image: 'https://images.pexels.com/photos/1793035/pexels-photo-1793035.jpeg?auto=compress&cs=tinysrgb&w=800',
       description: 'Mélange délicat de camomille, feuilles de framboisier et mélisse pour accompagner votre grossesse en douceur.',
       benefits: ['Apaise les nausées', 'Favorise la détente', 'Riche en minéraux'],
@@ -22,7 +22,7 @@ const Boutique = () => {
     {
       id: 'tisane-allaitement',
       name: 'Tisane Allaitement Douceur',
-      price: 15,
+      price: 26.90,
       image: 'https://images.pexels.com/photos/1793035/pexels-photo-1793035.jpeg?auto=compress&cs=tinysrgb&w=800',
       description: 'Synergie de fenouil, anis vert et galega pour soutenir naturellement l\'allaitement maternel.',
       benefits: ['Stimule la lactation', 'Facilite la digestion', 'Goût doux et agréable'],
@@ -33,7 +33,7 @@ const Boutique = () => {
     {
       id: 'tisane-postpartum',
       name: 'Tisane Post-partum Récupération',
-      price: 15,
+      price: 28.90,
       image: 'https://images.pexels.com/photos/1793035/pexels-photo-1793035.jpeg?auto=compress&cs=tinysrgb&w=800',
       description: 'Mélange reminéralisant d\'ortie, achillée millefeuille et rose pour une récupération optimale.',
       benefits: ['Tonifie l\'organisme', 'Apporte fer et vitamines', 'Soutient la récupération'],
@@ -44,7 +44,7 @@ const Boutique = () => {
     {
       id: 'tisane-feminin',
       name: 'Tisane Cycle Féminin',
-      price: 15,
+      price: 25.90,
       image: 'https://images.pexels.com/photos/1793035/pexels-photo-1793035.jpeg?auto=compress&cs=tinysrgb&w=800',
       description: 'Harmonise le cycle féminin avec un mélange de sauge, achillée et calendula.',
       benefits: ['Équilibre hormonal', 'Soulage les tensions', 'Régularise le cycle'],
@@ -90,7 +90,7 @@ const Boutique = () => {
   return (
     <>
       <Helmet>
-        <title>Boutique Tisanes Artisanales - Grossesse & Allaitement | Je Suis Radieuse</title>
+        <title>Je Suis Doula | Boutique Tisanes Artisanales</title>
         <meta name="description" content="Tisanes artisanales bio pour grossesse, allaitement et bien-être féminin. Mélanges traditionnels préparés avec soin." />
         <meta name="keywords" content="tisanes grossesse, tisane allaitement, herboristerie femme, tisanes bio Paris" />
       </Helmet>
@@ -258,11 +258,11 @@ const Boutique = () => {
                       )
                     ) : (
                       <button
-                        disabled
-                        className="flex-1 bg-gray-300 text-gray-500 py-3 rounded-full font-semibold flex items-center justify-center space-x-2 cursor-not-allowed"
+                        onClick={() => addToCart(tisane.id)}
+                        className="flex-1 bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 text-white py-3 rounded-full font-semibold transition-all hover:shadow-lg flex items-center justify-center space-x-2"
                       >
-                        <Clock className="h-4 w-4" />
-                        <span>Bientôt disponible</span>
+                        <ShoppingCart className="h-4 w-4" />
+                        <span>Commander</span>
                       </button>
                     )}
                   </div>
