@@ -94,7 +94,7 @@ const Boutique = () => {
   return (
     <>
       <Helmet>
-        <title>Je Suis Doula | Boutique Tisanes Artisanales</title>
+        <title>Je Suis Radieuse | Boutique Tisanes Artisanales</title>
         <meta
           name="description"
           content="Tisanes artisanales bio pour grossesse, allaitement et bien-être féminin. Mélanges traditionnels préparés avec soin."
