@@ -62,65 +62,65 @@ const About = () => {
         <meta name="keywords" content="doula Paris expérience, formation doula certifiée, accompagnement maternité bienveillant" />
       </Helmet>
 
-      <div className="min-h-screen bg-gradient-to-br from-pink-50 to-purple-50 py-12">
+      <div className="min-h-screen bg-gradient-to-br from-pink-50 to-purple-50 py-8 md:py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
           {/* Hero */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-20">
-            <div>
-              <h1 className="font-poppins text-4xl md:text-5xl font-bold text-purple-900 mb-6">À propos de moi</h1>
-              <p className="font-inter text-lg text-gray-700 mb-4 leading-relaxed">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12 items-center mb-16 md:mb-20">
+            <div className="order-2 lg:order-1">
+              <h1 className="font-poppins text-3xl md:text-5xl font-bold text-purple-900 mb-4 md:mb-6">À propos de moi</h1>
+              <p className="font-inter text-base md:text-lg text-gray-700 mb-4 leading-relaxed">
                 Bonjour, je suis <strong>Emilie</strong>, doula passionnée par l'accompagnement des femmes dans leur parcours de maternité.
                 Depuis 5 ans, j'ai le privilège de partager ces moments uniques et précieux avec les familles.
               </p>
-              <p className="font-inter text-lg text-gray-700 mb-8 leading-relaxed">
+              <p className="font-inter text-base md:text-lg text-gray-700 mb-6 md:mb-8 leading-relaxed">
                 Formée par des professionnelles reconnues au Québec, je vous offre un accompagnement bienveillant basé sur des techniques traditionnelles et modernes.
                 Mon approche respecte vos choix et s'adapte à vos besoins spécifiques.
               </p>
               <Link
                 to="/planning"
-                className="bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 text-white px-8 py-4 rounded-full font-poppins font-semibold text-lg inline-flex items-center space-x-2 transition-all hover:shadow-xl hover:scale-105"
+                className="bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 text-white px-6 py-3 md:px-8 md:py-4 rounded-full font-poppins font-semibold text-base md:text-lg inline-flex items-center space-x-2 transition-all hover:shadow-lg md:hover:shadow-xl hover:scale-105"
               >
-                <Calendar className="h-5 w-5" />
+                <Calendar className="h-4 w-4 md:h-5 md:w-5" />
                 <span>Prendre un 1er RDV gratuit</span>
               </Link>
             </div>
-            <div className="relative">
-              <div className="w-full h-96 bg-gradient-to-br from-pink-200 to-purple-300 rounded-3xl overflow-hidden shadow-2xl">
+            <div className="relative order-1 lg:order-2 mb-8 lg:mb-0">
+              <div className="w-full h-64 md:h-96 bg-gradient-to-br from-pink-200 to-purple-300 rounded-2xl md:rounded-3xl overflow-hidden shadow-xl md:shadow-2xl">
                 <img src={MeImg} alt="Emilie - Doula certifiée" className="w-full h-full object-cover" />
               </div>
-              <div className="absolute -bottom-6 -right-6 w-24 h-24 bg-white rounded-full shadow-lg flex items-center justify-center">
-                <Heart className="h-12 w-12 text-pink-500" />
+              <div className="absolute -bottom-4 -right-4 md:-bottom-6 md:-right-6 w-16 h-16 md:w-24 md:h-24 bg-white rounded-full shadow-lg flex items-center justify-center">
+                <Heart className="h-6 w-6 md:h-12 md:w-12 text-pink-500" />
               </div>
             </div>
           </div>
 
           {/* Stats */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-20">
+          <div className="grid grid-cols-2 gap-4 md:gap-6 mb-16 md:mb-20">
             {stats.map((stat, index) => (
-              <div key={index} className="bg-white rounded-2xl p-6 text-center shadow-lg hover:shadow-xl transition-shadow">
-                <div className="text-3xl font-bold text-purple-700 mb-2 font-poppins">{stat.number}</div>
-                <div className="text-gray-600 font-inter">{stat.label}</div>
+              <div key={index} className="bg-white rounded-xl md:rounded-2xl p-4 md:p-6 text-center shadow-md hover:shadow-lg transition-shadow">
+                <div className="text-xl md:text-3xl font-bold text-purple-700 mb-1 md:mb-2 font-poppins">{stat.number}</div>
+                <div className="text-xs md:text-sm text-gray-600 font-inter">{stat.label}</div>
               </div>
             ))}
           </div>
 
           {/* Values */}
-          <div className="mb-20">
-            <div className="text-center mb-12">
-              <h2 className="font-poppins text-3xl md:text-4xl font-bold text-purple-900 mb-4">Mes valeurs</h2>
-              <p className="font-inter text-lg text-gray-600">Les principes qui guident mon accompagnement au quotidien</p>
+          <div className="mb-16 md:mb-20">
+            <div className="text-center mb-8 md:mb-12">
+              <h2 className="font-poppins text-2xl md:text-4xl font-bold text-purple-900 mb-3 md:mb-4">Mes valeurs</h2>
+              <p className="font-inter text-sm md:text-lg text-gray-600">Les principes qui guident mon accompagnement au quotidien</p>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
               {values.map((value, index) => {
                 const IconComponent = value.icon;
                 return (
-                  <div key={index} className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all hover:scale-105">
-                    <div className="w-16 h-16 bg-gradient-to-br from-pink-200 to-purple-300 rounded-full flex items-center justify-center mb-4 mx-auto">
-                      <IconComponent className="h-8 w-8 text-purple-700" />
+                  <div key={index} className="bg-white rounded-xl md:rounded-2xl p-4 md:p-6 shadow-md hover:shadow-lg transition-all hover:scale-105">
+                    <div className="w-12 h-12 md:w-16 md:h-16 bg-gradient-to-br from-pink-200 to-purple-300 rounded-full flex items-center justify-center mb-3 md:mb-4 mx-auto">
+                      <IconComponent className="h-5 w-5 md:h-8 md:w-8 text-purple-700" />
                     </div>
-                    <h3 className="font-poppins text-lg font-semibold text-purple-900 text-center mb-3">{value.title}</h3>
-                    <p className="font-inter text-gray-600 text-center text-sm leading-relaxed">{value.description}</p>
+                    <h3 className="font-poppins text-base md:text-lg font-semibold text-purple-900 text-center mb-2 md:mb-3">{value.title}</h3>
+                    <p className="font-inter text-xs md:text-sm text-gray-600 text-center leading-relaxed">{value.description}</p>
                   </div>
                 );
               })}
@@ -128,57 +128,57 @@ const About = () => {
           </div>
 
           {/* Formation & Certifications */}
-          <div className="bg-white rounded-3xl p-6 md:p-12 shadow-xl mb-20">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12 items-start">
+          <div className="bg-white rounded-2xl md:rounded-3xl p-4 md:p-8 lg:p-12 shadow-lg md:shadow-xl mb-16 md:mb-20">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8 lg:gap-12 items-start">
               <div>
-                <h2 className="font-poppins text-3xl font-bold text-purple-900 mb-6 flex items-center">
-                  <Award className="h-8 w-8 mr-3 text-purple-600" />
+                <h2 className="font-poppins text-2xl md:text-3xl font-bold text-purple-900 mb-4 md:mb-6 flex items-center">
+                  <Award className="h-6 w-6 md:h-8 md:w-8 mr-2 md:mr-3 text-purple-600" />
                   Formation & Certifications
                 </h2>
-                <p className="font-inter text-gray-700 mb-6 leading-relaxed">
+                <p className="font-inter text-sm md:text-base text-gray-700 mb-4 md:mb-6 leading-relaxed">
                   Je vous rappelle que le métier n'est pas réglementé en France, ainsi il n'existe aucune formation officielle de Doula.
                   J'ai été formée par des professionnelles reconnues et je continue à me former régulièrement pour vous offrir le meilleur accompagnement.
                 </p>
-                <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl p-6 mb-8 shadow-sm border border-purple-100">
-                  <h3 className="font-semibold text-purple-900 mb-3 text-lg">Formation principale</h3>
-                  <div className="text-sm text-purple-800 bg-white p-4 rounded-lg">
+                <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg md:rounded-xl p-4 md:p-6 mb-6 md:mb-8 shadow-sm border border-purple-100">
+                  <h3 className="font-semibold text-purple-900 mb-2 md:mb-3 text-base md:text-lg">Formation principale</h3>
+                  <div className="text-xs md:text-sm text-purple-800 bg-white p-3 md:p-4 rounded-lg">
                     <div className="font-bold mb-1">Décembre 2019 – Février 2020</div>
-                    <p className="mb-2">Formation d'Accompagnante à la Naissance et Perfectionnement en Périnatalité</p>
-                    <p className="text-purple-600 italic">Par Diane Boutin - Naturopathe, sage-femme traditionnelle, Doula au Québec depuis plus de 30 ans</p>
+                    <p className="mb-1 md:mb-2">Formation d'Accompagnante à la Naissance et Perfectionnement en Périnatalité</p>
+                    <p className="text-purple-600 italic text-xs">Par Diane Boutin - Naturopathe, sage-femme traditionnelle, Doula au Québec depuis plus de 30 ans</p>
                   </div>
                 </div>
               </div>
-              <div className="relative">
-                <div className="w-full h-80 bg-gradient-to-br from-purple-200 to-pink-300 rounded-3xl overflow-hidden shadow-lg">
+              <div className="relative mt-6 lg:mt-0">
+                <div className="w-full h-64 md:h-80 bg-gradient-to-br from-purple-200 to-pink-300 rounded-2xl md:rounded-3xl overflow-hidden shadow-lg">
                   <img src={Me1Img} alt="Formation professionnelle doula" className="w-full h-full object-cover" />
                 </div>
               </div>
             </div>
 
             {/* Formations continues accordéon */}
-            <div className="mt-12 border-t border-gray-200 pt-8">
-              <div className="text-center mb-10">
-                <h3 className="font-poppins text-2xl md:text-3xl font-bold text-purple-900 mb-3">Formations Continues</h3>
-                <p className="font-inter text-gray-600 italic">Mise à jour février 2022 • Un engagement constant envers l'excellence</p>
+            <div className="mt-8 md:mt-12 border-t border-gray-200 pt-6 md:pt-8">
+              <div className="text-center mb-8 md:mb-10">
+                <h3 className="font-poppins text-xl md:text-3xl font-bold text-purple-900 mb-2 md:mb-3">Formations Continues</h3>
+                <p className="font-inter text-xs md:text-sm text-gray-600 italic">Mise à jour février 2022 • Un engagement constant envers l'excellence</p>
                 {(Object.keys(formationsByYear) as FormationYear[]).sort((a,b) => Number(b)-Number(a)).map(year => (
-                  <div key={year} className="border border-purple-100 rounded-xl overflow-hidden bg-white shadow-sm hover:shadow-md transition-shadow mb-4">
+                  <div key={year} className="border border-purple-100 rounded-lg md:rounded-xl overflow-hidden bg-white shadow-sm hover:shadow-md transition-shadow mb-3 md:mb-4">
                     <button
                       onClick={() => toggleYear(year)}
-                      className="w-full flex justify-between items-center p-5 bg-gradient-to-r from-purple-50 to-pink-50 hover:from-purple-100 hover:to-pink-100 transition-colors"
+                      className="w-full flex justify-between items-center p-3 md:p-5 bg-gradient-to-r from-purple-50 to-pink-50 hover:from-purple-100 hover:to-pink-100 transition-colors"
                     >
-                      <h4 className="font-poppins text-lg md:text-xl font-semibold text-purple-900 text-left">
-                        Formations {year} <span className="text-purple-600 text-sm font-normal ml-3">({formationsByYear[year].length} formation{formationsByYear[year].length>1?'s':''})</span>
+                      <h4 className="font-poppins text-base md:text-xl font-semibold text-purple-900 text-left">
+                        Formations {year} <span className="text-purple-600 text-xs md:text-sm font-normal ml-2">({formationsByYear[year].length} formation{formationsByYear[year].length>1?'s':''})</span>
                       </h4>
-                      {expandedYear === year ? <ChevronUp className="h-5 w-5 text-purple-600" /> : <ChevronDown className="h-5 w-5 text-purple-600" />}
+                      {expandedYear === year ? <ChevronUp className="h-4 w-4 md:h-5 md:w-5 text-purple-600" /> : <ChevronDown className="h-4 w-4 md:h-5 md:w-5 text-purple-600" />}
                     </button>
                     {expandedYear === year && (
-                      <div className="p-4 md:p-6 bg-white">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="p-3 md:p-4 lg:p-6 bg-white">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
                           {formationsByYear[year].map((formation, index) => (
-                            <div key={index} className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-lg p-5 hover:shadow-md transition-shadow border border-purple-100">
-                              <div className="text-xs font-semibold text-purple-700 mb-2 tracking-wide uppercase">{formation.date}</div>
-                              <h4 className="font-medium text-gray-900 mb-3 text-base leading-tight">{formation.title}</h4>
-                              <p className="text-sm text-gray-600 leading-relaxed">{formation.formateur}</p>
+                            <div key={index} className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-md md:rounded-lg p-3 md:p-4 hover:shadow-md transition-shadow border border-purple-100">
+                              <div className="text-xs font-semibold text-purple-700 mb-1 md:mb-2 tracking-wide uppercase">{formation.date}</div>
+                              <h4 className="font-medium text-gray-900 mb-2 text-sm md:text-base leading-tight">{formation.title}</h4>
+                              <p className="text-xs md:text-sm text-gray-600 leading-relaxed">{formation.formateur}</p>
                             </div>
                           ))}
                         </div>
@@ -191,12 +191,12 @@ const About = () => {
           </div>
 
           {/* Philosophie */}
-          <div className="bg-gradient-to-r from-purple-600 to-pink-500 rounded-3xl p-8 md:p-12 text-white text-center">
-            <h2 className="font-poppins text-3xl font-bold mb-6">Ma philosophie</h2>
-            <p className="font-inter text-lg leading-relaxed max-w-4xl mx-auto mb-8 opacity-90">
+          <div className="bg-gradient-to-r from-purple-600 to-pink-500 rounded-2xl md:rounded-3xl p-6 md:p-8 lg:p-12 text-white text-center">
+            <h2 className="font-poppins text-2xl md:text-3xl font-bold mb-4 md:mb-6">Ma philosophie</h2>
+            <p className="font-inter text-sm md:text-base lg:text-lg leading-relaxed max-w-4xl mx-auto mb-4 md:mb-6 opacity-90">
               Je crois profondément que chaque femme porte en elle la sagesse nécessaire pour vivre sa maternité. Mon rôle n'est pas de vous dire quoi faire, mais de vous accompagner pour que vous puissiez faire confiance à votre instinct et prendre les décisions qui vous correspondent.
             </p>
-            <p className="font-inter text-lg leading-relaxed max-w-4xl mx-auto opacity-90">
+            <p className="font-inter text-sm md:text-base lg:text-lg leading-relaxed max-w-4xl mx-auto opacity-90">
               L'accouchement et la maternité sont des expériences transformatrices. Ensemble, nous créons un espace sécurisant où vous pouvez explorer vos émotions, vos peurs et vos joies, et vous préparer à accueillir cette nouvelle version de vous-même.
             </p>
           </div>
