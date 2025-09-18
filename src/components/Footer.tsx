@@ -1,6 +1,7 @@
 import { Mail, MapPin, Instagram, Facebook, ArrowUp } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
+import Logo from '../images/Logo.png';
 
 const Footer = () => {
   const [showScrollButton, setShowScrollButton] = useState(false);
@@ -87,10 +88,10 @@ const Footer = () => {
             <div className="col-span-1 md:col-span-2">
               <div className="flex items-center space-x-2 mb-4">
                 <img 
-                  src="/logo.png" 
-                  alt="Je Suis Radieuse" 
-                  className="w-10 h-10 object-contain" 
-                />
+  src={Logo} 
+  alt="Je Suis Radieuse" 
+  className="w-10 h-10 object-contain" 
+/>
                 <span className="font-poppins text-xl font-semibold">
                   Je Suis Radieuse
                 </span>
