@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Calendar, Clock, MapPin, Users, Plus, Filter, Search } from 'lucide-react';
-import CalendlyButton from '../components/CalendlyButton';
 
 const Evenements = () => {
   const [filter, setFilter] = useState('tous');
@@ -256,7 +255,7 @@ const Evenements = () => {
           </div>
 
           {/* Newsletter Signup */}
-          <div className="bg-gradient-to-r from-purple-600 to-pink-500 rounded-3xl p-12 text-center text-white mb-8">
+          <div className="bg-gradient-to-r from-purple-600 to-pink-500 rounded-3xl p-12 text-center text-white">
             <h2 className="font-poppins text-3xl font-bold mb-4">
               Ne ratez aucun événement
             </h2>
@@ -274,6 +273,8 @@ const Evenements = () => {
               </button>
             </div>
           </div>
+        </div>
+      </div>
 
       {/* Add Event Modal */}
       {showAddEvent && (
