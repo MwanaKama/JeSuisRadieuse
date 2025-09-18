@@ -1,6 +1,6 @@
 // src/App.tsx
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { HelmetProvider } from 'react-helmet-async';
+import { HelmetProvider, Helmet } from 'react-helmet-async';
 
 import Header from './components/Header';
 import Footer from './components/Footer';
@@ -24,6 +24,13 @@ import './App.css';
 function App() {
   return (
     <HelmetProvider>
+      {/* Ajout du Helmet pour le favicon global */}
+      <Helmet>
+        <link rel="icon" type="image/png" href="/logo.png" sizes="32x32" />
+        <link rel="apple-touch-icon" href="/logo.png" />
+        <meta name="theme-color" content="#9C27B0" />
+      </Helmet>
+      
       <Router>
         <div className="min-h-screen bg-gradient-to-br from-pink-50 to-purple-50">
           <ScrollToTop />
