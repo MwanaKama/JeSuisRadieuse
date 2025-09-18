@@ -1,15 +1,24 @@
+// src/App.tsx
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
+
 import Header from './components/Header';
 import Footer from './components/Footer';
 import ScrollToTop from './components/ScrollToTop';
+import CookieConsent from './components/CookieConsent';
+
 import Home from './pages/Home';
 import Accompagnements from './pages/Accompagnements';
 import Soins from './pages/Soins';
 import Boutique from './pages/Boutique';
 import About from './pages/About';
 import Evenements from './pages/Evenements';
-import CookieConsent from './components/CookieConsent';
+
+/* Ajoute ici l'import des pages existantes */
+import MentionsLegales from './pages/MentionsLegales';
+import PolitiqueConfidentialite from './pages/PolitiqueConfidentialite';
+import ConditionsGenerales from './pages/ConditionsGenerales';
+
 import './App.css';
 
 function App() {
@@ -28,6 +37,20 @@ function App() {
               <Route path="/a-propos" element={<About />} />
               <Route path="/evenements" element={<Evenements />} />
               <Route path="/planning" element={<Evenements />} />
+
+              {/* Routes pour les pages légales */}
+              <Route path="/mentions-legales" element={<MentionsLegales />} />
+              <Route
+                path="/politique-de-confidentialite"
+                element={<PolitiqueConfidentialite />}
+              />
+              <Route
+                path="/conditions-generales"
+                element={<ConditionsGenerales />}
+              />
+
+              {/* Optionnel : page 404 basique */}
+              {/* <Route path="*" element={<NotFound />} /> */}
             </Routes>
           </main>
           <Footer />
