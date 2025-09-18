@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { ShoppingCart, Plus, Minus, Star, Leaf, Heart } from 'lucide-react';
-import StripeCheckout from '../components/StripeCheckout';
+import { ShoppingCart, Plus, Minus, Star, Leaf, Heart, Truck, Package, Clock } from 'lucide-react';
+import OrderForm from '../components/OrderForm';
 
 const Boutique = () => {
   const [cart, setCart] = useState<{[key: string]: number}>({});
-  const [showCheckout, setShowCheckout] = useState(false);
+  const [showOrderForm, setShowOrderForm] = useState(false);
 
   const tisanes = [
     {
@@ -16,7 +16,8 @@ const Boutique = () => {
       description: 'Mélange délicat de camomille, feuilles de framboisier et mélisse pour accompagner votre grossesse en douceur.',
       benefits: ['Apaise les nausées', 'Favorise la détente', 'Riche en minéraux'],
       ingredients: 'Camomille, feuilles de framboisier, mélisse, ortie',
-      weight: '100g'
+      weight: '100g',
+      available: false
     },
     {
       id: 'tisane-allaitement',
@@ -26,7 +27,8 @@ const Boutique = () => {
       description: 'Synergie de fenouil, anis vert et galega pour soutenir naturellement l\'allaitement maternel.',
       benefits: ['Stimule la lactation', 'Facilite la digestion', 'Goût doux et agréable'],
       ingredients: 'Fenouil, anis vert, galega, verveine',
-      weight: '100g'
+      weight: '100g',
+      available: false
     },
     {
       id: 'tisane-postpartum',
@@ -36,7 +38,8 @@ const Boutique = () => {
       description: 'Mélange reminéralisant d\'ortie, achillée millefeuille et rose pour une récupération optimale.',
       benefits: ['Tonifie l\'organisme', 'Apporte fer et vitamines', 'Soutient la récupération'],
       ingredients: 'Ortie, achillée millefeuille, pétales de rose, avoine',
-      weight: '100g'
+      weight: '100g',
+      available: false
     },
     {
       id: 'tisane-feminin',
@@ -46,7 +49,8 @@ const Boutique = () => {
       description: 'Harmonise le cycle féminin avec un mélange de sauge, achillée et calendula.',
       benefits: ['Équilibre hormonal', 'Soulage les tensions', 'Régularise le cycle'],
       ingredients: 'Sauge, achillée, calendula, mélisse',
-      weight: '100g'
+      weight: '100g',
+      available: false
     }
   ];
 
@@ -86,7 +90,7 @@ const Boutique = () => {
   return (
     <>
       <Helmet>
-        <title>Boutique | Je suis Radieuse</title>
+        <title>Boutique Tisanes Artisanales - Grossesse & Allaitement | [Nom] Doula</title>
         <meta name="description" content="Tisanes artisanales bio pour grossesse, allaitement et bien-être féminin. Mélanges traditionnels préparés avec soin." />
         <meta name="keywords" content="tisanes grossesse, tisane allaitement, herboristerie femme, tisanes bio Paris" />
       </Helmet>
@@ -98,22 +102,90 @@ const Boutique = () => {
             <h1 className="font-poppins text-4xl md:text-5xl font-bold text-purple-900 mb-6">
               Boutique Tisanes
             </h1>
-            <p className="font-inter text-lg text-gray-700 max-w-3xl mx-auto leading-relaxed">
-              Découvrez mes tisanes artisanales spécialement conçues pour accompagner 
-              chaque étape de votre parcours de femme avec douceur et bienfaisance.
-            </p>
+            <div className="bg-gradient-to-r from-purple-100 to-pink-100 rounded-2xl p-6 mb-8 max-w-4xl mx-auto">
+              <div className="flex items-center justify-center mb-4">
+                <Clock className="h-8 w-8 text-purple-600 mr-3" />
+                <h2 className="font-poppins text-2xl font-bold text-purple-900">
+                  Tisanes à venir
+                </h2>
+              </div>
+              <p className="font-inter text-lg text-gray-700 leading-relaxed">
+                Mes tisanes artisanales spécialement conçues pour accompagner chaque étape 
+                de votre parcours de femme seront bientôt disponibles. Vous pourrez les 
+                pré-commander et je vous les enverrai dès qu'elles seront prêtes !
+              </p>
+            </div>
+          </div>
+
+          {/* Shipping Info */}
+          <div className="bg-white rounded-3xl shadow-xl p-8 mb-12">
+            <h2 className="font-poppins text-2xl font-bold text-purple-900 text-center mb-6">
+              Livraison en France
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="text-center">
+                <div className="w-16 h-16 bg-gradient-to-br from-blue-200 to-blue-300 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Package className="h-8 w-8 text-blue-700" />
+                </div>
+                <h3 className="font-poppins text-lg font-semibold text-purple-900 mb-2">
+                  Colissimo
+                </h3>
+                <p className="font-inter text-gray-600 text-sm">
+                  Livraison standard 48-72h
+                </p>
+              </div>
+              
+              <div className="text-center">
+                <div className="w-16 h-16 bg-gradient-to-br from-green-200 to-green-300 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Truck className="h-8 w-8 text-green-700" />
+                </div>
+                <h3 className="font-poppins text-lg font-semibold text-purple-900 mb-2">
+                  Mondial Relay
+                </h3>
+                <p className="font-inter text-gray-600 text-sm">
+                  Point relais économique
+                </p>
+              </div>
+              
+              <div className="text-center">
+                <div className="w-16 h-16 bg-gradient-to-br from-red-200 to-red-300 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Package className="h-8 w-8 text-red-700" />
+                </div>
+                <h3 className="font-poppins text-lg font-semibold text-purple-900 mb-2">
+                  Chronopost
+                </h3>
+                <p className="font-inter text-gray-600 text-sm">
+                  Livraison express 24h
+                </p>
+              </div>
+            </div>
           </div>
 
           {/* Products Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8 mb-12">
             {tisanes.map((tisane) => (
-              <div key={tisane.id} className="bg-white rounded-3xl shadow-xl hover:shadow-2xl transition-all hover:scale-105 overflow-hidden">
-                <div className="h-64 overflow-hidden">
+              <div key={tisane.id} className="bg-white rounded-3xl shadow-xl hover:shadow-2xl transition-all overflow-hidden relative">
+                {!tisane.available && (
+                  <div className="absolute top-4 right-4 z-10">
+                    <span className="bg-purple-600 text-white px-3 py-1 rounded-full text-sm font-medium">
+                      Bientôt disponible
+                    </span>
+                  </div>
+                )}
+                
+                <div className="h-64 overflow-hidden relative">
                   <img 
                     src={tisane.image} 
                     alt={tisane.name}
-                    className="w-full h-full object-cover hover:scale-110 transition-transform duration-500"
+                    className={`w-full h-full object-cover transition-transform duration-500 ${
+                      !tisane.available ? 'opacity-75' : 'hover:scale-110'
+                    }`}
                   />
+                  {!tisane.available && (
+                    <div className="absolute inset-0 bg-white bg-opacity-20 flex items-center justify-center">
+                      <Clock className="h-12 w-12 text-purple-600" />
+                    </div>
+                  )}
                 </div>
                 
                 <div className="p-8">
@@ -157,31 +229,41 @@ const Boutique = () => {
                   </div>
                   
                   <div className="flex items-center justify-between">
-                    {cart[tisane.id] ? (
-                      <div className="flex items-center space-x-3">
-                        <button
-                          onClick={() => removeFromCart(tisane.id)}
-                          className="w-8 h-8 bg-gray-200 hover:bg-gray-300 rounded-full flex items-center justify-center transition-colors"
-                        >
-                          <Minus className="h-4 w-4" />
-                        </button>
-                        <span className="font-semibold text-purple-900 min-w-[2rem] text-center">
-                          {cart[tisane.id]}
-                        </span>
+                    {tisane.available ? (
+                      cart[tisane.id] ? (
+                        <div className="flex items-center space-x-3">
+                          <button
+                            onClick={() => removeFromCart(tisane.id)}
+                            className="w-8 h-8 bg-gray-200 hover:bg-gray-300 rounded-full flex items-center justify-center transition-colors"
+                          >
+                            <Minus className="h-4 w-4" />
+                          </button>
+                          <span className="font-semibold text-purple-900 min-w-[2rem] text-center">
+                            {cart[tisane.id]}
+                          </span>
+                          <button
+                            onClick={() => addToCart(tisane.id)}
+                            className="w-8 h-8 bg-purple-600 hover:bg-purple-700 text-white rounded-full flex items-center justify-center transition-colors"
+                          >
+                            <Plus className="h-4 w-4" />
+                          </button>
+                        </div>
+                      ) : (
                         <button
                           onClick={() => addToCart(tisane.id)}
-                          className="w-8 h-8 bg-purple-600 hover:bg-purple-700 text-white rounded-full flex items-center justify-center transition-colors"
+                          className="flex-1 bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 text-white py-3 rounded-full font-semibold transition-all hover:shadow-lg flex items-center justify-center space-x-2"
                         >
-                          <Plus className="h-4 w-4" />
+                          <ShoppingCart className="h-4 w-4" />
+                          <span>Ajouter au panier</span>
                         </button>
-                      </div>
+                      )
                     ) : (
                       <button
                         onClick={() => addToCart(tisane.id)}
                         className="flex-1 bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 text-white py-3 rounded-full font-semibold transition-all hover:shadow-lg flex items-center justify-center space-x-2"
                       >
                         <ShoppingCart className="h-4 w-4" />
-                        <span>Ajouter au panier</span>
+                        <span>Pré-commander</span>
                       </button>
                     )}
                   </div>
@@ -218,10 +300,10 @@ const Boutique = () => {
               </div>
               
               <button
-                onClick={() => setShowCheckout(true)}
+                onClick={() => setShowOrderForm(true)}
                 className="w-full bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 text-white py-4 rounded-full font-poppins font-semibold text-lg transition-all hover:shadow-xl hover:scale-105"
               >
-                Procéder au paiement
+                Finaliser ma commande
               </button>
             </div>
           )}
@@ -233,22 +315,22 @@ const Boutique = () => {
               Préparées avec amour
             </h2>
             <p className="font-inter text-lg opacity-90 max-w-3xl mx-auto">
-              Toutes mes tisanes sont préparées artisanalement avec des plantes bio 
+              Toutes mes tisanes seront préparées artisanalement avec des plantes bio 
               sélectionnées pour leurs propriétés thérapeutiques et leur qualité exceptionnelle.
             </p>
           </div>
         </div>
       </div>
 
-      {showCheckout && (
-        <StripeCheckout
+      {showOrderForm && (
+        <OrderForm
           items={getCartItems()}
           total={getCartTotal()}
-          onClose={() => setShowCheckout(false)}
+          onClose={() => setShowOrderForm(false)}
           onSuccess={() => {
             setCart({});
-            setShowCheckout(false);
-            alert('Commande confirmée ! Vous recevrez un email de confirmation.');
+            setShowOrderForm(false);
+            alert('Commande enregistrée ! Vous recevrez un email de confirmation.');
           }}
         />
       )}
