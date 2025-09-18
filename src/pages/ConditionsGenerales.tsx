@@ -64,7 +64,6 @@ const ConditionsGenerales: React.FC = () => {
                     <ul className="list-circle pl-5 mt-1 md:mt-2 text-sm">
                       <li>Massage Rebozo - 90€ (1h30)</li>
                       <li>Yoni Steam - 60€ (60 min)</li>
-                      <li>Rituels de soins féminins</li>
                     </ul>
                   </li>
                 </ul>
