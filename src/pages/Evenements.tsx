@@ -111,7 +111,7 @@ const Evenements = () => {
   return (
     <>
       <Helmet>
-        <title>Événements & Ateliers - Je Suis Radieuse | Doula Paris</title>
+        <title>Je Suis Radieuse | Événements & Ateliers</title>
         <meta name="description" content="Découvrez tous nos événements : ateliers préparation accouchement, cercles de parole, formations massage bébé." />
         <meta name="keywords" content="ateliers doula Paris, formation massage bébé, cercle parole post-partum, préparation accouchement" />
       </Helmet>
