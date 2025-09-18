@@ -24,11 +24,22 @@ import './App.css';
 function App() {
   return (
     <HelmetProvider>
-      {/* Ajout du Helmet pour le favicon global */}
+      {/* Configuration du favicon avec plusieurs approches */}
       <Helmet>
+        {/* Méthode 1: Chemin absolu */}
         <link rel="icon" type="image/png" href="/logo.png" sizes="32x32" />
+        
+        {/* Méthode 2: Utilisation de PUBLIC_URL (alternative) */}
+        <link rel="icon" type="image/png" href={`${process.env.PUBLIC_URL}/logo.png`} />
+        
+        {/* Méthode 3: Pour les appareils Apple */}
         <link rel="apple-touch-icon" href="/logo.png" />
+        
+        {/* Méthode 4: Couleur de thème */}
         <meta name="theme-color" content="#9C27B0" />
+        
+        {/* Méthode 5: Favicon classique pour compatibilité */}
+        <link rel="shortcut icon" href="/logo.png" />
       </Helmet>
       
       <Router>
