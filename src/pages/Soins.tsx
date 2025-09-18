@@ -3,6 +3,8 @@ import { Sparkles, Flower2, Calendar, Clock, Users, CheckCircle } from 'lucide-r
 import CalendlyButton from '../components/CalendlyButton';
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
+import RebozoImg from '../images/rebozo.jpg';
+import YoniSteamImg from '../images/yoni-steam.png';
 
 const Soins = () => {
   const location = useLocation();
@@ -42,28 +44,29 @@ const Soins = () => {
   const yoniSteamBookingLink = "https://calendly.com/jesuisradieuse/rencontredoula";
 
   const services = [
-    {
-      name: 'Massage Rebozo',
-      id: 'rebozo',
-      icon: Sparkles,
-      duration: '1h30 min',
-      price: '90€',
-      description: 'Massage traditionnel mexicain',
-      benefits: rebozoBenefits,
-      image: '/rebozo.jpg',
-      bookingLink: rebozoBookingLink
-    },
-    {
-      name: 'Yoni Steam',
-      id: 'yoni-steam',
-      icon: Flower2,
-      duration: '60 min',
-      price: '60€',
-      description: 'Bain de vapeur aux plantes médicinales pour le bien-être féminin',
-      benefits: yoniSteamBenefits,
-      image: '/yoni-steam.png',
-      bookingLink: yoniSteamBookingLink
-    }
+    const services = [
+  {
+    name: 'Massage Rebozo',
+    id: 'rebozo',
+    icon: Sparkles,
+    duration: '1h30 min',
+    price: '90€',
+    description: 'Massage traditionnel mexicain',
+    benefits: rebozoBenefits,
+    image: RebozoImg, // ← ici
+    bookingLink: rebozoBookingLink
+  },
+      {
+    name: 'Yoni Steam',
+    id: 'yoni-steam',
+    icon: Flower2,
+    duration: '60 min',
+    price: '60€',
+    description: 'Bain de vapeur aux plantes médicinales pour le bien-être féminin',
+    benefits: yoniSteamBenefits,
+    image: YoniSteamImg, // ← ici
+    bookingLink: yoniSteamBookingLink
+  }
   ];
 
   return (
