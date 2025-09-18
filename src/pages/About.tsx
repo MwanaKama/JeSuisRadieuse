@@ -1,73 +1,148 @@
-import React, { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { Link } from 'react-router-dom';
-import { Heart, Award, Users, Calendar, Star, BookOpen, ChevronDown, ChevronUp } from 'lucide-react';
+import { Sparkles, Flower2, Clock, Users, Calendar, CheckCircle } from 'lucide-react';
+import CalendlyButton from '../components/CalendlyButton';
+import { useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 
-// Import des images depuis src/images
-import meImg from '../images/me.png';
-import me1Img from '../images/me-1.png';
+// Import correct des images
+import rebozoImg from '../images/rebozo.jpg';
+import yoniSteamImg from '../images/yoni-steam.png';
 
-const About = () => {
-  const [expandedYear, setExpandedYear] = useState<string | null>("2022");
+const Soins = () => {
+  const location = useLocation();
 
-  // ... valeurs, stats et formationsByYear restent identiques
+  useEffect(() => {
+    if (location.hash) {
+      const element = document.getElementById(location.hash.substring(1));
+      if (element) {
+        setTimeout(() => {
+          element.scrollIntoView({ behavior: 'smooth' });
+        }, 100);
+      }
+    }
+  }, [location]);
 
-  const toggleYear = (year: string) => {
-    if (expandedYear === year) setExpandedYear(null);
-    else setExpandedYear(year);
-  };
+  const yoniSteamBenefits = [
+    'Nettoyage en douceur et purification',
+    'Stimulation de la circulation sanguine',
+    'Soutien hormonal naturel',
+    'Détente profonde et reconnexion',
+    'Préparation pré-conceptionnelle',
+    'Récupération post-partum'
+  ];
+
+  const rebozoBenefits = [
+    'Détente musculaire profonde',
+    'Réalignement du bassin',
+    'Massage thérapeutique traditionnel',
+    'Soulagement des tensions',
+    'Accompagnement émotionnel',
+    'Rituel de fermeture post-partum'
+  ];
+
+  const services = [
+    {
+      name: 'Massage Rebozo',
+      id: 'rebozo',
+      icon: Sparkles,
+      duration: '1h30 min',
+      price: '90€',
+      description: 'Massage traditionnel mexicain',
+      benefits: rebozoBenefits,
+      image: rebozoImg,
+      bookingLink: "https://calendly.com/jesuisradieuse/rencontredoula"
+    },
+    {
+      name: 'Yoni Steam',
+      id: 'yoni-steam',
+      icon: Flower2,
+      duration: '60 min',
+      price: '60€',
+      description: 'Bain de vapeur aux plantes médicinales pour le bien-être féminin',
+      benefits: yoniSteamBenefits,
+      image: yoniSteamImg,
+      bookingLink: "https://calendly.com/jesuisradieuse/rencontredoula"
+    }
+  ];
 
   return (
     <>
       <Helmet>
-        <title>À propos - Je Suis Radieuse | Mon parcours et philosophie</title>
-        <meta name="description" content="Doula certifiée avec 5 ans d'expérience à Paris. Découvrez mon parcours, ma formation et ma philosophie d'accompagnement bienveillant." />
+        <title>Soins | Je suis Radieuse</title>
+        <meta name="description" content="Soins traditionnels pour femmes : Massage Rebozo et Yoni Steam. Bien-être féminin, récupération post-partum. Séances à Paris." />
+        <meta name="keywords" content="massage rebozo, yoni steam Paris, soins traditionnels femmes, bien-être féminin, récupération post-partum" />
       </Helmet>
 
       <div className="min-h-screen bg-gradient-to-br from-pink-50 to-purple-50 py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Hero */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-20">
-            <div>
-              <h1 className="font-poppins text-4xl md:text-5xl font-bold text-purple-900 mb-6">À propos de moi</h1>
-              <p className="font-inter text-lg text-gray-700 mb-8 leading-relaxed">
-                Bonjour, je suis <strong>Emilie</strong>, doula passionnée...
-              </p>
-              <Link to="/planning" className="bg-gradient-to-r from-purple-600 to-pink-500 text-white px-8 py-4 rounded-full font-poppins font-semibold text-lg inline-flex items-center space-x-2">
-                <Calendar className="h-5 w-5" />
-                <span>Prendre un 1er RDV gratuit</span>
-              </Link>
-            </div>
-            <div className="relative">
-              <div className="w-full h-96 bg-gradient-to-br from-pink-200 to-purple-300 rounded-3xl overflow-hidden shadow-2xl">
-                <img src={meImg} alt="Emilie - Doula certifiée" className="w-full h-full object-cover" />
-              </div>
-              <div className="absolute -bottom-6 -right-6 w-24 h-24 bg-white rounded-full shadow-lg flex items-center justify-center">
-                <Heart className="h-12 w-12 text-pink-500" />
-              </div>
-            </div>
+          <div className="text-center mb-16">
+            <h1 className="font-poppins text-4xl md:text-5xl font-bold text-purple-900 mb-6">
+              Soins Traditionnels
+            </h1>
+            <p className="font-inter text-lg text-gray-700 max-w-3xl mx-auto leading-relaxed">
+              Des rituels ancestraux adaptés aux femmes d'aujourd'hui. Reconnectez-vous à votre féminité dans un espace sacré de bien-être et de guérison.
+            </p>
           </div>
 
-          {/* Formation Section */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start mb-20">
-            <div>
-              <h2 className="font-poppins text-3xl font-bold text-purple-900 mb-6 flex items-center">
-                <Award className="h-8 w-8 mr-3 text-purple-600" /> Formation & Certifications
-              </h2>
-              {/* Formation principale */}
-            </div>
-            <div className="relative">
-              <div className="w-full h-80 bg-gradient-to-br from-purple-200 to-pink-300 rounded-3xl overflow-hidden shadow-lg">
-                <img src={me1Img} alt="Formation professionnelle doula" className="w-full h-full object-cover" />
-              </div>
-            </div>
-          </div>
+          <div className="space-y-20">
+            {services.map((service, index) => {
+              const IconComponent = service.icon;
+              return (
+                <div key={index} id={service.id} className={`scroll-mt-20 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center ${index % 2 === 1 ? 'lg:grid-flow-col-dense' : ''}`}>
+                  {/* Content */}
+                  <div className={index % 2 === 1 ? 'lg:col-start-2' : ''}>
+                    <div className="flex items-center mb-6">
+                      <div className="w-16 h-16 bg-gradient-to-br from-pink-200 to-purple-300 rounded-full flex items-center justify-center mr-4">
+                        <IconComponent className="h-8 w-8 text-purple-700" />
+                      </div>
+                      <div>
+                        <h2 className="font-poppins text-3xl font-bold text-purple-900">{service.name}</h2>
+                        <div className="flex items-center space-x-4 text-gray-600 mt-1">
+                          <div className="flex items-center space-x-1">
+                            <Clock className="h-4 w-4" />
+                            <span className="text-sm">{service.duration}</span>
+                          </div>
+                          <div className="text-2xl font-bold text-purple-700">{service.price}</div>
+                        </div>
+                      </div>
+                    </div>
 
-          {/* Accordéon formations continues - reste identique */}
+                    <p className="font-inter text-gray-700 mb-8 text-lg leading-relaxed">{service.description}</p>
+
+                    <div className="mb-8">
+                      <h3 className="font-poppins text-xl font-semibold text-purple-900 mb-4">Bienfaits</h3>
+                      <ul className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        {service.benefits.map((benefit, i) => (
+                          <li key={i} className="flex items-start space-x-3">
+                            <CheckCircle className="h-5 w-5 text-pink-500 flex-shrink-0 mt-0.5" />
+                            <span className="font-inter text-gray-700">{benefit}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    <CalendlyButton text="Réserver une séance" size="lg" />
+                  </div>
+
+                  {/* Image */}
+                  <div className={index % 2 === 1 ? 'lg:col-start-1' : ''}>
+                    <div className="relative">
+                      <div className="w-full h-96 bg-gradient-to-br from-pink-200 to-purple-300 rounded-3xl overflow-hidden shadow-2xl">
+                        <img src={service.image} alt={service.name} className="w-full h-full object-cover" />
+                      </div>
+                      <div className="absolute -bottom-6 -right-6 w-24 h-24 bg-white rounded-full shadow-lg flex items-center justify-center">
+                        <IconComponent className="h-12 w-12 text-purple-600" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         </div>
       </div>
     </>
   );
 };
 
-export default About;
+export default Soins;
