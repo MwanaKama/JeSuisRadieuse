@@ -1,6 +1,6 @@
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
-import { Mail, Phone, MapPin } from 'lucide-react';
+import { Mail, MapPin } from 'lucide-react';
 
 const MentionsLegales: React.FC = () => {
   return (
@@ -34,10 +34,6 @@ const MentionsLegales: React.FC = () => {
                     <span className="text-sm md:text-base">mamanradieuse@gmail.com</span>
                   </div>
                   <div className="flex items-center space-x-2 md:space-x-3">
-                    <Phone className="h-4 w-4 md:h-5 md:w-5 text-pink-500" />
-                    <span className="text-sm md:text-base">+33 6 12 34 56 78</span>
-                  </div>
-                  <div className="flex items-center space-x-2 md:space-x-3">
                     <MapPin className="h-4 w-4 md:h-5 md:w-5 text-pink-500" />
                     <span className="text-sm md:text-base">Paris, France</span>
                   </div>
@@ -66,7 +62,7 @@ const MentionsLegales: React.FC = () => {
                   à disposition sur ce site.
                 </p>
                 <p className="text-sm md:text-base leading-relaxed mt-3 md:mt-4">
-                  Les accompagnements proposés par Je Suis Radieuse sont des accompagnements non médicaux, à visée de soutien émotionnel 
+                  Les accompagnements proposés par Je Suis Radieuse sont des accompagnements non médicaux, non thérapeutiques, à visée de soutien émotionnel 
                   et physique. Ils ne se substituent en aucun cas au suivi médical conventionnel par un professionnel de santé.
                 </p>
               </section>
