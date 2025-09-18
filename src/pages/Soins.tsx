@@ -1,15 +1,17 @@
 import { Helmet } from 'react-helmet-async';
-import { Sparkles, Flower2, Calendar, Clock, Users, CheckCircle } from 'lucide-react';
+import { Sparkles, Flower2, Clock, Users, Calendar, CheckCircle } from 'lucide-react';
 import CalendlyButton from '../components/CalendlyButton';
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import RebozoImg from '../images/rebozo.jpg';
-import YoniSteamImg from '../images/yoni-steam.png';
+
+// Import des images depuis src/images
+import rebozoImg from '../images/rebozo.png';
+import yoniSteamImg from '../images/yoni-steam.png';
 
 const Soins = () => {
   const location = useLocation();
 
-  // Gestion du scroll vers les ancres au chargement de la page
+  // Scroll vers les ancres au chargement
   useEffect(() => {
     if (location.hash) {
       const element = document.getElementById(location.hash.substring(1));
@@ -39,34 +41,33 @@ const Soins = () => {
     'Rituel de fermeture post-partum'
   ];
 
-  // Remplacez ces liens par vos propres liens Google Calendar
+  // Liens Calendly
   const rebozoBookingLink = "https://calendly.com/jesuisradieuse/rencontredoula";
   const yoniSteamBookingLink = "https://calendly.com/jesuisradieuse/rencontredoula";
 
   const services = [
-    const services = [
-  {
-    name: 'Massage Rebozo',
-    id: 'rebozo',
-    icon: Sparkles,
-    duration: '1h30 min',
-    price: '90€',
-    description: 'Massage traditionnel mexicain',
-    benefits: rebozoBenefits,
-    image: RebozoImg, // ← ici
-    bookingLink: rebozoBookingLink
-  },
-      {
-    name: 'Yoni Steam',
-    id: 'yoni-steam',
-    icon: Flower2,
-    duration: '60 min',
-    price: '60€',
-    description: 'Bain de vapeur aux plantes médicinales pour le bien-être féminin',
-    benefits: yoniSteamBenefits,
-    image: YoniSteamImg, // ← ici
-    bookingLink: yoniSteamBookingLink
-  }
+    {
+      name: 'Massage Rebozo',
+      id: 'rebozo',
+      icon: Sparkles,
+      duration: '1h30 min',
+      price: '90€',
+      description: 'Massage traditionnel mexicain',
+      benefits: rebozoBenefits,
+      image: rebozoImg,
+      bookingLink: rebozoBookingLink
+    },
+    {
+      name: 'Yoni Steam',
+      id: 'yoni-steam',
+      icon: Flower2,
+      duration: '60 min',
+      price: '60€',
+      description: 'Bain de vapeur aux plantes médicinales pour le bien-être féminin',
+      benefits: yoniSteamBenefits,
+      image: yoniSteamImg,
+      bookingLink: yoniSteamBookingLink
+    }
   ];
 
   return (
@@ -103,7 +104,7 @@ const Soins = () => {
                   }`}
                 >
                   {/* Content */}
-                   <div className={index % 2 === 1 ? 'lg:col-start-2' : ''}>
+                  <div className={index % 2 === 1 ? 'lg:col-start-2' : ''}>
                     <div className="flex items-center mb-6">
                       <div className="w-16 h-16 bg-gradient-to-br from-pink-200 to-purple-300 rounded-full flex items-center justify-center mr-4">
                         <IconComponent className="h-8 w-8 text-purple-700" />
@@ -145,6 +146,7 @@ const Soins = () => {
                     <CalendlyButton 
                       text="Réserver une séance"
                       size="lg"
+                      link={service.bookingLink}
                     />
                   </div>
 
@@ -168,7 +170,7 @@ const Soins = () => {
             })}
           </div>
 
-          {/* Information Section */}
+          {/* Informations pratiques */}
           <div className="mt-20 bg-white rounded-3xl p-12 shadow-xl">
             <h2 className="font-poppins text-3xl font-bold text-purple-900 text-center mb-8">
               Informations pratiques
@@ -195,7 +197,7 @@ const Soins = () => {
                   Lieu
                 </h3>
                 <p className="font-inter text-gray-600">
-                  Chez vous, merci d'indiquer votre adresse à la réservation vous serez recontacter pour confirmer le rdv
+                  Chez vous, indiquez votre adresse à la réservation ; vous serez recontactée pour confirmation
                 </p>
               </div>
               
@@ -213,14 +215,14 @@ const Soins = () => {
             </div>
           </div>
 
-          {/* CTA Section */}
+          {/* CTA */}
           <div className="mt-16 bg-gradient-to-r from-purple-600 to-pink-500 rounded-3xl p-12 text-center text-white">
             <h2 className="font-poppins text-3xl font-bold mb-4">
               Offrez-vous un moment de bien-être
             </h2>
             <p className="font-inter text-lg mb-8 opacity-90">
               Prenez rendez-vous pour découvrir ces soins traditionnels adaptés à vos besoins
-             </p>
+            </p>
             <CalendlyButton 
               text="Réserver maintenant"
               variant="secondary"
