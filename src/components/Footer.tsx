@@ -189,9 +189,8 @@ const Footer = () => {
                   Mentions Légales
                 </Link>
                 <Link to="/politique-de-confidentialite" className="block text-purple-200 hover:text-white transition-colors">
-  Politique de Confidentialité
-</Link>
-
+                  Politique de Confidentialité
+                </Link>
                 <Link to="/conditions-generales" className="block text-purple-200 hover:text-white transition-colors">
                   Conditions Générales
                 </Link>
