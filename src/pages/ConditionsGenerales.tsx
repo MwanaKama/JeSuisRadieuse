@@ -6,7 +6,7 @@ const ConditionsGenerales: React.FC = () => {
   return (
     <>
       <Helmet>
-        <title>Conditions Générales | Je Suis Radieuse - Doula Paris</title>
+        <title>Je Suis Radieuse | Conditions Générales</title>
         <meta name="description" content="Conditions générales de vente de Je Suis Radieuse. Informations sur les prestations, modalités de réservation et d'annulation." />
       </Helmet>
 
