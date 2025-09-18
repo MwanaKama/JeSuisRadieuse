@@ -57,7 +57,7 @@ const About = () => {
   return (
     <>
       <Helmet>
-        <title>À propos - Je Suis Radieuse | Mon parcours et philosophie</title>
+        <title>Je Suis Radieuse | Mon parcours et philosophie</title>
         <meta name="description" content="Doula certifiée avec 5 ans d'expérience à Paris. Découvrez mon parcours, ma formation et ma philosophie d'accompagnement bienveillant." />
         <meta name="keywords" content="doula Paris expérience, formation doula certifiée, accompagnement maternité bienveillant" />
       </Helmet>
