@@ -90,7 +90,7 @@ const Boutique = () => {
   return (
     <>
       <Helmet>
-        <title>Boutique Tisanes Artisanales - Grossesse & Allaitement | [Nom] Doula</title>
+        <title>Boutique Tisanes Artisanales - Grossesse & Allaitement | Je Suis Radieuse</title>
         <meta name="description" content="Tisanes artisanales bio pour grossesse, allaitement et bien-être féminin. Mélanges traditionnels préparés avec soin." />
         <meta name="keywords" content="tisanes grossesse, tisane allaitement, herboristerie femme, tisanes bio Paris" />
       </Helmet>
@@ -111,8 +111,7 @@ const Boutique = () => {
               </div>
               <p className="font-inter text-lg text-gray-700 leading-relaxed">
                 Mes tisanes artisanales spécialement conçues pour accompagner chaque étape 
-                de votre parcours de femme seront bientôt disponibles. Vous pourrez les 
-                pré-commander et je vous les enverrai dès qu'elles seront prêtes !
+                de votre parcours de femme seront bientôt disponibles.
               </p>
             </div>
           </div>
@@ -259,11 +258,11 @@ const Boutique = () => {
                       )
                     ) : (
                       <button
-                        onClick={() => addToCart(tisane.id)}
-                        className="flex-1 bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 text-white py-3 rounded-full font-semibold transition-all hover:shadow-lg flex items-center justify-center space-x-2"
+                        disabled
+                        className="flex-1 bg-gray-300 text-gray-500 py-3 rounded-full font-semibold flex items-center justify-center space-x-2 cursor-not-allowed"
                       >
-                        <ShoppingCart className="h-4 w-4" />
-                        <span>Commander</span>
+                        <Clock className="h-4 w-4" />
+                        <span>Bientôt disponible</span>
                       </button>
                     )}
                   </div>
