@@ -4,8 +4,8 @@ import CalendlyButton from '../components/CalendlyButton';
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 
-// Import des images depuis src/images
-import rebozoImg from '../images/rebozo.png';
+// Import correct des images
+import rebozoImg from '../images/rebozo.jpg';
 import yoniSteamImg from '../images/yoni-steam.png';
 
 const Soins = () => {
