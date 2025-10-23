@@ -62,74 +62,41 @@ const Evenements = () => {
     'conference': 'Conférences'
   };
 
-  // Improved newsletter subscription with better error handling
-  const handleNewsletterSubscription = async (e) => {
-    e.preventDefault();
-    
-    if (!newsletterEmail) return;
-    
-    setSubscriptionStatus('loading');
-    setSubscriptionMessage('');
+  // SECURE newsletter handler - no API key in frontend
+const handleNewsletterSubscription = async (e) => {
+  e.preventDefault();
+  
+  if (!newsletterEmail) return;
+  
+  setSubscriptionStatus('loading');
+  setSubscriptionMessage('');
 
-    try {
-      // Check if API key is available
-      const apiKey = import.meta.env.VITE_BREVO_API_KEY;
-      if (!apiKey) {
-        throw new Error('API key not configured');
-      }
+  try {
+    // Call our secure Netlify function
+    const response = await fetch('/.netlify/functions/newsletter', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email: newsletterEmail }),
+    });
 
-      const response = await fetch('https://api.brevo.com/v3/contacts', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'api-key': apiKey,
-        },
-        body: JSON.stringify({
-          email: newsletterEmail,
-          listIds: [7], // Replace with your actual list ID
-          updateEnabled: true,
-        }),
-      });
+    const data = await response.json();
 
-      console.log('Brevo API Response Status:', response.status);
-
-      if (response.status === 201) {
-        setSubscriptionStatus('success');
-        setSubscriptionMessage('✅ Inscription réussie ! Merci de vous être abonné à notre newsletter.');
-        setNewsletterEmail('');
-      } else if (response.status === 204) {
-        setSubscriptionStatus('success');
-        setSubscriptionMessage('✅ Vous êtes déjà inscrit à notre newsletter. Merci !');
-        setNewsletterEmail('');
-      } else {
-        const errorData = await response.json();
-        console.error('Brevo API Error:', errorData);
-        
-        if (response.status === 401) {
-          setSubscriptionStatus('error');
-          setSubscriptionMessage('❌ Erreur d\'authentification. Vérifiez votre clé API Brevo.');
-        } else if (response.status === 400) {
-          setSubscriptionStatus('error');
-          setSubscriptionMessage('❌ Adresse email invalide. Veuillez vérifier votre email.');
-        } else if (response.status === 403) {
-          setSubscriptionStatus('error');
-          setSubscriptionMessage('❌ Clé API non autorisée. Vérifiez les permissions de votre clé Brevo.');
-        } else {
-          setSubscriptionStatus('error');
-          setSubscriptionMessage(`❌ Erreur: ${errorData.message || 'Une erreur est survenue'}`);
-        }
-      }
-    } catch (error) {
-      console.error('Subscription error:', error);
+    if (response.ok) {
+      setSubscriptionStatus('success');
+      setSubscriptionMessage(data.message);
+      setNewsletterEmail('');
+    } else {
       setSubscriptionStatus('error');
-      
-      if (error.message === 'API key not configured') {
-        setSubscriptionMessage('❌ Clé API non configurée. Vérifiez votre fichier .env.local');
-      } else {
-        setSubscriptionMessage('❌ Erreur réseau. Veuillez vérifier votre connexion et réessayer.');
-      }
+      setSubscriptionMessage(data.error || '❌ Erreur lors de l\'inscription');
     }
-  };
+  } catch (error) {
+    console.error('Subscription error:', error);
+    setSubscriptionStatus('error');
+    setSubscriptionMessage('❌ Erreur réseau. Veuillez réessayer.');
+  }
+};
 
   // Filtrage des événements
   const filteredEvents = events.filter(event => {
