@@ -62,7 +62,7 @@ const Evenements = () => {
     'conference': 'Conférences'
   };
 
-  // SECURE newsletter handler - no API key in frontend
+// In your Evenements component
 const handleNewsletterSubscription = async (e) => {
   e.preventDefault();
   
@@ -72,7 +72,6 @@ const handleNewsletterSubscription = async (e) => {
   setSubscriptionMessage('');
 
   try {
-    // Call our secure Netlify function
     const response = await fetch('/.netlify/functions/newsletter', {
       method: 'POST',
       headers: {
