@@ -34,7 +34,7 @@ exports.handler = async function(event, context) {
     // Prepare data for Brevo
     const data = {
       email: email,
-      listIds: [2], // Replace with your actual list ID
+      listIds: [7], // Replace with your actual list ID
       updateEnabled: true,
     };
 
