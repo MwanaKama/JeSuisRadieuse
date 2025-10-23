@@ -20,29 +20,33 @@ exports.handler = async function(event, context) {
       };
     }
 
-    // API key from Netlify environment variables (set in dashboard)
+    // Get API key from Netlify environment
     const BREVO_API_KEY = process.env.BREVO_API_KEY;
     
     if (!BREVO_API_KEY) {
-      console.error('Brevo API key not found in environment variables');
+      console.error('Brevo API key not found');
       return {
         statusCode: 500,
         body: JSON.stringify({ error: 'Configuration serveur manquante' })
       };
     }
 
+    // Prepare data for Brevo
     const data = {
       email: email,
-      listIds: [7], // Replace with your actual list ID
+      listIds: [2], // Replace with your actual list ID
       updateEnabled: true,
     };
 
+    // Make request to Brevo
     const response = await axios.post('https://api.brevo.com/v3/contacts', data, {
       headers: {
         'Content-Type': 'application/json',
         'api-key': BREVO_API_KEY,
       },
     });
+
+    console.log('Brevo response:', response.status);
 
     if (response.status === 201) {
       return {
