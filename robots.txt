@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://jesuisradieuse.com/sitemap.xml
+
+# Optional: Disallow any private/admin areas (if you have any)
+# Disallow: /admin/
+# Disallow: /private/
