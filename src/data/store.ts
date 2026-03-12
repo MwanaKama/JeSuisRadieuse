@@ -1,83 +1,77 @@
-import type { Product, ShippingOption } from '../types/shop';
+﻿import type { Product, ShippingOption } from '../types/shop';
 
 export const storeProducts: Product[] = [
   {
     id: 'pregnancy-herbal-tea',
     slug: 'tisane-bien-etre-grossesse',
     name: 'Tisane bien-etre grossesse',
-    description:
-      'Une infusion douce aux plantes selectionnees pour accompagner la grossesse avec chaleur, confort digestif et apaisement.',
+    description: 'Une infusion douce aux plantes selectionnees pour accompagner la grossesse avec chaleur, confort digestif et apaisement.',
     price: 15.9,
-    image: '/prénatale.png',
+    image: 'https://images.unsplash.com/photo-1576092768241-dec231879fc3?w=600&auto=format&fit=crop',
     category: 'Tisanes',
     stock: 24,
-    benefits: ['Apaise les inconforts digestifs', 'Favorise la detente', 'Soutient l’hydratation au quotidien'],
-    usageInstructions: '1 a 2 tasses par jour. Laisser infuser 8 a 10 minutes dans une eau frémissante.'
+    benefits: ['Apaise les inconforts digestifs', 'Favorise la detente', 'Soutient l hydratation au quotidien'],
+    usageInstructions: '1 a 2 tasses par jour. Laisser infuser 8 a 10 minutes dans une eau fremissante.'
   },
   {
     id: 'women-secret-herbal-tea',
     slug: 'tisane-secret-des-femmes',
     name: 'Tisane secret des femmes',
-    description:
-      'Une tisane rituel pensee pour le bien-etre feminin global, au parfum floral et a l’equilibre vegetal enveloppant.',
+    description: 'Une tisane rituel pensee pour le bien-etre feminin global, au parfum floral et a l equilibre vegetal enveloppant.',
     price: 16.5,
-    image: '/accompagnement-bienveillant.png',
+    image: 'https://images.unsplash.com/photo-1544787219-7f47ccb76574?w=600&auto=format&fit=crop',
     category: 'Tisanes',
     stock: 18,
-    benefits: ['Favorise l’equilibre feminin', 'Soutient les temps de fatigue', 'Offre un moment de recentrage'],
+    benefits: ['Favorise l equilibre feminin', 'Soutient les temps de fatigue', 'Offre un moment de recentrage'],
     usageInstructions: '1 tasse le matin et 1 le soir. Infusion 10 minutes dans une tasse couverte.'
   },
   {
     id: 'cycle-herbal-tea',
     slug: 'tisane-cycle-feminin',
     name: 'Tisane cycle feminin',
-    description:
-      'Un melange de plantes traditionnelles pour accompagner les differentes phases du cycle avec douceur et regularite.',
+    description: 'Un melange de plantes traditionnelles pour accompagner les differentes phases du cycle avec douceur et regularite.',
     price: 15.9,
-    image: '/choisir-doula.png',
+    image: 'https://images.unsplash.com/photo-1563397780-19fe08be5b1e?w=600&auto=format&fit=crop',
     category: 'Tisanes',
     stock: 20,
-    benefits: ['Accompagne le confort premenstruel', 'Soutient l’equilibre du cycle', 'Aide a relacher les tensions'],
+    benefits: ['Accompagne le confort premenstruel', 'Soutient l equilibre du cycle', 'Aide a relacher les tensions'],
     usageInstructions: 'Commencer quelques jours avant les regles. 1 a 2 tasses par jour selon le besoin.'
   },
   {
     id: 'menopause-herbal-tea',
     slug: 'tisane-menopause',
     name: 'Tisane menopause',
-    description:
-      'Une formule reconfortante pour accompagner les transitions hormonales avec serenite et chaleur interieure.',
+    description: 'Une formule reconfortante pour accompagner les transitions hormonales avec serenite et chaleur interieure.',
     price: 17.5,
-    image: '/rebozo.jpg',
+    image: 'https://images.unsplash.com/photo-1597318181409-cf64d0b5d8a2?w=600&auto=format&fit=crop',
     category: 'Tisanes',
     stock: 16,
     benefits: ['Apaise les inconforts de transition', 'Soutient le sommeil', 'Invite au ralentissement'],
-    usageInstructions: '2 tasses par jour, plutot en fin d’apres-midi et en soiree.'
+    usageInstructions: '2 tasses par jour, plutot en fin d apres-midi et en soiree.'
   },
   {
     id: 'postpartum-yoni-steam',
     slug: 'yoni-steam-post-partum',
     name: 'Yoni steam post-partum',
-    description:
-      'Un melange de plantes pour accompagner le post-partum dans une logique de confort, de repos et de rituel de soin.',
+    description: 'Un melange de plantes pour accompagner le post-partum dans une logique de confort, de repos et de rituel de soin.',
     price: 24.9,
     image: '/post-partum.png',
     category: 'Yoni steam',
     stock: 12,
     benefits: ['Rituel de bien-etre post-partum', 'Invite au relachement', 'Accompagne le temps de recuperation'],
-    usageInstructions: 'Utiliser uniquement hors contre-indication, sur une duree courte, selon vos recommandations d’accompagnement.'
+    usageInstructions: 'Utiliser uniquement hors contre-indication, sur une duree courte, selon vos recommandations.'
   },
   {
     id: 'clean-hydrate-yoni-steam',
     slug: 'yoni-steam-nettoyant-hydratant',
     name: 'Yoni steam nettoyant et hydratant',
-    description:
-      'Une synergie vegetale pour un rituel intime bien-etre centre sur la sensation de fraicheur et de confort.',
+    description: 'Une synergie vegetale pour un rituel intime bien-etre centre sur la sensation de fraicheur et de confort.',
     price: 23.9,
     image: '/yoni-steam.png',
     category: 'Yoni steam',
     stock: 14,
     benefits: ['Sensation de fraicheur', 'Rituel feminin enveloppant', 'Moment de soin a domicile'],
-    usageInstructions: '1 a 2 utilisations par semaine maximum, en respectant les precautions d’usage et sans surchauffe.'
+    usageInstructions: '1 a 2 utilisations par semaine maximum, en respectant les precautions d usage et sans surchauffe.'
   }
 ];
 
