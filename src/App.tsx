@@ -1,5 +1,5 @@
 // src/App.tsx
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { HelmetProvider, Helmet } from 'react-helmet-async';
 
 import Header from './components/Header';
@@ -10,7 +10,6 @@ import CookieConsent from './components/CookieConsent';
 import Home from './pages/Home';
 import Accompagnements from './pages/Accompagnements';
 import Soins from './pages/Soins';
-import Boutique from './pages/Boutique';
 import About from './pages/About';
 import Evenements from './pages/Evenements';
 import OrderTracking from './pages/OrderTracking';
@@ -54,7 +53,7 @@ function App() {
               <Route path="/" element={<Home />} />
               <Route path="/accompagnements" element={<Accompagnements />} />
               <Route path="/soins" element={<Soins />} />
-              <Route path="/boutique" element={<Boutique />} />
+              <Route path="/boutique" element={<Navigate to="/" replace />} />
               <Route path="/suivi-commande" element={<OrderTracking />} />
               <Route path="/commande/confirmation" element={<OrderResult mode="success" />} />
               <Route path="/commande/annulee" element={<OrderResult mode="cancel" />} />
