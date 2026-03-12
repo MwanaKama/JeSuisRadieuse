@@ -1,0 +1,92 @@
+export type ShippingMethodCode = 'colissimo_home' | 'mondialrelay_point' | 'chronopost_express';
+export type PaymentMethodCode = 'stripe' | 'paypal';
+export type OrderStatusCode = 'pending' | 'paid' | 'preparing' | 'shipped' | 'delivered' | 'cancelled';
+
+export interface Product {
+  id: string;
+  slug: string;
+  name: string;
+  description: string;
+  price: number;
+  image: string;
+  category: string;
+  stock: number;
+  benefits: string[];
+  usageInstructions: string;
+}
+
+export interface CartItem extends Product {
+  quantity: number;
+}
+
+export interface ShippingOption {
+  code: ShippingMethodCode;
+  carrier: 'colissimo' | 'mondialrelay' | 'chronopost';
+  label: string;
+  description: string;
+  price: number;
+  eta: string;
+  requiresPickupPoint: boolean;
+}
+
+export interface PickupPoint {
+  id: string;
+  name: string;
+  address: string;
+  postalCode: string;
+  city: string;
+  country: string;
+}
+
+export interface CheckoutCustomer {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  address: string;
+  city: string;
+  postalCode: string;
+  country: string;
+  notes?: string;
+}
+
+export interface CheckoutPayload {
+  items: Array<{ productId: string; quantity: number }>;
+  customer: CheckoutCustomer;
+  shippingMethodCode: ShippingMethodCode;
+  pickupPointId?: string;
+  pickupPointLabel?: string;
+  paymentMethod: PaymentMethodCode;
+}
+
+export interface CheckoutResponse {
+  orderNumber: string;
+  checkoutUrl?: string;
+  providerReference?: string;
+}
+
+export interface TrackedOrder {
+  orderNumber: string;
+  customerEmail: string;
+  status: OrderStatusCode;
+  paymentStatus: 'pending' | 'paid' | 'failed' | 'refunded';
+  total: number;
+  shippingMethodCode: ShippingMethodCode;
+  trackingNumber?: string;
+  trackingUrl?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface AdminOrderSummary {
+  orderNumber: string;
+  customerName: string;
+  customerEmail: string;
+  total: number;
+  paymentMethod: PaymentMethodCode;
+  paymentStatus: 'pending' | 'paid' | 'failed' | 'refunded';
+  status: OrderStatusCode;
+  shippingMethodCode: ShippingMethodCode;
+  trackingNumber?: string;
+  createdAt: string;
+}

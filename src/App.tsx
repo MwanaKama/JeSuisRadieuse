@@ -13,6 +13,9 @@ import Soins from './pages/Soins';
 import Boutique from './pages/Boutique';
 import About from './pages/About';
 import Evenements from './pages/Evenements';
+import OrderTracking from './pages/OrderTracking';
+import OrderResult from './pages/OrderResult';
+import AdminOrders from './pages/AdminOrders';
 
 /* Ajoute ici l'import des pages existantes */
 import MentionsLegales from './pages/MentionsLegales';
@@ -52,6 +55,10 @@ function App() {
               <Route path="/accompagnements" element={<Accompagnements />} />
               <Route path="/soins" element={<Soins />} />
               <Route path="/boutique" element={<Boutique />} />
+              <Route path="/suivi-commande" element={<OrderTracking />} />
+              <Route path="/commande/confirmation" element={<OrderResult mode="success" />} />
+              <Route path="/commande/annulee" element={<OrderResult mode="cancel" />} />
+              <Route path="/admin/commandes" element={<AdminOrders />} />
               <Route path="/a-propos" element={<About />} />
               <Route path="/evenements" element={<Evenements />} />
               <Route path="/planning" element={<Evenements />} />

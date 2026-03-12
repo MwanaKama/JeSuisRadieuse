@@ -3,8 +3,8 @@ export interface OrderItem {
   name: string;
   price: number;
   quantity: number;
-  weight: string;
-  ingredients: string;
+  weight?: string;
+  ingredients?: string;
 }
 
 export interface CustomerInfo {
@@ -31,7 +31,7 @@ export interface Order {
   orderDate: string;
   status: 'pending' | 'paid' | 'preparing' | 'shipped' | 'delivered' | 'cancelled';
   trackingNumber?: string;
-  paymentMethod: 'bank_transfer';
+  paymentMethod: 'bank_transfer' | 'stripe' | 'paypal';
   notes?: string;
 }
 

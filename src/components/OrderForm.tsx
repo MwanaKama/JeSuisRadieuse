@@ -1,109 +1,164 @@
-import React, { useState } from 'react';
-import { X, Package, Truck, CreditCard, User, MapPin, Mail, Phone } from 'lucide-react';
+import React, { useEffect, useMemo, useState } from 'react';
+import { CreditCard, Loader2, MapPin, Package, Truck, User, X } from 'lucide-react';
+
+import { defaultShippingOptions } from '../data/store';
+import {
+  createPayPalCheckout,
+  createStripeCheckout,
+  fetchPickupPoints,
+  fetchShippingOptions
+} from '../services/storeApi';
+import type { CartItem, CheckoutCustomer, PaymentMethodCode, PickupPoint, ShippingOption } from '../types/shop';
 
 interface OrderFormProps {
-  items: any[];
+  items: CartItem[];
   total: number;
   onClose: () => void;
-  onSuccess: () => void;
+  onSuccess: (orderNumber: string) => void;
 }
+
+const initialCustomer: CheckoutCustomer = {
+  firstName: '',
+  lastName: '',
+  email: '',
+  phone: '',
+  address: '',
+  city: '',
+  postalCode: '',
+  country: 'FR',
+  notes: ''
+};
 
 const OrderForm: React.FC<OrderFormProps> = ({ items, total, onClose, onSuccess }) => {
   const [step, setStep] = useState(1);
-  const [formData, setFormData] = useState({
-    // Informations personnelles
-    firstName: '',
-    lastName: '',
-    email: '',
-    phone: '',
-    
-    // Adresse de livraison
-    address: '',
-    city: '',
-    postalCode: '',
-    country: 'France',
-    
-    // Mode de livraison
-    shippingMethod: 'colissimo',
-    
-    // Point relais (pour Mondial Relay)
-    relayPoint: '',
-    
-    // Notes
-    notes: ''
-  });
+  const [customer, setCustomer] = useState<CheckoutCustomer>(initialCustomer);
+  const [shippingOptions, setShippingOptions] = useState<ShippingOption[]>(defaultShippingOptions);
+  const [shippingMethodCode, setShippingMethodCode] = useState<ShippingOption['code']>('colissimo_home');
+  const [pickupPoints, setPickupPoints] = useState<PickupPoint[]>([]);
+  const [pickupPointId, setPickupPointId] = useState('');
+  const [isLoadingShipping, setIsLoadingShipping] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethodCode>('stripe');
 
-  const shippingMethods = {
-    colissimo: {
-      name: 'Colissimo',
-      description: 'Livraison standard 48-72h',
-      price: 6.90,
-      icon: Package
-    },
-    mondialRelay: {
-      name: 'Mondial Relay',
-      description: 'Point relais économique',
-      price: 4.90,
-      icon: Truck
-    },
-    chronopost: {
-      name: 'Chronopost',
-      description: 'Livraison express 24h',
-      price: 12.90,
-      icon: Package
+  const serializedItems = useMemo(
+    () => items.map((item) => ({ productId: item.id, quantity: item.quantity })),
+    [items]
+  );
+
+  const selectedShipping = useMemo(
+    () => shippingOptions.find((option) => option.code === shippingMethodCode) || shippingOptions[0],
+    [shippingMethodCode, shippingOptions]
+  );
+
+  const totalWithShipping = total + (selectedShipping?.price || 0);
+
+  useEffect(() => {
+    const shouldFetch = customer.country.length === 2 && customer.postalCode.trim().length >= 4 && items.length > 0;
+
+    if (!shouldFetch) {
+      return;
     }
-  };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
+    let cancelled = false;
+
+    async function loadShipping() {
+      setIsLoadingShipping(true);
+      try {
+        const options = await fetchShippingOptions(customer.country, customer.postalCode, serializedItems);
+        if (!cancelled && options.length > 0) {
+          setShippingOptions(options);
+          if (!options.some((option) => option.code === shippingMethodCode)) {
+            setShippingMethodCode(options[0].code);
+          }
+        }
+      } catch (error) {
+        if (!cancelled) {
+          setErrorMessage(error instanceof Error ? error.message : 'Impossible de charger les modes de livraison.');
+        }
+      } finally {
+        if (!cancelled) {
+          setIsLoadingShipping(false);
+        }
+      }
+    }
+
+    loadShipping();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [customer.country, customer.postalCode, items.length, serializedItems, shippingMethodCode]);
+
+  useEffect(() => {
+    if (!selectedShipping?.requiresPickupPoint || customer.postalCode.trim().length < 4) {
+      setPickupPoints([]);
+      setPickupPointId('');
+      return;
+    }
+
+    let cancelled = false;
+
+    async function loadPickupPoints() {
+      try {
+        const points = await fetchPickupPoints(customer.postalCode, customer.country);
+        if (!cancelled) {
+          setPickupPoints(points);
+          setPickupPointId((current) => current || points[0]?.id || '');
+        }
+      } catch (error) {
+        if (!cancelled) {
+          setErrorMessage(error instanceof Error ? error.message : 'Impossible de recuperer les points relais.');
+        }
+      }
+    }
+
+    loadPickupPoints();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [customer.country, customer.postalCode, selectedShipping?.requiresPickupPoint]);
+
+  function updateCustomerField(event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) {
+    const { name, value } = event.target;
+    setCustomer((current) => ({
+      ...current,
       [name]: value
     }));
-  };
+  }
 
-  const getShippingPrice = () => {
-    return shippingMethods[formData.shippingMethod as keyof typeof shippingMethods].price;
-  };
-
-  const getTotalWithShipping = () => {
-    return total + getShippingPrice();
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    // Ici vous enverriez les données à votre backend
-    const orderData = {
-      items,
-      customerInfo: formData,
-      subtotal: total,
-      shipping: getShippingPrice(),
-      total: getTotalWithShipping(),
-      orderDate: new Date().toISOString(),
-      status: 'pending'
-    };
+  async function handleSubmit(event: React.FormEvent) {
+    event.preventDefault();
+    setErrorMessage('');
+    setIsSubmitting(true);
 
     try {
-      // Simulation d'envoi au backend
-      console.log('Commande envoyée:', orderData);
-      
-      // Ici vous feriez un appel API réel :
-      // const response = await fetch('/api/orders', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify(orderData)
-      // });
-      
-      // Simulation d'attente
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      onSuccess();
+      const payload = {
+        items: serializedItems,
+        customer,
+        shippingMethodCode,
+        pickupPointId: pickupPointId || undefined,
+        pickupPointLabel: pickupPoints.find((point) => point.id === pickupPointId)?.name,
+        paymentMethod
+      };
+
+      const response = paymentMethod === 'stripe'
+        ? await createStripeCheckout(payload)
+        : await createPayPalCheckout(payload);
+
+      if (response.checkoutUrl) {
+        window.location.href = response.checkoutUrl;
+        return;
+      }
+
+      onSuccess(response.orderNumber);
     } catch (error) {
-      console.error('Erreur lors de l\'envoi de la commande:', error);
-      alert('Erreur lors de l\'envoi de la commande. Veuillez réessayer.');
+      setErrorMessage(error instanceof Error ? error.message : 'Le checkout a echoue.');
+    } finally {
+      setIsSubmitting(false);
     }
-  };
+  }
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 overflow-y-auto">
@@ -140,8 +195,8 @@ const OrderForm: React.FC<OrderFormProps> = ({ items, total, onClose, onSuccess 
                   <input
                     type="text"
                     name="firstName"
-                    value={formData.firstName}
-                    onChange={handleInputChange}
+                    value={customer.firstName}
+                    onChange={updateCustomerField}
                     required
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                   />
@@ -154,8 +209,8 @@ const OrderForm: React.FC<OrderFormProps> = ({ items, total, onClose, onSuccess 
                   <input
                     type="text"
                     name="lastName"
-                    value={formData.lastName}
-                    onChange={handleInputChange}
+                    value={customer.lastName}
+                    onChange={updateCustomerField}
                     required
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                   />
@@ -170,8 +225,8 @@ const OrderForm: React.FC<OrderFormProps> = ({ items, total, onClose, onSuccess 
                   <input
                     type="email"
                     name="email"
-                    value={formData.email}
-                    onChange={handleInputChange}
+                    value={customer.email}
+                    onChange={updateCustomerField}
                     required
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                   />
@@ -184,8 +239,8 @@ const OrderForm: React.FC<OrderFormProps> = ({ items, total, onClose, onSuccess 
                   <input
                     type="tel"
                     name="phone"
-                    value={formData.phone}
-                    onChange={handleInputChange}
+                    value={customer.phone}
+                    onChange={updateCustomerField}
                     required
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                   />
@@ -216,11 +271,11 @@ const OrderForm: React.FC<OrderFormProps> = ({ items, total, onClose, onSuccess 
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Adresse complète *
                 </label>
-                <input
-                  type="text"
-                  name="address"
-                  value={formData.address}
-                  onChange={handleInputChange}
+                  <input
+                    type="text"
+                    name="address"
+                    value={customer.address}
+                    onChange={updateCustomerField}
                   required
                   placeholder="Numéro et nom de rue"
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
@@ -235,8 +290,8 @@ const OrderForm: React.FC<OrderFormProps> = ({ items, total, onClose, onSuccess 
                   <input
                     type="text"
                     name="postalCode"
-                    value={formData.postalCode}
-                    onChange={handleInputChange}
+                    value={customer.postalCode}
+                    onChange={updateCustomerField}
                     required
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                   />
@@ -249,8 +304,8 @@ const OrderForm: React.FC<OrderFormProps> = ({ items, total, onClose, onSuccess 
                   <input
                     type="text"
                     name="city"
-                    value={formData.city}
-                    onChange={handleInputChange}
+                    value={customer.city}
+                    onChange={updateCustomerField}
                     required
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                   />
@@ -262,11 +317,13 @@ const OrderForm: React.FC<OrderFormProps> = ({ items, total, onClose, onSuccess 
                   </label>
                   <select
                     name="country"
-                    value={formData.country}
-                    onChange={handleInputChange}
+                    value={customer.country}
+                    onChange={updateCustomerField}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                   >
-                    <option value="France">France</option>
+                    <option value="FR">France</option>
+                    <option value="BE">Belgique</option>
+                    <option value="CH">Suisse</option>
                   </select>
                 </div>
               </div>
@@ -275,22 +332,23 @@ const OrderForm: React.FC<OrderFormProps> = ({ items, total, onClose, onSuccess 
               <div className="mt-8">
                 <h4 className="font-medium text-gray-900 mb-4">Mode de livraison</h4>
                 <div className="space-y-3">
-                  {Object.entries(shippingMethods).map(([key, method]) => {
-                    const IconComponent = method.icon;
+                  {shippingOptions.map((method) => {
+                    const IconComponent = method.requiresPickupPoint ? Truck : Package;
                     return (
-                      <label key={key} className="flex items-center p-4 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50">
+                      <label key={method.code} className="flex items-center p-4 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50">
                         <input
                           type="radio"
                           name="shippingMethod"
-                          value={key}
-                          checked={formData.shippingMethod === key}
-                          onChange={handleInputChange}
+                          value={method.code}
+                          checked={shippingMethodCode === method.code}
+                          onChange={() => setShippingMethodCode(method.code)}
                           className="mr-4"
                         />
                         <IconComponent className="h-5 w-5 mr-3 text-gray-600" />
                         <div className="flex-1">
-                          <div className="font-medium">{method.name}</div>
+                          <div className="font-medium">{method.label}</div>
                           <div className="text-sm text-gray-600">{method.description}</div>
+                          <div className="text-xs text-gray-500 mt-1">{method.eta}</div>
                         </div>
                         <div className="font-semibold text-purple-700">
                           {method.price.toFixed(2)}€
@@ -299,23 +357,30 @@ const OrderForm: React.FC<OrderFormProps> = ({ items, total, onClose, onSuccess 
                     );
                   })}
                 </div>
+                {isLoadingShipping && (
+                  <p className="text-sm text-gray-500 mt-3">Calcul des frais de livraison...</p>
+                )}
               </div>
 
-              {formData.shippingMethod === 'mondialRelay' && (
+              {selectedShipping?.requiresPickupPoint && (
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Point relais choisi
                   </label>
-                  <input
-                    type="text"
-                    name="relayPoint"
-                    value={formData.relayPoint}
-                    onChange={handleInputChange}
-                    placeholder="Sélectionnez un point relais"
+                  <select
+                    value={pickupPointId}
+                    onChange={(event) => setPickupPointId(event.target.value)}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                  />
+                  >
+                    {pickupPoints.length === 0 && <option value="">Aucun point relais disponible</option>}
+                    {pickupPoints.map((point) => (
+                      <option key={point.id} value={point.id}>
+                        {point.name} - {point.city}
+                      </option>
+                    ))}
+                  </select>
                   <p className="text-xs text-gray-500 mt-1">
-                    Vous recevrez un lien pour choisir votre point relais après validation de la commande
+                    Selectionnez le point relais le plus pratique pour votre retrait.
                   </p>
                 </div>
               )}
@@ -366,12 +431,12 @@ const OrderForm: React.FC<OrderFormProps> = ({ items, total, onClose, onSuccess 
                     <span>{total.toFixed(2)}€</span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span>Livraison ({shippingMethods[formData.shippingMethod as keyof typeof shippingMethods].name})</span>
-                    <span>{getShippingPrice().toFixed(2)}€</span>
+                    <span>Livraison ({selectedShipping?.label})</span>
+                    <span>{(selectedShipping?.price || 0).toFixed(2)}€</span>
                   </div>
                   <div className="flex justify-between font-semibold text-lg border-t border-gray-200 pt-2">
                     <span>Total</span>
-                    <span>{getTotalWithShipping().toFixed(2)}€</span>
+                    <span>{totalWithShipping.toFixed(2)}€</span>
                   </div>
                 </div>
               </div>
@@ -380,10 +445,10 @@ const OrderForm: React.FC<OrderFormProps> = ({ items, total, onClose, onSuccess 
               <div className="bg-gray-50 rounded-lg p-4">
                 <h4 className="font-medium text-gray-900 mb-3">Informations de livraison</h4>
                 <div className="text-sm text-gray-700 space-y-1">
-                  <p><strong>{formData.firstName} {formData.lastName}</strong></p>
-                  <p>{formData.address}</p>
-                  <p>{formData.postalCode} {formData.city}</p>
-                  <p>{formData.email} • {formData.phone}</p>
+                  <p><strong>{customer.firstName} {customer.lastName}</strong></p>
+                  <p>{customer.address}</p>
+                  <p>{customer.postalCode} {customer.city}</p>
+                  <p>{customer.email} • {customer.phone}</p>
                 </div>
               </div>
 
@@ -394,26 +459,45 @@ const OrderForm: React.FC<OrderFormProps> = ({ items, total, onClose, onSuccess 
                 </label>
                 <textarea
                   name="notes"
-                  value={formData.notes}
-                  onChange={handleInputChange}
+                  value={customer.notes}
+                  onChange={updateCustomerField}
                   rows={3}
                   placeholder="Instructions de livraison, allergies, etc."
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                 />
               </div>
 
-              {/* Information de paiement */}
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                <div className="flex items-center mb-2">
-                  <Mail className="h-5 w-5 text-blue-600 mr-2" />
-                  <h4 className="font-medium text-blue-900">Paiement par virement</h4>
+              <div className="bg-gray-50 rounded-lg p-4">
+                <h4 className="font-medium text-gray-900 mb-3">Mode de paiement</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <label className="border border-gray-200 rounded-xl p-4 flex items-center gap-3 cursor-pointer">
+                    <input
+                      type="radio"
+                      checked={paymentMethod === 'stripe'}
+                      onChange={() => setPaymentMethod('stripe')}
+                    />
+                    <CreditCard className="h-5 w-5 text-purple-700" />
+                    <div>
+                      <div className="font-medium text-gray-900">Carte bancaire via Stripe</div>
+                      <div className="text-sm text-gray-500">Paiement securise avec redirection Stripe Checkout</div>
+                    </div>
+                  </label>
+                  <label className="border border-gray-200 rounded-xl p-4 flex items-center gap-3 cursor-pointer">
+                    <input
+                      type="radio"
+                      checked={paymentMethod === 'paypal'}
+                      onChange={() => setPaymentMethod('paypal')}
+                    />
+                    <Truck className="h-5 w-5 text-purple-700" />
+                    <div>
+                      <div className="font-medium text-gray-900">PayPal</div>
+                      <div className="text-sm text-gray-500">Validation via la page de paiement PayPal</div>
+                    </div>
+                  </label>
                 </div>
-                <p className="text-sm text-blue-800">
-                  Après validation de votre commande, vous recevrez un email avec les informations 
-                  de paiement par virement bancaire. Vos tisanes seront préparées et expédiées 
-                  dès réception du paiement.
-                </p>
               </div>
+
+              {errorMessage && <div className="bg-red-50 text-red-700 rounded-xl px-4 py-3 text-sm">{errorMessage}</div>}
 
               <div className="flex space-x-4">
                 <button
@@ -425,9 +509,17 @@ const OrderForm: React.FC<OrderFormProps> = ({ items, total, onClose, onSuccess 
                 </button>
                 <button
                   type="submit"
+                  disabled={isSubmitting || (selectedShipping?.requiresPickupPoint && !pickupPointId)}
                   className="flex-1 bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 text-white py-3 rounded-full font-medium transition-all"
                 >
-                  Valider ma commande
+                  {isSubmitting ? (
+                    <span className="inline-flex items-center gap-2">
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      Redirection vers le paiement...
+                    </span>
+                  ) : (
+                    'Payer ma commande'
+                  )}
                 </button>
               </div>
             </div>
