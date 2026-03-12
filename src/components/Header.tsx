@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, Calendar } from 'lucide-react';
+import { Menu, X, Calendar, ShoppingCart } from 'lucide-react';
+import { useCart } from '../hooks/useCart';
+import { storeProducts } from '../data/store';
 import Logo from '../images/Logo.png';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [showCalendly, setShowCalendly] = useState(false);
   const location = useLocation();
+  const { itemCount } = useCart(storeProducts);
 
   const navigation = [
     { name: 'Accueil', href: '/' },
@@ -93,6 +96,18 @@ const Header = () => {
                 <Calendar className="h-4 w-4" />
                 <span>Prendre RDV</span>
               </button>
+
+              <Link
+                to="/boutique"
+                className="relative bg-gradient-to-r from-purple-500 to-pink-400 hover:from-purple-600 hover:to-pink-500 text-white font-poppins font-semibold inline-flex items-center space-x-2 transition-all hover:shadow-lg hover:scale-105 rounded-full px-4 py-2 text-sm"
+              >
+                <ShoppingCart className="h-4 w-4" />
+                {itemCount > 0 && (
+                  <span className="absolute top-0 right-0 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center -translate-y-1/2 translate-x-1/2">
+                    {itemCount}
+                  </span>
+                )}
+              </Link>
             </div>
 
             {/* Mobile menu button */}
@@ -125,7 +140,7 @@ const Header = () => {
                     {item.name}
                   </Link>
                 ))}
-                <div className="mt-4">
+                <div className="mt-4 space-y-3">
                   <button
                     onClick={openCalendly}
                     className="w-full bg-gradient-to-r from-pink-200 to-purple-300 text-purple-800 border-0 font-poppins font-semibold inline-flex items-center justify-center space-x-2 transition-all hover:shadow-xl hover:scale-105 rounded-full px-6 py-3 text-base"
@@ -133,6 +148,19 @@ const Header = () => {
                     <Calendar className="h-5 w-5" />
                     <span>Prendre RDV</span>
                   </button>
+                  <Link
+                    to="/boutique"
+                    className="relative w-full block bg-gradient-to-r from-purple-500 to-pink-400 text-white font-poppins font-semibold inline-flex items-center justify-center space-x-2 transition-all hover:shadow-lg hover:scale-105 rounded-full px-6 py-3 text-base"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    <ShoppingCart className="h-5 w-5" />
+                    <span>Panier</span>
+                    {itemCount > 0 && (
+                      <span className="bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center ml-auto">
+                        {itemCount}
+                      </span>
+                    )}
+                  </Link>
                 </div>
               </div>
             </div>

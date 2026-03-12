@@ -75,11 +75,8 @@ const Boutique = () => {
               </p>
             </div>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Link to="/suivi-commande" className="px-6 py-3 rounded-full border border-purple-200 text-purple-900 font-semibold bg-white shadow-sm">
+              <Link to="/suivi-commande" className="px-6 py-3 rounded-full border border-purple-200 text-purple-900 font-semibold bg-white shadow-sm hover:bg-purple-50 transition">
                 Suivre une commande
-              </Link>
-              <Link to="/admin/commandes" className="px-6 py-3 rounded-full bg-white/70 text-purple-800 font-semibold border border-white/80 shadow-sm">
-                Dashboard admin
               </Link>
             </div>
           </div>
@@ -207,31 +204,54 @@ const Boutique = () => {
           ))}
 
           {items.length > 0 && (
-            <div className="bg-white rounded-2xl md:rounded-3xl shadow-lg md:shadow-xl p-4 md:p-8 mb-6 md:mb-8">
+            <div className="bg-white rounded-2xl md:rounded-3xl shadow-lg md:shadow-xl p-4 md:p-8 mb-6 md:mb-8 sticky top-4 z-20">
               <h2 className="font-poppins text-lg md:text-2xl font-bold text-purple-900 mb-4 md:mb-6 flex items-center">
                 <ShoppingCart className="h-5 w-5 md:h-6 md:w-6 mr-2" />
                 Votre panier ({itemCount})
               </h2>
 
-              <div className="space-y-3 md:space-y-4 mb-4 md:mb-6">
-                {items.map((item) => (
-                  <div key={item.id} className="flex items-center justify-between py-2 border-b border-gray-100 gap-4">
-                    <div className="flex-1">
-                      <h4 className="font-medium text-purple-900 text-sm md:text-base">{item.name}</h4>
-                      <p className="text-xs md:text-sm text-gray-600">
-                        {item.price.toFixed(2)}€ × {item.quantity}
-                      </p>
+              <div className="space-y-3 md:space-y-4 mb-4 md:mb-6 max-h-60 overflow-y-auto">
+                {items.map((item) => {
+                  const product = products.find(p => p.id === item.id);
+                  return (
+                    <div key={item.id} className="flex items-center gap-3 md:gap-4 py-2 border-b border-gray-100">
+                      {product?.image && (
+                        <img 
+                          src={product.image} 
+                          alt={item.name}
+                          className="w-12 h-12 md:w-16 md:h-16 object-cover rounded-lg shadow-sm flex-shrink-0"
+                        />
+                      )}
+                      <div className="flex-1 min-w-0">
+                        <h4 className="font-medium text-purple-900 text-sm md:text-base truncate">{item.name}</h4>
+                        <p className="text-xs md:text-sm text-gray-600">
+                          {item.price.toFixed(2)}€ × {item.quantity}
+                        </p>
+                      </div>
+                      <div className="font-semibold text-purple-700 text-sm md:text-base whitespace-nowrap">
+                        {(item.price * item.quantity).toFixed(2)}€
+                      </div>
+                      <button
+                        onClick={() => removeFromCart(item.id)}
+                        className="text-red-400 hover:text-red-600 text-sm flex-shrink-0"
+                        title="Supprimer"
+                      >
+                        ✕
+                      </button>
                     </div>
-                    <div className="font-semibold text-purple-700 text-sm md:text-base">
-                      {(item.price * item.quantity).toFixed(2)}€
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
 
-              <div className="flex items-center justify-between mb-4 md:mb-6 text-base md:text-xl font-bold text-purple-900 border-t border-gray-200 pt-3 md:pt-4">
-                <span>Sous-total :</span>
-                <span>{subtotal.toFixed(2)}€</span>
+              <div className="space-y-2 mb-4 md:mb-6 border-t border-gray-200 pt-3 md:pt-4">
+                <div className="flex items-center justify-between text-sm md:text-base text-gray-600">
+                  <span>Sous-total :</span>
+                  <span className="font-semibold">{subtotal.toFixed(2)}€</span>
+                </div>
+                <div className="flex items-center justify-between text-base md:text-lg font-bold text-purple-900 bg-purple-50 p-3 rounded-lg">
+                  <span>À payer :</span>
+                  <span className="text-purple-600">{subtotal.toFixed(2)}€</span>
+                </div>
               </div>
 
               <div className="grid sm:grid-cols-2 gap-3">
@@ -243,7 +263,7 @@ const Boutique = () => {
                 </button>
                 <button
                   onClick={clearCart}
-                  className="w-full border border-purple-200 text-purple-900 py-3 md:py-4 rounded-full font-poppins font-semibold text-sm md:text-lg bg-white"
+                  className="w-full border border-purple-200 text-purple-900 py-3 md:py-4 rounded-full font-poppins font-semibold text-sm md:text-lg bg-white hover:bg-purple-50 transition"
                 >
                   Vider le panier
                 </button>
