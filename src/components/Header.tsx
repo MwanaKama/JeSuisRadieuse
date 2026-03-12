@@ -116,7 +116,7 @@ const Header = () => {
                 <CartDropdown
                   isOpen={showCart}
                   onClose={() => setShowCart(false)}
-                  onCheckout={() => { setShowCart(false); navigate('/boutique'); }}
+                  onCheckout={() => { setShowCart(false); navigate('/boutique?checkout=1'); }}
                 />
               </div>
             </div>

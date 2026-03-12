@@ -155,7 +155,7 @@ const CartDropdown: React.FC<CartDropdownProps> = ({ isOpen, onClose, onCheckout
             {/* Actions */}
             <div className="space-y-2">
               <Link
-                to="/boutique"
+                to="/boutique?checkout=1"
                 onClick={() => { onCheckout(); onClose(); }}
                 className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 text-white py-3 rounded-full font-semibold text-sm transition hover:shadow-lg"
               >
