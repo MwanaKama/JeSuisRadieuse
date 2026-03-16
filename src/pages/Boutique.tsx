@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { ShoppingCart, Plus, Minus, Star, Leaf, Heart, Truck, Package, Clock } from 'lucide-react';
 import OrderForm from '../components/OrderForm';
@@ -10,13 +10,13 @@ const Boutique = () => {
   const tisanes = [
     {
       id: 'tisane-grossesse',
-      name: 'Tisane Grossesse S├®r├®nit├®',
+      name: 'Tisane Grossesse Sérénité',
       price: 15,
       image: 'https://images.pexels.com/photos/1793035/pexels-photo-1793035.jpeg?auto=compress&cs=tinysrgb&w=800',
       description:
-        'M├®lange d├®licat de camomille, feuilles de framboisier et m├®lisse pour accompagner votre grossesse en douceur.',
-      benefits: ['Apaise les naus├®es', 'Favorise la d├®tente', 'Riche en min├®raux'],
-      ingredients: 'Camomille, feuilles de framboisier, m├®lisse, ortie',
+        'Mélange délicat de camomille, feuilles de framboisier et mélisse pour accompagner votre grossesse en douceur.',
+      benefits: ['Apaise les nausées', 'Favorise la détente', 'Riche en minéraux'],
+      ingredients: 'Camomille, feuilles de framboisier, mélisse, ortie',
       weight: '100g',
       available: false,
     },
@@ -26,31 +26,31 @@ const Boutique = () => {
       price: 15,
       image: 'https://images.pexels.com/photos/1793035/pexels-photo-1793035.jpeg?auto=compress&cs=tinysrgb&w=800',
       description: "Synergie de fenouil, anis vert et galega pour soutenir naturellement l'allaitement maternel.",
-      benefits: ['Stimule la lactation', 'Facilite la digestion', 'Go├╗t doux et agr├®able'],
+      benefits: ['Stimule la lactation', 'Facilite la digestion', 'Goût doux et agréable'],
       ingredients: 'Fenouil, anis vert, galega, verveine',
       weight: '100g',
       available: false,
     },
     {
       id: 'tisane-postpartum',
-      name: 'Tisane Post-partum R├®cup├®ration',
+      name: 'Tisane Post-partum Récupération',
       price: 15,
       image: 'https://images.pexels.com/photos/1793035/pexels-photo-1793035.jpeg?auto=compress&cs=tinysrgb&w=800',
       description:
-        "M├®lange remin├®ralisant d'ortie, achill├®e millefeuille et rose pour une r├®cup├®ration optimale.",
-      benefits: ['Tonifie lÔÇÖorganisme', 'Apporte fer et vitamines', 'Soutient la r├®cup├®ration'],
-      ingredients: 'Ortie, achill├®e millefeuille, p├®tales de rose, avoine',
+        "Mélange reminéralisant d'ortie, achillée millefeuille et rose pour une récupération optimale.",
+      benefits: ['Tonifie l’organisme', 'Apporte fer et vitamines', 'Soutient la récupération'],
+      ingredients: 'Ortie, achillée millefeuille, pétales de rose, avoine',
       weight: '100g',
       available: false,
     },
     {
       id: 'tisane-feminin',
-      name: 'Tisane Cycle F├®minin',
+      name: 'Tisane Cycle Féminin',
       price: 15,
       image: 'https://images.pexels.com/photos/1793035/pexels-photo-1793035.jpeg?auto=compress&cs=tinysrgb&w=800',
-      description: 'Harmonise le cycle f├®minin avec un m├®lange de sauge, achill├®e et calendula.',
-      benefits: ['├ëquilibre hormonal', 'Soulage les tensions', 'R├®gularise le cycle'],
-      ingredients: 'Sauge, achill├®e, calendula, m├®lisse',
+      description: 'Harmonise le cycle féminin avec un mélange de sauge, achillée et calendula.',
+      benefits: ['Équilibre hormonal', 'Soulage les tensions', 'Régularise le cycle'],
+      ingredients: 'Sauge, achillée, calendula, mélisse',
       weight: '100g',
       available: false,
     },
@@ -97,7 +97,7 @@ const Boutique = () => {
         <title>Je Suis Radieuse | Boutique Tisanes Artisanales</title>
         <meta
           name="description"
-          content="Tisanes artisanales bio pour grossesse, allaitement et bien-├¬tre f├®minin. M├®langes traditionnels pr├®par├®s avec soin."
+          content="Tisanes artisanales bio pour grossesse, allaitement et bien-être féminin. Mélanges traditionnels préparés avec soin."
         />
         <meta
           name="keywords"
@@ -115,11 +115,11 @@ const Boutique = () => {
             <div className="bg-gradient-to-r from-purple-100 to-pink-100 rounded-2xl p-6 mb-8 max-w-4xl mx-auto">
               <div className="flex items-center justify-center mb-4">
                 <Clock className="h-6 w-6 md:h-8 md:w-8 text-purple-600 mr-3" />
-                <h2 className="font-poppins text-xl md:text-2xl font-bold text-purple-900">Tisanes ├á venir</h2>
+                <h2 className="font-poppins text-xl md:text-2xl font-bold text-purple-900">Tisanes à venir</h2>
               </div>
               <p className="font-inter text-base md:text-lg text-gray-700 leading-relaxed">
-                Mes tisanes artisanales sp├®cialement con├ºues pour accompagner chaque ├®tape de votre parcours de femme
-                seront bient├┤t disponibles.
+                Mes tisanes artisanales spécialement conçues pour accompagner chaque étape de votre parcours de femme
+                seront bientôt disponibles.
               </p>
             </div>
           </div>
@@ -143,7 +143,7 @@ const Boutique = () => {
                   <Truck className="h-6 w-6 md:h-8 md:w-8 text-green-700" />
                 </div>
                 <h3 className="font-poppins text-base md:text-lg font-semibold text-purple-900 mb-2">Mondial Relay</h3>
-                <p className="font-inter text-gray-600 text-sm">Point relais ├®conomique</p>
+                <p className="font-inter text-gray-600 text-sm">Point relais économique</p>
               </div>
 
               <div className="text-center">
@@ -166,7 +166,7 @@ const Boutique = () => {
                 {!tisane.available && (
                   <div className="absolute top-4 right-4 z-10">
                     <span className="bg-purple-600 text-white px-3 py-1 rounded-full text-xs md:text-sm font-medium">
-                      Bient├┤t disponible
+                      Bientôt disponible
                     </span>
                   </div>
                 )}
@@ -193,11 +193,11 @@ const Boutique = () => {
                       <div className="flex items-center space-x-2 text-xs md:text-sm text-gray-600 mb-2">
                         <Leaf className="h-4 w-4 text-green-500" />
                         <span>{tisane.weight}</span>
-                        <span>ÔÇó</span>
+                        <span>•</span>
                         <span>Bio & Artisanal</span>
                       </div>
                     </div>
-                    <div className="text-lg md:text-2xl font-bold text-purple-700">{tisane.price.toFixed(2)}Ôé¼</div>
+                    <div className="text-lg md:text-2xl font-bold text-purple-700">{tisane.price.toFixed(2)}€</div>
                   </div>
 
                   <p className="font-inter text-sm md:text-base text-gray-600 mb-4 leading-relaxed">{tisane.description}</p>
@@ -215,7 +215,7 @@ const Boutique = () => {
                   </div>
 
                   <div className="mb-6 text-xs text-gray-500">
-                    <strong>Ingr├®dients :</strong> {tisane.ingredients}
+                    <strong>Ingrédients :</strong> {tisane.ingredients}
                   </div>
 
                   <div className="flex items-center justify-between">
@@ -277,11 +277,11 @@ const Boutique = () => {
                     <div className="flex-1">
                       <h4 className="font-medium text-purple-900 text-sm md:text-base">{item!.name}</h4>
                       <p className="text-xs md:text-sm text-gray-600">
-                        {item!.price.toFixed(2)}Ôé¼ ├ù {item!.quantity}
+                        {item!.price.toFixed(2)}€ × {item!.quantity}
                       </p>
                     </div>
                     <div className="font-semibold text-purple-700 text-sm md:text-base">
-                      {(item!.price * item!.quantity).toFixed(2)}Ôé¼
+                      {(item!.price * item!.quantity).toFixed(2)}€
                     </div>
                   </div>
                 ))}
@@ -290,7 +290,7 @@ const Boutique = () => {
               {/* Total */}
               <div className="flex items-center justify-between mb-4 md:mb-6 text-base md:text-xl font-bold text-purple-900 border-t border-gray-200 pt-3 md:pt-4">
                 <span>Total :</span>
-                <span>{getCartTotal().toFixed(2)}Ôé¼</span>
+                <span>{getCartTotal().toFixed(2)}€</span>
               </div>
 
               {/* Checkout Button */}
@@ -306,10 +306,10 @@ const Boutique = () => {
           {/* Info Section */}
           <div className="bg-gradient-to-r from-purple-600 to-pink-500 rounded-2xl md:rounded-3xl p-8 md:p-12 text-white text-center">
             <Heart className="h-10 w-10 md:h-12 md:w-12 mx-auto mb-4 md:mb-6" />
-            <h2 className="font-poppins text-2xl md:text-3xl font-bold mb-3 md:mb-4">Pr├®par├®es avec amour</h2>
+            <h2 className="font-poppins text-2xl md:text-3xl font-bold mb-3 md:mb-4">Préparées avec amour</h2>
             <p className="font-inter text-base md:text-lg opacity-90 max-w-3xl mx-auto">
-              Toutes mes tisanes seront pr├®par├®es artisanalement avec des plantes bio s├®lectionn├®es pour leurs
-              propri├®t├®s th├®rapeutiques et leur qualit├® exceptionnelle.
+              Toutes mes tisanes seront préparées artisanalement avec des plantes bio sélectionnées pour leurs
+              propriétés thérapeutiques et leur qualité exceptionnelle.
             </p>
           </div>
         </div>
@@ -323,7 +323,7 @@ const Boutique = () => {
           onSuccess={() => {
             setCart({});
             setShowOrderForm(false);
-            alert('Commande enregistr├®e ! Vous recevrez un email de confirmation.');
+            alert('Commande enregistrée ! Vous recevrez un email de confirmation.');
           }}
         />
       )}
@@ -332,4 +332,3 @@ const Boutique = () => {
 };
 
 export default Boutique;
-

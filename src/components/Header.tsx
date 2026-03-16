@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, Calendar } from 'lucide-react';
 import Logo from '../images/Logo.png';
@@ -13,8 +13,8 @@ const Header = () => {
     { name: 'Accompagnements', href: '/accompagnements' },
     { name: 'Soins', href: '/soins' },
     { name: 'Boutique', href: '/boutique' },
-    { name: '├Ç propos', href: '/a-propos' },
-    { name: '├ëv├®nements', href: '/evenements' },
+    { name: 'À propos', href: '/a-propos' },
+    { name: 'Événements', href: '/evenements' },
   ];
 
   const isActive = (href: string) => location.pathname === href;
@@ -159,7 +159,7 @@ const Header = () => {
                 </div>
                 <div>
                   <h2 className="font-poppins text-xl font-bold text-purple-900">
-                    R├®server un rendez-vous
+                    Réserver un rendez-vous
                   </h2>
                   <p className="text-sm text-gray-600">Premier RDV gratuit - 30 minutes</p>
                 </div>
@@ -180,7 +180,7 @@ const Header = () => {
                 width="100%"
                 height="100%"
                 frameBorder="0"
-                title="Calendrier de r├®servation"
+                title="Calendrier de réservation"
                 style={{ border: 'none' }}
               />
             </div>
@@ -202,4 +202,3 @@ const Header = () => {
 };
 
 export default Header;
-
