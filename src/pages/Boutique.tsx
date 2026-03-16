@@ -13,7 +13,7 @@ const Boutique = () => {
 
   const tisanes = [
     {
-      id: 'tisane-grossesse',
+      id: 'pregnancy-herbal-tea',
       name: 'Tisane Grossesse Sérénité',
       price: 15,
       image: 'https://images.pexels.com/photos/1793035/pexels-photo-1793035.jpeg?auto=compress&cs=tinysrgb&w=800',
@@ -25,7 +25,7 @@ const Boutique = () => {
       available: false,
     },
     {
-      id: 'tisane-allaitement',
+      id: 'women-secret-herbal-tea',
       name: 'Tisane Allaitement Douceur',
       price: 15,
       image: 'https://images.pexels.com/photos/1793035/pexels-photo-1793035.jpeg?auto=compress&cs=tinysrgb&w=800',
@@ -36,7 +36,7 @@ const Boutique = () => {
       available: false,
     },
     {
-      id: 'tisane-postpartum',
+      id: 'cycle-herbal-tea',
       name: 'Tisane Post-partum Récupération',
       price: 15,
       image: 'https://images.pexels.com/photos/1793035/pexels-photo-1793035.jpeg?auto=compress&cs=tinysrgb&w=800',
@@ -48,7 +48,7 @@ const Boutique = () => {
       available: false,
     },
     {
-      id: 'tisane-feminin',
+      id: 'menopause-herbal-tea',
       name: 'Tisane Cycle Féminin',
       price: 15,
       image: 'https://images.pexels.com/photos/1793035/pexels-photo-1793035.jpeg?auto=compress&cs=tinysrgb&w=800',
