@@ -6,6 +6,14 @@ import { query, usingDatabase, withTransaction } from './db.js';
 const ORDER_STATUSES = ['pending', 'paid', 'preparing', 'shipped', 'delivered', 'cancelled'];
 const PAYMENT_STATUSES = ['pending', 'paid', 'failed', 'refunded'];
 
+// Compatibilite avec les IDs historiques utilises par la page Boutique.
+const LEGACY_PRODUCT_ID_MAP = {
+  'tisane-grossesse': 'pregnancy-herbal-tea',
+  'tisane-allaitement': 'women-secret-herbal-tea',
+  'tisane-postpartum': 'cycle-herbal-tea',
+  'tisane-feminin': 'menopause-herbal-tea'
+};
+
 const transitions = {
   pending: ['paid', 'cancelled'],
   paid: ['preparing', 'cancelled'],
@@ -106,7 +114,8 @@ export async function createOrder(payload, providerReference) {
   let subtotalCents = 0;
 
   for (const inputItem of payload.items) {
-    const product = catalog.get(inputItem.productId);
+    const normalizedProductId = LEGACY_PRODUCT_ID_MAP[inputItem.productId] || inputItem.productId;
+    const product = catalog.get(normalizedProductId);
     if (!product) {
       throw new Error(`Produit introuvable: ${inputItem.productId}`);
     }
