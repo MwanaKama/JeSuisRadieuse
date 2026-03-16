@@ -1,5 +1,120 @@
 import { badRequest, getQuery, ok, serverError } from './_lib/http.js';
 
+async function fetchJson(url) {
+  const response = await fetch(url, {
+    headers: {
+      'User-Agent': 'JeSuisRadieuse/1.0 (contact: support@jesuisradieuse.fr)'
+    }
+  });
+
+  if (!response.ok) {
+    throw new Error(`HTTP ${response.status}`);
+  }
+
+  return response.json();
+}
+
+function normalizeText(input) {
+  return String(input || '').trim();
+}
+
+async function getCityFromPostalCode(postalCode) {
+  try {
+    const url = `https://geo.api.gouv.fr/communes?codePostal=${encodeURIComponent(postalCode)}&fields=nom,centre&format=json`;
+    const communes = await fetchJson(url);
+
+    if (Array.isArray(communes) && communes.length > 0) {
+      const first = communes[0];
+      const coordinates = first?.centre?.coordinates || [];
+      return {
+        city: normalizeText(first?.nom) || postalCode,
+        latitude: Number.isFinite(coordinates[1]) ? Number(coordinates[1]) : undefined,
+        longitude: Number.isFinite(coordinates[0]) ? Number(coordinates[0]) : undefined,
+      };
+    }
+  } catch {
+    // fallback handled by caller
+  }
+
+  return {
+    city: postalCode,
+    latitude: undefined,
+    longitude: undefined,
+  };
+}
+
+function mapNominatimToPickupPoint(result, fallbackPostalCode, fallbackCountry) {
+  const address = result?.address || {};
+  const city = normalizeText(address.city || address.town || address.village || address.municipality || address.county);
+  const houseNumber = normalizeText(address.house_number);
+  const road = normalizeText(address.road || address.pedestrian || address.footway);
+  const postcode = normalizeText(address.postcode || fallbackPostalCode);
+  const countryCode = normalizeText(address.country_code || fallbackCountry).toUpperCase();
+
+  const name = normalizeText(result?.name) || normalizeText(result?.display_name).split(',')[0] || 'Point Relais Mondial Relay';
+  const fullAddress = [houseNumber, road].filter(Boolean).join(' ').trim() || normalizeText(result?.display_name);
+
+  return {
+    id: `MR-${result?.osm_type || 'N'}-${result?.osm_id || Math.random().toString(36).slice(2)}`,
+    name,
+    address: fullAddress,
+    postalCode: postcode,
+    city: city || fallbackPostalCode,
+    country: countryCode || fallbackCountry,
+    latitude: result?.lat ? Number(result.lat) : undefined,
+    longitude: result?.lon ? Number(result.lon) : undefined,
+  };
+}
+
+async function searchMondialRelayPoints({ postalCode, city, country, limit }) {
+  const countryCode = String(country || 'FR').toLowerCase();
+  const queries = [
+    `Mondial Relay ${postalCode} ${city}`,
+    `Point Relais Mondial Relay ${postalCode} ${city}`,
+    `Locker Mondial Relay ${postalCode} ${city}`,
+  ];
+
+  const collected = [];
+  const seenIds = new Set();
+
+  for (const query of queries) {
+    if (collected.length >= limit) {
+      break;
+    }
+
+    const url = `https://nominatim.openstreetmap.org/search?format=jsonv2&addressdetails=1&countrycodes=${encodeURIComponent(countryCode)}&limit=${encodeURIComponent(limit)}&q=${encodeURIComponent(query)}`;
+
+    let results = [];
+    try {
+      const payload = await fetchJson(url);
+      results = Array.isArray(payload) ? payload : [];
+    } catch {
+      results = [];
+    }
+
+    for (const result of results) {
+      const point = mapNominatimToPickupPoint(result, postalCode, country);
+
+      if (!point.name.toLowerCase().includes('mondial') && !String(result?.display_name || '').toLowerCase().includes('mondial')) {
+        continue;
+      }
+
+      if (seenIds.has(point.id)) {
+        continue;
+      }
+
+      seenIds.add(point.id);
+      collected.push(point);
+
+      if (collected.length >= limit) {
+        break;
+      }
+    }
+  }
+
+  return collected;
+}
+
 export async function handler(event) {
   try {
     const query = getQuery(event);
@@ -19,83 +134,28 @@ export async function handler(event) {
       return badRequest('Code postal invalide.');
     }
 
-    const cityByPostalPrefix = {
-      '75': 'Paris',
-      '69': 'Lyon',
-      '13': 'Marseille',
-      '33': 'Bordeaux',
-      '59': 'Lille',
-      '31': 'Toulouse'
-    };
+    const { city, latitude, longitude } = await getCityFromPostalCode(postalCode);
+    let pickupPoints = await searchMondialRelayPoints({ postalCode, city, country, limit });
+    const hasExternalResults = pickupPoints.length > 0;
 
-    const prefix = String(postalCode).slice(0, 2);
-    const city = cityByPostalPrefix[prefix] || 'Ville proche';
+    // Fallback propre : on garde une ville réelle issue du code postal, sans "Ville proche".
+    if (pickupPoints.length === 0) {
+      pickupPoints = Array.from({ length: Math.min(limit, 10) }, (_, index) => {
+        const i = index + 1;
+        return {
+          id: `${postalCode}-MR-${String(i).padStart(3, '0')}`,
+          name: `Mondial Relay ${city} ${i}`,
+          address: `${5 + index} Rue de ${city}${address ? ` (proche de ${address})` : ''}`,
+          postalCode,
+          city,
+          country,
+          latitude: Number.isFinite(latitude) ? Number((latitude + index * 0.0012).toFixed(6)) : undefined,
+          longitude: Number.isFinite(longitude) ? Number((longitude + index * 0.001).toFixed(6)) : undefined,
+        };
+      });
+    }
 
-    const centerByCity = {
-      Paris: { latitude: 48.8566, longitude: 2.3522 },
-      Lyon: { latitude: 45.764, longitude: 4.8357 },
-      Marseille: { latitude: 43.2965, longitude: 5.3698 },
-      Bordeaux: { latitude: 44.8378, longitude: -0.5792 },
-      Lille: { latitude: 50.6292, longitude: 3.0573 },
-      Toulouse: { latitude: 43.6047, longitude: 1.4442 },
-      'Ville proche': { latitude: 48.8566, longitude: 2.3522 }
-    };
-
-    const base = centerByCity[city] || centerByCity['Ville proche'];
-
-    const streetPool = [
-      'Rue Centrale',
-      'Avenue de la Gare',
-      'Boulevard Victor Hugo',
-      'Rue du Commerce',
-      'Rue des Lilas',
-      'Rue de la République',
-      'Place du Marché',
-      'Rue des Ecoles',
-      'Rue Pasteur',
-      'Avenue Jean Jaurès',
-      'Rue de la Paix',
-      'Rue Anatole France',
-      'Rue Voltaire',
-      'Rue Nationale',
-      'Rue du Moulin',
-      'Rue des Tilleuls',
-      'Rue Pierre Curie',
-      'Rue de la Liberté',
-      'Avenue du Général Leclerc',
-      'Rue des Fleurs',
-      'Rue des Acacias',
-      'Rue Lafayette',
-      'Rue des Artisans',
-      'Rue de la Mairie',
-      'Rue de Verdun',
-      'Rue des Peupliers',
-      'Rue Berlioz',
-      'Avenue Gambetta',
-      'Rue Colbert',
-      'Rue du Temple'
-    ];
-
-    const pickupPoints = Array.from({ length: limit }, (_, index) => {
-      const i = index + 1;
-      const latitude = Number((base.latitude + (index - limit / 2) * 0.004).toFixed(6));
-      const longitude = Number((base.longitude + ((index % 5) - 2) * 0.006).toFixed(6));
-      const street = streetPool[index % streetPool.length];
-      const number = 4 + ((index * 3) % 47);
-
-      return {
-        id: `${postalCode}-MR-${String(i).padStart(3, '0')}`,
-        name: `Point Relais ${city} ${i}`,
-        address: `${number} ${street}${address ? ` (proche de ${address})` : ''}`,
-        postalCode,
-        city,
-        country,
-        latitude,
-        longitude
-      };
-    });
-
-    return ok({ pickupPoints });
+    return ok({ pickupPoints, citySource: city, source: hasExternalResults ? 'osm' : 'fallback' });
   } catch (error) {
     return serverError(error, 'Impossible de charger les points relais.');
   }
