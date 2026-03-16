@@ -1,11 +1,15 @@
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { ShoppingCart, Plus, Minus, Star, Leaf, Heart, Truck, Package, Clock } from 'lucide-react';
+import { useSearchParams } from 'react-router-dom';
 import OrderForm from '../components/OrderForm';
+import AddToCartButton from '../components/AddToCartButton';
+import { useCartContext } from '../context/CartContext';
 
 const Boutique = () => {
-  const [cart, setCart] = useState<{ [key: string]: number }>({});
   const [showOrderForm, setShowOrderForm] = useState(false);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const { items, total, addItem, removeOne, getQuantity, clearCart } = useCartContext();
 
   const tisanes = [
     {
@@ -56,40 +60,21 @@ const Boutique = () => {
     },
   ];
 
-  const addToCart = (productId: string) => {
-    setCart((prev) => ({
-      ...prev,
-      [productId]: (prev[productId] || 0) + 1,
-    }));
-  };
+  const quantityById = useMemo(() => {
+    return items.reduce<Record<string, number>>((acc, item) => {
+      acc[item.id] = item.quantity;
+      return acc;
+    }, {});
+  }, [items]);
 
-  const removeFromCart = (productId: string) => {
-    setCart((prev) => {
-      const newCart = { ...prev };
-      if (newCart[productId] > 1) {
-        newCart[productId] -= 1;
-      } else {
-        delete newCart[productId];
+  useEffect(() => {
+    if (searchParams.get('checkout') === '1') {
+      if (items.length > 0) {
+        setShowOrderForm(true);
       }
-      return newCart;
-    });
-  };
-
-  const getCartTotal = () => {
-    return Object.entries(cart).reduce((total, [productId, quantity]) => {
-      const product = tisanes.find((t) => t.id === productId);
-      return total + (product ? product.price * quantity : 0);
-    }, 0);
-  };
-
-  const getCartItems = () => {
-    return Object.entries(cart)
-      .map(([productId, quantity]) => {
-        const product = tisanes.find((t) => t.id === productId);
-        return product ? { ...product, quantity } : null;
-      })
-      .filter(Boolean);
-  };
+      setSearchParams({}, { replace: true });
+    }
+  }, [items.length, searchParams, setSearchParams]);
 
   return (
     <>
@@ -220,88 +205,55 @@ const Boutique = () => {
 
                   <div className="flex items-center justify-between">
                     {tisane.available ? (
-                      cart[tisane.id] ? (
+                      quantityById[tisane.id] ? (
                         <div className="flex items-center space-x-3">
                           <button
-                            onClick={() => removeFromCart(tisane.id)}
+                            onClick={() => removeOne(tisane.id)}
                             className="w-8 h-8 bg-gray-200 hover:bg-gray-300 rounded-full flex items-center justify-center transition-colors"
                           >
                             <Minus className="h-4 w-4" />
                           </button>
                           <span className="font-semibold text-purple-900 min-w-[2rem] text-center">
-                            {cart[tisane.id]}
+                            {quantityById[tisane.id]}
                           </span>
                           <button
-                            onClick={() => addToCart(tisane.id)}
+                            onClick={() => addItem({
+                              id: tisane.id,
+                              name: tisane.name,
+                              price: tisane.price,
+                              image: tisane.image,
+                            })}
                             className="w-8 h-8 bg-purple-600 hover:bg-purple-700 text-white rounded-full flex items-center justify-center transition-colors"
                           >
                             <Plus className="h-4 w-4" />
                           </button>
                         </div>
                       ) : (
-                        <button
-                          onClick={() => addToCart(tisane.id)}
-                          className="flex-1 bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 text-white py-2 md:py-3 rounded-full font-semibold transition-all hover:shadow-lg flex items-center justify-center space-x-2 text-sm md:text-base"
-                        >
-                          <ShoppingCart className="h-4 w-4" />
-                          <span>Ajouter au panier</span>
-                        </button>
+                        <AddToCartButton
+                          product={{
+                            id: tisane.id,
+                            name: tisane.name,
+                            price: tisane.price,
+                            image: tisane.image,
+                          }}
+                        />
                       )
                     ) : (
-                      <button
-                        onClick={() => addToCart(tisane.id)}
-                        className="flex-1 bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 text-white py-2 md:py-3 rounded-full font-semibold transition-all hover:shadow-lg flex items-center justify-center space-x-2 text-sm md:text-base"
-                      >
-                        <ShoppingCart className="h-4 w-4" />
-                        <span>Commander</span>
-                      </button>
+                      <AddToCartButton
+                        product={{
+                          id: tisane.id,
+                          name: tisane.name,
+                          price: tisane.price,
+                          image: tisane.image,
+                        }}
+                        label="Commander"
+                      />
                     )}
                   </div>
                 </div>
               </div>
             ))}
           </div>
-
-          {/* Cart Summary */}
-          {Object.keys(cart).length > 0 && (
-            <div className="bg-white rounded-2xl md:rounded-3xl shadow-lg md:shadow-xl p-4 md:p-8 mb-6 md:mb-8">
-              <h2 className="font-poppins text-lg md:text-2xl font-bold text-purple-900 mb-4 md:mb-6 flex items-center">
-                <ShoppingCart className="h-5 w-5 md:h-6 md:w-6 mr-2" />
-                Votre panier
-              </h2>
-
-              {/* Items */}
-              <div className="space-y-3 md:space-y-4 mb-4 md:mb-6">
-                {getCartItems().map((item) => (
-                  <div key={item!.id} className="flex items-center justify-between py-2 border-b border-gray-100">
-                    <div className="flex-1">
-                      <h4 className="font-medium text-purple-900 text-sm md:text-base">{item!.name}</h4>
-                      <p className="text-xs md:text-sm text-gray-600">
-                        {item!.price.toFixed(2)}€ × {item!.quantity}
-                      </p>
-                    </div>
-                    <div className="font-semibold text-purple-700 text-sm md:text-base">
-                      {(item!.price * item!.quantity).toFixed(2)}€
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              {/* Total */}
-              <div className="flex items-center justify-between mb-4 md:mb-6 text-base md:text-xl font-bold text-purple-900 border-t border-gray-200 pt-3 md:pt-4">
-                <span>Total :</span>
-                <span>{getCartTotal().toFixed(2)}€</span>
-              </div>
-
-              {/* Checkout Button */}
-              <button
-                onClick={() => setShowOrderForm(true)}
-                className="w-full bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 text-white py-3 md:py-4 rounded-full font-poppins font-semibold text-sm md:text-lg transition-all hover:shadow-xl hover:scale-105"
-              >
-                Finaliser ma commande
-              </button>
-            </div>
-          )}
 
           {/* Info Section */}
           <div className="bg-gradient-to-r from-purple-600 to-pink-500 rounded-2xl md:rounded-3xl p-8 md:p-12 text-white text-center">
@@ -317,11 +269,11 @@ const Boutique = () => {
 
       {showOrderForm && (
         <OrderForm
-          items={getCartItems()}
-          total={getCartTotal()}
+          items={items as any}
+          total={total}
           onClose={() => setShowOrderForm(false)}
           onSuccess={() => {
-            setCart({});
+            clearCart();
             setShowOrderForm(false);
             alert('Commande enregistrée ! Vous recevrez un email de confirmation.');
           }}

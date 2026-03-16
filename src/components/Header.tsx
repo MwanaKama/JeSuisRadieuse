@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, Calendar } from 'lucide-react';
+import CartIcon from './CartIcon';
 import Logo from '../images/Logo.png';
 
 const Header = () => {
@@ -93,10 +94,13 @@ const Header = () => {
                 <Calendar className="h-4 w-4" />
                 <span>Prendre RDV</span>
               </button>
+
+              <CartIcon />
             </div>
 
             {/* Mobile menu button */}
-            <div className="md:hidden flex items-center">
+            <div className="md:hidden flex items-center gap-2">
+              <CartIcon />
               <button
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
                 className="text-gray-700 hover:text-purple-600 p-2"
