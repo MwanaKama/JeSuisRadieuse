@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, Calendar } from 'lucide-react';
 import Logo from '../images/Logo.png';
@@ -12,8 +12,9 @@ const Header = () => {
     { name: 'Accueil', href: '/' },
     { name: 'Accompagnements', href: '/accompagnements' },
     { name: 'Soins', href: '/soins' },
-    { name: 'À propos', href: '/a-propos' },
-    { name: 'Événements', href: '/evenements' },
+    { name: 'Boutique', href: '/boutique' },
+    { name: '├Ç propos', href: '/a-propos' },
+    { name: '├ëv├®nements', href: '/evenements' },
   ];
 
   const isActive = (href: string) => location.pathname === href;
@@ -92,7 +93,6 @@ const Header = () => {
                 <Calendar className="h-4 w-4" />
                 <span>Prendre RDV</span>
               </button>
-
             </div>
 
             {/* Mobile menu button */}
@@ -125,7 +125,7 @@ const Header = () => {
                     {item.name}
                   </Link>
                 ))}
-                <div className="mt-4 space-y-3">
+                <div className="mt-4">
                   <button
                     onClick={openCalendly}
                     className="w-full bg-gradient-to-r from-pink-200 to-purple-300 text-purple-800 border-0 font-poppins font-semibold inline-flex items-center justify-center space-x-2 transition-all hover:shadow-xl hover:scale-105 rounded-full px-6 py-3 text-base"
@@ -159,7 +159,7 @@ const Header = () => {
                 </div>
                 <div>
                   <h2 className="font-poppins text-xl font-bold text-purple-900">
-                    Réserver un rendez-vous
+                    R├®server un rendez-vous
                   </h2>
                   <p className="text-sm text-gray-600">Premier RDV gratuit - 30 minutes</p>
                 </div>
@@ -180,7 +180,7 @@ const Header = () => {
                 width="100%"
                 height="100%"
                 frameBorder="0"
-                title="Calendrier de réservation"
+                title="Calendrier de r├®servation"
                 style={{ border: 'none' }}
               />
             </div>
@@ -202,3 +202,4 @@ const Header = () => {
 };
 
 export default Header;
+

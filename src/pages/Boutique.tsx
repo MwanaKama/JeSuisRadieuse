@@ -1,94 +1,95 @@
-import React, { useEffect, useMemo, useState } from 'react';
+﻿import React, { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
-import {
-  Award,
-  CheckCircle,
-  Heart,
-  Minus,
-  Plus,
-  ShoppingCart,
-  Sparkles,
-  Star,
-  Truck,
-} from 'lucide-react';
-import { Link, useSearchParams } from 'react-router-dom';
-
+import { ShoppingCart, Plus, Minus, Star, Leaf, Heart, Truck, Package, Clock } from 'lucide-react';
 import OrderForm from '../components/OrderForm';
-import { storeProducts } from '../data/store';
-import { useCart } from '../hooks/useCart';
-import { fetchProducts } from '../services/storeApi';
-import type { Product } from '../types/shop';
-
-/* Image hero — licence Unsplash (usage commercial gratuit) */
-const HERO_IMAGE =
-  'https://images.unsplash.com/photo-1544787219-7f47ccb76574?w=1600&auto=format&fit=crop&q=80';
-
-const TRUST_BADGES = [
-  {
-    icon: Truck,
-    label: 'Livraison France',
-    sub: 'Colissimo · Mondial Relay · Chronopost',
-    bgClass: 'bg-purple-100',
-    iconClass: 'text-purple-600',
-  },
-  {
-    icon: Award,
-    label: '100 % Naturel',
-    sub: 'Plantes sélectionnées avec soin',
-    bgClass: 'bg-green-100',
-    iconClass: 'text-green-600',
-  },
-  {
-    icon: Sparkles,
-    label: 'Artisanal',
-    sub: 'Préparé à la main en France',
-    bgClass: 'bg-pink-100',
-    iconClass: 'text-pink-600',
-  },
-  {
-    icon: CheckCircle,
-    label: 'Paiement sécurisé',
-    sub: 'Stripe · PayPal',
-    bgClass: 'bg-blue-100',
-    iconClass: 'text-blue-600',
-  },
-] as const;
 
 const Boutique = () => {
-  const [products, setProducts] = useState<Product[]>(storeProducts);
-  const [isLoading, setIsLoading] = useState(true);
+  const [cart, setCart] = useState<{ [key: string]: number }>({});
   const [showOrderForm, setShowOrderForm] = useState(false);
-  const [activeCategory, setActiveCategory] = useState<string>('Tous');
-  const { quantities, items, subtotal, addToCart, removeFromCart, clearCart } = useCart(products);
-  const [searchParams, setSearchParams] = useSearchParams();
 
-  /* Ouvrir le formulaire si on arrive depuis la bulle panier ?checkout=1 */
-  useEffect(() => {
-    if (searchParams.get('checkout') === '1') {
-      setShowOrderForm(true);
-      setSearchParams({}, { replace: true });
-    }
-  }, [searchParams, setSearchParams]);
+  const tisanes = [
+    {
+      id: 'tisane-grossesse',
+      name: 'Tisane Grossesse S├®r├®nit├®',
+      price: 15,
+      image: 'https://images.pexels.com/photos/1793035/pexels-photo-1793035.jpeg?auto=compress&cs=tinysrgb&w=800',
+      description:
+        'M├®lange d├®licat de camomille, feuilles de framboisier et m├®lisse pour accompagner votre grossesse en douceur.',
+      benefits: ['Apaise les naus├®es', 'Favorise la d├®tente', 'Riche en min├®raux'],
+      ingredients: 'Camomille, feuilles de framboisier, m├®lisse, ortie',
+      weight: '100g',
+      available: false,
+    },
+    {
+      id: 'tisane-allaitement',
+      name: 'Tisane Allaitement Douceur',
+      price: 15,
+      image: 'https://images.pexels.com/photos/1793035/pexels-photo-1793035.jpeg?auto=compress&cs=tinysrgb&w=800',
+      description: "Synergie de fenouil, anis vert et galega pour soutenir naturellement l'allaitement maternel.",
+      benefits: ['Stimule la lactation', 'Facilite la digestion', 'Go├╗t doux et agr├®able'],
+      ingredients: 'Fenouil, anis vert, galega, verveine',
+      weight: '100g',
+      available: false,
+    },
+    {
+      id: 'tisane-postpartum',
+      name: 'Tisane Post-partum R├®cup├®ration',
+      price: 15,
+      image: 'https://images.pexels.com/photos/1793035/pexels-photo-1793035.jpeg?auto=compress&cs=tinysrgb&w=800',
+      description:
+        "M├®lange remin├®ralisant d'ortie, achill├®e millefeuille et rose pour une r├®cup├®ration optimale.",
+      benefits: ['Tonifie lÔÇÖorganisme', 'Apporte fer et vitamines', 'Soutient la r├®cup├®ration'],
+      ingredients: 'Ortie, achill├®e millefeuille, p├®tales de rose, avoine',
+      weight: '100g',
+      available: false,
+    },
+    {
+      id: 'tisane-feminin',
+      name: 'Tisane Cycle F├®minin',
+      price: 15,
+      image: 'https://images.pexels.com/photos/1793035/pexels-photo-1793035.jpeg?auto=compress&cs=tinysrgb&w=800',
+      description: 'Harmonise le cycle f├®minin avec un m├®lange de sauge, achill├®e et calendula.',
+      benefits: ['├ëquilibre hormonal', 'Soulage les tensions', 'R├®gularise le cycle'],
+      ingredients: 'Sauge, achill├®e, calendula, m├®lisse',
+      weight: '100g',
+      available: false,
+    },
+  ];
 
-  /* Chargement catalogue API (fallback sur storeProducts) */
-  useEffect(() => {
-    let isMounted = true;
-    fetchProducts()
-      .then((catalog) => { if (isMounted && catalog.length > 0) setProducts(catalog); })
-      .catch(() => { /* garde les produits statiques */ })
-      .finally(() => { if (isMounted) setIsLoading(false); });
-    return () => { isMounted = false; };
-  }, []);
+  const addToCart = (productId: string) => {
+    setCart((prev) => ({
+      ...prev,
+      [productId]: (prev[productId] || 0) + 1,
+    }));
+  };
 
-  const categories = useMemo(
-    () => ['Tous', ...Array.from(new Set(products.map((p) => p.category)))],
-    [products],
-  );
+  const removeFromCart = (productId: string) => {
+    setCart((prev) => {
+      const newCart = { ...prev };
+      if (newCart[productId] > 1) {
+        newCart[productId] -= 1;
+      } else {
+        delete newCart[productId];
+      }
+      return newCart;
+    });
+  };
 
-  const filteredProducts = useMemo(
-    () => (activeCategory === 'Tous' ? products : products.filter((p) => p.category === activeCategory)),
-    [products, activeCategory],
-  );
+  const getCartTotal = () => {
+    return Object.entries(cart).reduce((total, [productId, quantity]) => {
+      const product = tisanes.find((t) => t.id === productId);
+      return total + (product ? product.price * quantity : 0);
+    }, 0);
+  };
+
+  const getCartItems = () => {
+    return Object.entries(cart)
+      .map(([productId, quantity]) => {
+        const product = tisanes.find((t) => t.id === productId);
+        return product ? { ...product, quantity } : null;
+      })
+      .filter(Boolean);
+  };
 
   return (
     <>
@@ -96,249 +97,233 @@ const Boutique = () => {
         <title>Je Suis Radieuse | Boutique Tisanes Artisanales</title>
         <meta
           name="description"
-          content="Boutique bien-être féminin — tisanes artisanales, yoni steam, paiement sécurisé, livraison France."
+          content="Tisanes artisanales bio pour grossesse, allaitement et bien-├¬tre f├®minin. M├®langes traditionnels pr├®par├®s avec soin."
         />
         <meta
           name="keywords"
-          content="tisanes grossesse, cycle feminin, menopause, yoni steam, boutique bien-etre feminin"
+          content="tisanes grossesse, tisane allaitement, herboristerie femme, tisanes bio Paris"
         />
       </Helmet>
 
-      {/* ══════════════════════════════════════════════════════════
-          HERO
-      ══════════════════════════════════════════════════════════ */}
-      <section className="relative h-[400px] md:h-[500px] overflow-hidden">
-        <img
-          src={HERO_IMAGE}
-          alt="Tisanes bien-être artisanales Je Suis Radieuse"
-          className="absolute inset-0 w-full h-full object-cover scale-105"
-          style={{ filter: 'brightness(0.52)' }}
-        />
-        <div className="relative z-10 h-full flex flex-col items-center justify-center text-center px-4">
-          <span className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm text-white text-xs font-semibold uppercase tracking-widest px-4 py-2 rounded-full mb-5 border border-white/30">
-            <Sparkles className="h-3.5 w-3.5" />
-            Préparations artisanales françaises
-          </span>
-          <h1 className="font-poppins text-4xl md:text-6xl font-bold text-white mb-4 leading-tight drop-shadow-xl">
-            Boutique<br />bien-être féminin
-          </h1>
-          <p className="font-inter text-white/90 text-base md:text-lg max-w-xl mb-8 leading-relaxed">
-            Tisanes, rituels yoni steam et soins naturels pensés pour chaque étape de la vie des femmes.
-          </p>
-          <a
-            href="#catalogue"
-            className="bg-gradient-to-r from-pink-400 to-purple-600 hover:from-pink-500 hover:to-purple-700 text-white font-poppins font-semibold px-8 py-3.5 rounded-full shadow-xl hover:shadow-2xl transition-all hover:scale-105"
-          >
-            Découvrir les produits
-          </a>
-        </div>
-      </section>
-
-      {/* ══════════════════════════════════════════════════════════
-          TRUST BADGES
-      ══════════════════════════════════════════════════════════ */}
-      <section className="bg-white border-b border-purple-50 py-6 shadow-sm">
-        <div className="max-w-5xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-          {TRUST_BADGES.map(({ icon: Icon, label, sub, bgClass, iconClass }) => (
-            <div key={label} className="flex items-center gap-3">
-              <div className={`w-10 h-10 rounded-full flex-shrink-0 flex items-center justify-center ${bgClass}`}>
-                <Icon className={`h-5 w-5 ${iconClass}`} />
+      <div className="min-h-screen bg-gradient-to-br from-pink-50 to-purple-50 py-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Header */}
+          <div className="text-center mb-16">
+            <h1 className="font-poppins text-3xl md:text-5xl font-bold text-purple-900 mb-6">
+              Boutique Tisanes
+            </h1>
+            <div className="bg-gradient-to-r from-purple-100 to-pink-100 rounded-2xl p-6 mb-8 max-w-4xl mx-auto">
+              <div className="flex items-center justify-center mb-4">
+                <Clock className="h-6 w-6 md:h-8 md:w-8 text-purple-600 mr-3" />
+                <h2 className="font-poppins text-xl md:text-2xl font-bold text-purple-900">Tisanes ├á venir</h2>
               </div>
-              <div>
-                <p className="font-poppins font-semibold text-purple-900 text-sm leading-tight">{label}</p>
-                <p className="text-gray-500 text-xs leading-tight mt-0.5">{sub}</p>
+              <p className="font-inter text-base md:text-lg text-gray-700 leading-relaxed">
+                Mes tisanes artisanales sp├®cialement con├ºues pour accompagner chaque ├®tape de votre parcours de femme
+                seront bient├┤t disponibles.
+              </p>
+            </div>
+          </div>
+
+          {/* Shipping Info */}
+          <div className="bg-white rounded-2xl md:rounded-3xl shadow-lg md:shadow-xl p-6 md:p-8 mb-12">
+            <h2 className="font-poppins text-xl md:text-2xl font-bold text-purple-900 text-center mb-6">
+              Livraison en France
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="text-center">
+                <div className="w-14 h-14 md:w-16 md:h-16 bg-gradient-to-br from-blue-200 to-blue-300 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Package className="h-6 w-6 md:h-8 md:w-8 text-blue-700" />
+                </div>
+                <h3 className="font-poppins text-base md:text-lg font-semibold text-purple-900 mb-2">Colissimo</h3>
+                <p className="font-inter text-gray-600 text-sm">Livraison standard 48-72h</p>
+              </div>
+
+              <div className="text-center">
+                <div className="w-14 h-14 md:w-16 md:h-16 bg-gradient-to-br from-green-200 to-green-300 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Truck className="h-6 w-6 md:h-8 md:w-8 text-green-700" />
+                </div>
+                <h3 className="font-poppins text-base md:text-lg font-semibold text-purple-900 mb-2">Mondial Relay</h3>
+                <p className="font-inter text-gray-600 text-sm">Point relais ├®conomique</p>
+              </div>
+
+              <div className="text-center">
+                <div className="w-14 h-14 md:w-16 md:h-16 bg-gradient-to-br from-red-200 to-red-300 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Package className="h-6 w-6 md:h-8 md:w-8 text-red-700" />
+                </div>
+                <h3 className="font-poppins text-base md:text-lg font-semibold text-purple-900 mb-2">Chronopost</h3>
+                <p className="font-inter text-gray-600 text-sm">Livraison express 24h</p>
               </div>
             </div>
-          ))}
-        </div>
-      </section>
-
-      {/* ══════════════════════════════════════════════════════════
-          CATALOGUE
-      ══════════════════════════════════════════════════════════ */}
-      <div id="catalogue" className="min-h-screen bg-gradient-to-br from-pink-50/70 to-purple-50/70 pb-32">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12">
-
-          {/* Lien suivi commande */}
-          <div className="flex justify-end mb-8">
-            <Link
-              to="/suivi-commande"
-              className="text-sm font-medium text-purple-700 hover:text-purple-900 underline underline-offset-2 transition"
-            >
-              Suivre ma commande →
-            </Link>
           </div>
 
-          {/* ── Onglets catégories ────────────────────────────────── */}
-          <div className="flex items-center gap-2 flex-wrap mb-10">
-            {categories.map((cat) => (
-              <button
-                key={cat}
-                onClick={() => setActiveCategory(cat)}
-                className={`px-5 py-2 rounded-full text-sm font-semibold transition-all border ${
-                  activeCategory === cat
-                    ? 'bg-gradient-to-r from-purple-600 to-pink-500 text-white border-transparent shadow-md'
-                    : 'bg-white text-purple-700 border-purple-200 hover:border-purple-400 hover:bg-purple-50'
-                }`}
+          {/* Products Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 md:gap-8 mb-12">
+            {tisanes.map((tisane) => (
+              <div
+                key={tisane.id}
+                className="bg-white rounded-2xl md:rounded-3xl shadow-lg md:shadow-xl hover:shadow-2xl transition-all overflow-hidden relative"
               >
-                {cat}
-                {cat !== 'Tous' && (
-                  <span className="ml-1.5 text-xs opacity-70">
-                    ({products.filter((p) => p.category === cat).length})
-                  </span>
+                {!tisane.available && (
+                  <div className="absolute top-4 right-4 z-10">
+                    <span className="bg-purple-600 text-white px-3 py-1 rounded-full text-xs md:text-sm font-medium">
+                      Bient├┤t disponible
+                    </span>
+                  </div>
                 )}
-              </button>
-            ))}
-            {isLoading && (
-              <span className="text-sm text-gray-400 ml-2 animate-pulse">Mise à jour du catalogue…</span>
-            )}
-          </div>
 
-          {/* ── Grille produits ───────────────────────────────────── */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-            {filteredProducts.map((product) => {
-              const qty = quantities[product.id] ?? 0;
-              const isInCart = qty > 0;
-              const isOutOfStock = product.stock === 0;
+                <div className="h-56 md:h-64 overflow-hidden relative">
+                  <img
+                    src={tisane.image}
+                    alt={tisane.name}
+                    className={`w-full h-full object-cover transition-transform duration-500 ${
+                      !tisane.available ? 'opacity-75' : 'hover:scale-110'
+                    }`}
+                  />
+                  {!tisane.available && (
+                    <div className="absolute inset-0 bg-white bg-opacity-20 flex items-center justify-center">
+                      <Clock className="h-10 w-10 md:h-12 md:w-12 text-purple-600" />
+                    </div>
+                  )}
+                </div>
 
-              return (
-                <article
-                  key={product.id}
-                  className="group bg-white rounded-3xl shadow-md hover:shadow-2xl transition-all duration-300 overflow-hidden flex flex-col"
-                >
-                  {/* Image */}
-                  <div className="relative h-52 overflow-hidden bg-purple-50">
-                    <img
-                      src={product.image}
-                      alt={product.name}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    />
-                    <span className="absolute top-3 left-3 bg-white/90 text-purple-700 text-xs font-semibold px-3 py-1 rounded-full shadow-sm">
-                      {product.category}
-                    </span>
-                    <span
-                      className={`absolute top-3 right-3 text-xs font-semibold px-3 py-1 rounded-full shadow-sm ${
-                        isOutOfStock
-                          ? 'bg-red-100 text-red-700'
-                          : product.stock <= 5
-                          ? 'bg-orange-100 text-orange-700'
-                          : 'bg-green-100 text-green-700'
-                      }`}
-                    >
-                      {isOutOfStock ? 'Rupture' : `${product.stock} en stock`}
-                    </span>
-                    {isInCart && (
-                      <div className="absolute inset-0 bg-purple-900/10 flex items-end pb-3 pl-3">
-                        <span className="bg-purple-600 text-white text-xs font-bold px-2.5 py-1 rounded-full">
-                          {qty} au panier
-                        </span>
+                <div className="p-6 md:p-8">
+                  <div className="flex items-start justify-between mb-4">
+                    <div>
+                      <h3 className="font-poppins text-lg md:text-xl font-bold text-purple-900 mb-2">{tisane.name}</h3>
+                      <div className="flex items-center space-x-2 text-xs md:text-sm text-gray-600 mb-2">
+                        <Leaf className="h-4 w-4 text-green-500" />
+                        <span>{tisane.weight}</span>
+                        <span>ÔÇó</span>
+                        <span>Bio & Artisanal</span>
                       </div>
-                    )}
+                    </div>
+                    <div className="text-lg md:text-2xl font-bold text-purple-700">{tisane.price.toFixed(2)}Ôé¼</div>
                   </div>
 
-                  {/* Contenu */}
-                  <div className="p-5 flex flex-col flex-1">
-                    <div className="mb-3">
-                      <div className="flex items-start justify-between gap-2 mb-1">
-                        <h2 className="font-poppins text-base font-bold text-purple-900 leading-snug">
-                          {product.name}
-                        </h2>
-                        <span className="font-poppins font-bold text-purple-600 text-lg whitespace-nowrap flex-shrink-0">
-                          {product.price.toFixed(2)} €
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-0.5 mb-2">
-                        {Array.from({ length: 5 }).map((_, i) => (
-                          <Star key={i} className="h-3.5 w-3.5 fill-pink-300 text-pink-300" />
-                        ))}
-                        <span className="text-gray-400 text-xs ml-1.5">· Artisanal</span>
-                      </div>
-                      <p className="text-gray-500 text-sm leading-relaxed line-clamp-2">
-                        {product.description}
-                      </p>
-                    </div>
+                  <p className="font-inter text-sm md:text-base text-gray-600 mb-4 leading-relaxed">{tisane.description}</p>
 
-                    {/* Bienfaits */}
-                    <ul className="space-y-1 mb-4 flex-1">
-                      {product.benefits.slice(0, 2).map((benefit) => (
-                        <li key={benefit} className="flex items-center gap-1.5 text-xs text-gray-600">
-                          <CheckCircle className="h-3.5 w-3.5 text-green-500 flex-shrink-0" />
-                          {benefit}
+                  <div className="mb-4">
+                    <h4 className="font-poppins font-semibold text-purple-900 mb-2 text-sm md:text-base">Bienfaits</h4>
+                    <ul className="space-y-1">
+                      {tisane.benefits.map((benefit, index) => (
+                        <li key={index} className="flex items-center space-x-2 text-xs md:text-sm text-gray-600">
+                          <Star className="h-3 w-3 text-pink-400" />
+                          <span>{benefit}</span>
                         </li>
                       ))}
                     </ul>
+                  </div>
 
-                    {/* Instructions en italique */}
-                    <p className="text-xs text-gray-400 italic mb-4 leading-relaxed line-clamp-2">
-                      {product.usageInstructions}
-                    </p>
+                  <div className="mb-6 text-xs text-gray-500">
+                    <strong>Ingr├®dients :</strong> {tisane.ingredients}
+                  </div>
 
-                    {/* CTA */}
-                    {isInCart ? (
-                      <div className="flex items-center justify-between bg-purple-50 rounded-2xl p-1.5">
+                  <div className="flex items-center justify-between">
+                    {tisane.available ? (
+                      cart[tisane.id] ? (
+                        <div className="flex items-center space-x-3">
+                          <button
+                            onClick={() => removeFromCart(tisane.id)}
+                            className="w-8 h-8 bg-gray-200 hover:bg-gray-300 rounded-full flex items-center justify-center transition-colors"
+                          >
+                            <Minus className="h-4 w-4" />
+                          </button>
+                          <span className="font-semibold text-purple-900 min-w-[2rem] text-center">
+                            {cart[tisane.id]}
+                          </span>
+                          <button
+                            onClick={() => addToCart(tisane.id)}
+                            className="w-8 h-8 bg-purple-600 hover:bg-purple-700 text-white rounded-full flex items-center justify-center transition-colors"
+                          >
+                            <Plus className="h-4 w-4" />
+                          </button>
+                        </div>
+                      ) : (
                         <button
-                          onClick={() => removeFromCart(product.id)}
-                          className="w-9 h-9 bg-white hover:bg-gray-100 rounded-xl flex items-center justify-center shadow-sm transition"
-                          aria-label="Retirer une unité"
+                          onClick={() => addToCart(tisane.id)}
+                          className="flex-1 bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 text-white py-2 md:py-3 rounded-full font-semibold transition-all hover:shadow-lg flex items-center justify-center space-x-2 text-sm md:text-base"
                         >
-                          <Minus className="h-4 w-4 text-purple-700" />
+                          <ShoppingCart className="h-4 w-4" />
+                          <span>Ajouter au panier</span>
                         </button>
-                        <span className="font-poppins font-bold text-purple-900 text-sm">
-                          {qty} × {product.price.toFixed(2)} €
-                        </span>
-                        <button
-                          onClick={() => addToCart(product.id)}
-                          className="w-9 h-9 bg-purple-600 hover:bg-purple-700 text-white rounded-xl flex items-center justify-center shadow-sm transition"
-                          aria-label="Ajouter une unité"
-                        >
-                          <Plus className="h-4 w-4" />
-                        </button>
-                      </div>
+                      )
                     ) : (
                       <button
-                        onClick={() => addToCart(product.id)}
-                        disabled={isOutOfStock}
-                        className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 disabled:opacity-40 disabled:cursor-not-allowed text-white py-2.5 rounded-2xl font-semibold text-sm transition-all hover:shadow-lg"
+                        onClick={() => addToCart(tisane.id)}
+                        className="flex-1 bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 text-white py-2 md:py-3 rounded-full font-semibold transition-all hover:shadow-lg flex items-center justify-center space-x-2 text-sm md:text-base"
                       >
                         <ShoppingCart className="h-4 w-4" />
-                        Ajouter au panier
+                        <span>Commander</span>
                       </button>
                     )}
                   </div>
-                </article>
-              );
-            })}
+                </div>
+              </div>
+            ))}
           </div>
 
-          {/* ── Bannière bas de page ─────────────────────────────── */}
-          <div className="mt-20 bg-gradient-to-r from-purple-700 to-pink-500 rounded-3xl p-10 md:p-14 text-white text-center">
-            <Heart className="h-10 w-10 mx-auto mb-5 fill-white/30 text-white" />
-            <h2 className="font-poppins text-2xl md:text-3xl font-bold mb-3">Préparées avec amour</h2>
-            <p className="font-inter text-base md:text-lg opacity-90 max-w-2xl mx-auto mb-6 leading-relaxed">
-              Chaque commande est préparée à la main avec des plantes soigneusement sélectionnées pour
-              accompagner chaque étape de votre vie de femme.
+          {/* Cart Summary */}
+          {Object.keys(cart).length > 0 && (
+            <div className="bg-white rounded-2xl md:rounded-3xl shadow-lg md:shadow-xl p-4 md:p-8 mb-6 md:mb-8">
+              <h2 className="font-poppins text-lg md:text-2xl font-bold text-purple-900 mb-4 md:mb-6 flex items-center">
+                <ShoppingCart className="h-5 w-5 md:h-6 md:w-6 mr-2" />
+                Votre panier
+              </h2>
+
+              {/* Items */}
+              <div className="space-y-3 md:space-y-4 mb-4 md:mb-6">
+                {getCartItems().map((item) => (
+                  <div key={item!.id} className="flex items-center justify-between py-2 border-b border-gray-100">
+                    <div className="flex-1">
+                      <h4 className="font-medium text-purple-900 text-sm md:text-base">{item!.name}</h4>
+                      <p className="text-xs md:text-sm text-gray-600">
+                        {item!.price.toFixed(2)}Ôé¼ ├ù {item!.quantity}
+                      </p>
+                    </div>
+                    <div className="font-semibold text-purple-700 text-sm md:text-base">
+                      {(item!.price * item!.quantity).toFixed(2)}Ôé¼
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Total */}
+              <div className="flex items-center justify-between mb-4 md:mb-6 text-base md:text-xl font-bold text-purple-900 border-t border-gray-200 pt-3 md:pt-4">
+                <span>Total :</span>
+                <span>{getCartTotal().toFixed(2)}Ôé¼</span>
+              </div>
+
+              {/* Checkout Button */}
+              <button
+                onClick={() => setShowOrderForm(true)}
+                className="w-full bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 text-white py-3 md:py-4 rounded-full font-poppins font-semibold text-sm md:text-lg transition-all hover:shadow-xl hover:scale-105"
+              >
+                Finaliser ma commande
+              </button>
+            </div>
+          )}
+
+          {/* Info Section */}
+          <div className="bg-gradient-to-r from-purple-600 to-pink-500 rounded-2xl md:rounded-3xl p-8 md:p-12 text-white text-center">
+            <Heart className="h-10 w-10 md:h-12 md:w-12 mx-auto mb-4 md:mb-6" />
+            <h2 className="font-poppins text-2xl md:text-3xl font-bold mb-3 md:mb-4">Pr├®par├®es avec amour</h2>
+            <p className="font-inter text-base md:text-lg opacity-90 max-w-3xl mx-auto">
+              Toutes mes tisanes seront pr├®par├®es artisanalement avec des plantes bio s├®lectionn├®es pour leurs
+              propri├®t├®s th├®rapeutiques et leur qualit├® exceptionnelle.
             </p>
-            <Link
-              to="/suivi-commande"
-              className="inline-flex items-center gap-2 bg-white/20 hover:bg-white/30 border border-white/40 text-white font-semibold px-6 py-2.5 rounded-full transition"
-            >
-              Suivre ma commande →
-            </Link>
           </div>
         </div>
       </div>
 
-      {/* ══════════════════════════════════════════════════════════
-          FORMULAIRE DE COMMANDE
-      ══════════════════════════════════════════════════════════ */}
       {showOrderForm && (
         <OrderForm
-          items={items}
-          total={subtotal}
+          items={getCartItems()}
+          total={getCartTotal()}
           onClose={() => setShowOrderForm(false)}
           onSuccess={() => {
-            clearCart();
+            setCart({});
             setShowOrderForm(false);
+            alert('Commande enregistr├®e ! Vous recevrez un email de confirmation.');
           }}
         />
       )}
@@ -347,3 +332,4 @@ const Boutique = () => {
 };
 
 export default Boutique;
+

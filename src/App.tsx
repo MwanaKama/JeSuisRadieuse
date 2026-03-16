@@ -1,5 +1,5 @@
-// src/App.tsx
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+﻿// src/App.tsx
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { HelmetProvider, Helmet } from 'react-helmet-async';
 
 import Header from './components/Header';
@@ -10,6 +10,7 @@ import CookieConsent from './components/CookieConsent';
 import Home from './pages/Home';
 import Accompagnements from './pages/Accompagnements';
 import Soins from './pages/Soins';
+import Boutique from './pages/Boutique';
 import About from './pages/About';
 import Evenements from './pages/Evenements';
 import OrderTracking from './pages/OrderTracking';
@@ -28,19 +29,19 @@ function App() {
     <HelmetProvider>
       {/* Configuration du favicon avec plusieurs approches */}
       <Helmet>
-        {/* Méthode 1: Chemin absolu */}
+        {/* M├®thode 1: Chemin absolu */}
         <link rel="icon" type="image/png" href="/logo.png" sizes="32x32" />
         
-        {/* Méthode 2: Utilisation de PUBLIC_URL (alternative) */}
+        {/* M├®thode 2: Utilisation de PUBLIC_URL (alternative) */}
         <link rel="icon" type="image/png" href={`${process.env.PUBLIC_URL}/logo.png`} />
         
-        {/* Méthode 3: Pour les appareils Apple */}
+        {/* M├®thode 3: Pour les appareils Apple */}
         <link rel="apple-touch-icon" href="/logo.png" />
         
-        {/* Méthode 4: Couleur de thème */}
+        {/* M├®thode 4: Couleur de th├¿me */}
         <meta name="theme-color" content="#9C27B0" />
         
-        {/* Méthode 5: Favicon classique pour compatibilité */}
+        {/* M├®thode 5: Favicon classique pour compatibilit├® */}
         <link rel="shortcut icon" href="/logo.png" />
       </Helmet>
       
@@ -53,7 +54,7 @@ function App() {
               <Route path="/" element={<Home />} />
               <Route path="/accompagnements" element={<Accompagnements />} />
               <Route path="/soins" element={<Soins />} />
-              <Route path="/boutique" element={<Navigate to="/" replace />} />
+              <Route path="/boutique" element={<Boutique />} />
               <Route path="/suivi-commande" element={<OrderTracking />} />
               <Route path="/commande/confirmation" element={<OrderResult mode="success" />} />
               <Route path="/commande/annulee" element={<OrderResult mode="cancel" />} />
@@ -62,7 +63,7 @@ function App() {
               <Route path="/evenements" element={<Evenements />} />
               <Route path="/planning" element={<Evenements />} />
 
-              {/* Routes pour les pages légales */}
+              {/* Routes pour les pages l├®gales */}
               <Route path="/mentions-legales" element={<MentionsLegales />} />
               <Route
                 path="/politique-de-confidentialite"
@@ -86,3 +87,4 @@ function App() {
 }
 
 export default App;
+
