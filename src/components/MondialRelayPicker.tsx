@@ -79,6 +79,7 @@ const MondialRelayPicker: React.FC<MondialRelayPickerProps> = ({
   const normalizedCountry = useMemo(() => (country || 'FR').toUpperCase(), [country]);
   const canInit = postalCode.trim().length >= 4;
   const widgetBrand = (import.meta as any).env?.VITE_MONDIAL_RELAY_BRAND || 'CC20GQ7Y';
+  const isDefaultBrand = widgetBrand === 'CC20GQ7Y';
 
   useEffect(() => {
     let cancelled = false;
@@ -138,7 +139,7 @@ const MondialRelayPicker: React.FC<MondialRelayPickerProps> = ({
     let cancelled = false;
 
     async function loadPoints() {
-      if (!canInit || widgetReady) {
+      if (!canInit) {
         setPoints([]);
         return;
       }
@@ -168,7 +169,7 @@ const MondialRelayPicker: React.FC<MondialRelayPickerProps> = ({
     return () => {
       cancelled = true;
     };
-  }, [address, canInit, limit, normalizedCountry, postalCode, widgetReady]);
+  }, [address, canInit, limit, normalizedCountry, postalCode]);
 
   function handleSelect(point: PickupPoint) {
     const selected: MondialRelayPoint = {
@@ -200,18 +201,27 @@ const MondialRelayPicker: React.FC<MondialRelayPickerProps> = ({
 
       {canInit && (
         <>
-          {!widgetReady && isLoading && <div className="mr-picker-status">Chargement des points relais proches...</div>}
+          {isLoading && <div className="mr-picker-status">Chargement des points relais proches...</div>}
           {widgetReady && <div className="mr-picker-status">Widget officiel Mondial Relay chargé.</div>}
+          {isDefaultBrand && (
+            <div className="mr-picker-status text-amber-700">
+              Le code enseigne Mondial Relay est en mode par défaut. Configurez VITE_MONDIAL_RELAY_BRAND pour des résultats complets.
+            </div>
+          )}
           {error && !widgetReady && <div className="mr-picker-status text-red-600">{error}</div>}
 
           <div ref={widgetRef} className="mr-widget-host" />
 
-          {!widgetReady && !isLoading && !error && points.length === 0 && (
+          {!isLoading && !error && points.length === 0 && (
             <div className="mr-picker-status">Aucun point relais trouvé pour ce secteur.</div>
           )}
 
-          {!widgetReady && points.length > 0 && (
-            <div className="mr-points-list">
+          {points.length > 0 && (
+            <>
+              <div className="mr-picker-status">
+                Si le widget n'affiche rien, choisissez dans cette liste de points proches.
+              </div>
+              <div className="mr-points-list">
               {points.map((point) => {
                 const isSelected = selectedPoint?.id === point.id;
                 return (
@@ -243,7 +253,8 @@ const MondialRelayPicker: React.FC<MondialRelayPickerProps> = ({
                   </button>
                 );
               })}
-            </div>
+              </div>
+            </>
           )}
         </>
       )}
