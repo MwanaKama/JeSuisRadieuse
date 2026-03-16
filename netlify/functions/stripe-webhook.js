@@ -4,6 +4,28 @@ import { json, serverError } from './_lib/http.js';
 import { markOrderPaidFromProvider } from './_lib/orders.js';
 import { query, usingDatabase } from './_lib/db.js';
 
+/**
+ * Handlers Stripe par type d'evenement.
+ * Tu peux en ajouter facilement pour tes futurs besoins.
+ */
+const stripeEventHandlers = {
+  async 'checkout.session.completed'(stripeEvent) {
+    const session = stripeEvent.data.object;
+    const providerReference = session.metadata?.providerReference || session.metadata?.providerreference || session.id;
+    await markOrderPaidFromProvider(providerReference, 'stripe');
+  },
+
+  async 'checkout.session.async_payment_succeeded'(stripeEvent) {
+    const session = stripeEvent.data.object;
+    const providerReference = session.metadata?.providerReference || session.metadata?.providerreference || session.id;
+    await markOrderPaidFromProvider(providerReference, 'stripe');
+  },
+};
+
+function getStripeSignature(headers = {}) {
+  return headers['stripe-signature'] || headers['Stripe-Signature'] || '';
+}
+
 export async function handler(event) {
   try {
     const secret = process.env.STRIPE_WEBHOOK_SECRET;
@@ -14,7 +36,7 @@ export async function handler(event) {
     }
 
     const stripe = new Stripe(stripeKey);
-    const signature = event.headers['stripe-signature'] || event.headers['Stripe-Signature'];
+    const signature = getStripeSignature(event.headers);
     if (!signature) {
       return json(400, { message: 'Signature Stripe manquante.' });
     }
@@ -34,13 +56,12 @@ export async function handler(event) {
       }
     }
 
-    if (stripeEvent.type === 'checkout.session.completed') {
-      const session = stripeEvent.data.object;
-      const providerReference = session.metadata?.providerReference || session.metadata?.providerreference || session.id;
-      await markOrderPaidFromProvider(providerReference, 'stripe');
+    const handlerByType = stripeEventHandlers[stripeEvent.type];
+    if (handlerByType) {
+      await handlerByType(stripeEvent);
     }
 
-    return json(200, { received: true });
+    return json(200, { received: true, handled: Boolean(handlerByType), type: stripeEvent.type });
   } catch (error) {
     return serverError(error, 'Webhook Stripe invalide.');
   }
