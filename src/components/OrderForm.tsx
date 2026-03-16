@@ -8,7 +8,8 @@ import {
   fetchPickupPoints,
   fetchShippingOptions
 } from '../services/storeApi';
-import type { CartItem, CheckoutCustomer, PaymentMethodCode, PickupPoint, ShippingOption } from '../types/shop';
+import type { CartItem, CheckoutCustomer, MondialRelayPoint, PickupPoint, PaymentMethodCode, ShippingOption } from '../types/shop';
+import MondialRelayPicker from './MondialRelayPicker';
 
 interface OrderFormProps {
   items: CartItem[];
@@ -36,6 +37,7 @@ const OrderForm: React.FC<OrderFormProps> = ({ items, total, onClose, onSuccess 
   const [shippingMethodCode, setShippingMethodCode] = useState<ShippingOption['code']>('colissimo_home');
   const [pickupPoints, setPickupPoints] = useState<PickupPoint[]>([]);
   const [pickupPointId, setPickupPointId] = useState('');
+  const [selectedMondialRelayPoint, setSelectedMondialRelayPoint] = useState<MondialRelayPoint | null>(null);
   const [isLoadingShipping, setIsLoadingShipping] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
@@ -138,8 +140,16 @@ const OrderForm: React.FC<OrderFormProps> = ({ items, total, onClose, onSuccess 
         items: serializedItems,
         customer,
         shippingMethodCode,
-        pickupPointId: pickupPointId || undefined,
-        pickupPointLabel: pickupPoints.find((point) => point.id === pickupPointId)?.name,
+        pickupPointId: selectedMondialRelayPoint?.id || pickupPointId || undefined,
+        pickupPointLabel:
+          selectedMondialRelayPoint?.name ||
+          pickupPoints.find((point) => point.id === pickupPointId)?.name,
+        pickupPointAddress: selectedMondialRelayPoint?.address,
+        pickupPointPostalCode: selectedMondialRelayPoint?.postalCode,
+        pickupPointCity: selectedMondialRelayPoint?.city,
+        pickupPointCountry: selectedMondialRelayPoint?.country,
+        pickupPointLatitude: selectedMondialRelayPoint?.latitude,
+        pickupPointLongitude: selectedMondialRelayPoint?.longitude,
         paymentMethod
       };
 
@@ -362,7 +372,21 @@ const OrderForm: React.FC<OrderFormProps> = ({ items, total, onClose, onSuccess 
                 )}
               </div>
 
-              {selectedShipping?.requiresPickupPoint && (
+              {selectedShipping?.requiresPickupPoint && selectedShipping?.carrier === 'mondialrelay' && (
+                <div>
+                  <MondialRelayPicker
+                    postalCode={customer.postalCode}
+                    country={customer.country}
+                    selectedPoint={selectedMondialRelayPoint}
+                    onSelect={(point) => {
+                      setSelectedMondialRelayPoint(point);
+                      setPickupPointId(point.id);
+                    }}
+                  />
+                </div>
+              )}
+
+              {selectedShipping?.requiresPickupPoint && selectedShipping?.carrier !== 'mondialrelay' && (
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Point relais choisi
@@ -449,6 +473,12 @@ const OrderForm: React.FC<OrderFormProps> = ({ items, total, onClose, onSuccess 
                   <p>{customer.address}</p>
                   <p>{customer.postalCode} {customer.city}</p>
                   <p>{customer.email} • {customer.phone}</p>
+                  {selectedShipping?.requiresPickupPoint && selectedMondialRelayPoint && (
+                    <>
+                      <p className="pt-2"><strong>Point relais:</strong> {selectedMondialRelayPoint.name}</p>
+                      <p>{selectedMondialRelayPoint.address} {selectedMondialRelayPoint.postalCode} {selectedMondialRelayPoint.city}</p>
+                    </>
+                  )}
                 </div>
               </div>
 
