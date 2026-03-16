@@ -56,8 +56,19 @@ export async function fetchShippingOptions(country: string, postalCode: string, 
   }
 }
 
-export async function fetchPickupPoints(postalCode: string, country = 'FR'): Promise<PickupPoint[]> {
-  const params = new URLSearchParams({ carrier: 'mondialrelay', postalCode, country });
+export async function fetchPickupPoints(
+  postalCode: string,
+  country = 'FR',
+  address = '',
+  limit = 15,
+): Promise<PickupPoint[]> {
+  const params = new URLSearchParams({
+    carrier: 'mondialrelay',
+    postalCode,
+    country,
+    address,
+    limit: String(limit),
+  });
   const data = await request<{ pickupPoints: PickupPoint[] }>(`pickup-points?${params.toString()}`);
   return data.pickupPoints;
 }

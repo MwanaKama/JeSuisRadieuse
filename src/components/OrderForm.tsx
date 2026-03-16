@@ -375,8 +375,10 @@ const OrderForm: React.FC<OrderFormProps> = ({ items, total, onClose, onSuccess 
               {selectedShipping?.requiresPickupPoint && selectedShipping?.carrier === 'mondialrelay' && (
                 <div>
                   <MondialRelayPicker
+                    address={customer.address}
                     postalCode={customer.postalCode}
                     country={customer.country}
+                    limit={15}
                     selectedPoint={selectedMondialRelayPoint}
                     onSelect={(point) => {
                       setSelectedMondialRelayPoint(point);
@@ -539,7 +541,13 @@ const OrderForm: React.FC<OrderFormProps> = ({ items, total, onClose, onSuccess 
                 </button>
                 <button
                   type="submit"
-                  disabled={isSubmitting || (selectedShipping?.requiresPickupPoint && !pickupPointId)}
+                  disabled={
+                    isSubmitting ||
+                    (selectedShipping?.requiresPickupPoint &&
+                      (selectedShipping?.carrier === 'mondialrelay'
+                        ? !selectedMondialRelayPoint?.id
+                        : !pickupPointId))
+                  }
                   className="flex-1 bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 text-white py-3 rounded-full font-medium transition-all"
                 >
                   {isSubmitting ? (

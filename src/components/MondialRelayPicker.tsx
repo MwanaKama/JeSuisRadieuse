@@ -1,58 +1,27 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 
-import type { MondialRelayPoint } from '../types/shop';
+import { fetchPickupPoints } from '../services/storeApi';
+import type { MondialRelayPoint, PickupPoint } from '../types/shop';
 import './MondialRelayPicker.css';
 
 interface MondialRelayPickerProps {
+  address: string;
   postalCode: string;
   country?: string;
+  limit?: number;
   onSelect: (point: MondialRelayPoint) => void;
   selectedPoint?: MondialRelayPoint | null;
 }
 
-declare global {
-  interface Window {
-    $?: any;
-    jQuery?: any;
-  }
-}
-
-const JQUERY_CDN = 'https://code.jquery.com/jquery-3.7.1.min.js';
-const MONDIAL_RELAY_WIDGET_URL =
-  'https://widget.mondialrelay.com/parcelshop-picker/v4_0/scripts/jquery.plugin.mondialrelay.parcelshoppicker.min.js';
-
-function loadScriptOnce(src: string) {
-  return new Promise<void>((resolve, reject) => {
-    const existing = document.querySelector(`script[src="${src}"]`) as HTMLScriptElement | null;
-    if (existing) {
-      if (existing.dataset.loaded === 'true') {
-        resolve();
-        return;
-      }
-      existing.addEventListener('load', () => resolve(), { once: true });
-      existing.addEventListener('error', () => reject(new Error(`Impossible de charger: ${src}`)), { once: true });
-      return;
-    }
-
-    const script = document.createElement('script');
-    script.src = src;
-    script.async = true;
-    script.onload = () => {
-      script.dataset.loaded = 'true';
-      resolve();
-    };
-    script.onerror = () => reject(new Error(`Impossible de charger: ${src}`));
-    document.head.appendChild(script);
-  });
-}
-
 const MondialRelayPicker: React.FC<MondialRelayPickerProps> = ({
+  address,
   postalCode,
   country = 'FR',
+  limit = 15,
   onSelect,
   selectedPoint,
 }) => {
-  const hostRef = useRef<HTMLDivElement>(null);
+  const [points, setPoints] = useState<PickupPoint[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -62,8 +31,9 @@ const MondialRelayPicker: React.FC<MondialRelayPickerProps> = ({
   useEffect(() => {
     let cancelled = false;
 
-    async function initWidget() {
-      if (!canInit || !hostRef.current) {
+    async function loadPoints() {
+      if (!canInit) {
+        setPoints([]);
         return;
       }
 
@@ -71,52 +41,14 @@ const MondialRelayPicker: React.FC<MondialRelayPickerProps> = ({
       setError('');
 
       try {
-        await loadScriptOnce(JQUERY_CDN);
-        await loadScriptOnce(MONDIAL_RELAY_WIDGET_URL);
-
-        if (cancelled || !hostRef.current) {
-          return;
-        }
-
-        const $ = window.jQuery || window.$;
-        if (!$ || !$.fn || !$.fn.MR_ParcelShopPicker) {
-          throw new Error('Widget Mondial Relay indisponible pour le moment.');
-        }
-
-        $(hostRef.current).empty();
-
-        // Initialisation du widget officiel Mondial Relay
-        $(hostRef.current).MR_ParcelShopPicker({
-          Brand: 'CC20GQ7Y',
-          Country: normalizedCountry,
-          PostCode: postalCode,
-          ColLivMod: '24R',
-          NbResults: 7,
-          Responsive: true,
-          ShowResultsOnMap: true,
-          OnParcelShopSelected: (data: any) => {
-            const point: MondialRelayPoint = {
-              id: String(data?.Num || data?.ID || ''),
-              name: String(data?.LgAdr1 || data?.Name || 'Point relais'),
-              address: String(
-                [data?.LgAdr2, data?.LgAdr3, data?.LgAdr4]
-                  .filter(Boolean)
-                  .join(' ')
-                  .trim() || data?.Address || ''
-              ),
-              postalCode: String(data?.CP || data?.PostCode || ''),
-              city: String(data?.Ville || data?.City || ''),
-              country: String(data?.Pays || data?.Country || normalizedCountry),
-              latitude: data?.Latitude ? Number(data.Latitude) : undefined,
-              longitude: data?.Longitude ? Number(data.Longitude) : undefined,
-            };
-
-            onSelect(point);
-          },
-        });
-      } catch (widgetError) {
+        const result = await fetchPickupPoints(postalCode, normalizedCountry, address, limit);
         if (!cancelled) {
-          setError(widgetError instanceof Error ? widgetError.message : 'Erreur widget Mondial Relay.');
+          setPoints(result);
+        }
+      } catch (apiError) {
+        if (!cancelled) {
+          setError(apiError instanceof Error ? apiError.message : 'Impossible de charger les points relais.');
+          setPoints([]);
         }
       } finally {
         if (!cancelled) {
@@ -125,18 +57,33 @@ const MondialRelayPicker: React.FC<MondialRelayPickerProps> = ({
       }
     }
 
-    initWidget();
+    loadPoints();
 
     return () => {
       cancelled = true;
     };
-  }, [canInit, normalizedCountry, onSelect, postalCode]);
+  }, [address, canInit, limit, normalizedCountry, postalCode]);
+
+  function handleSelect(point: PickupPoint) {
+    const selected: MondialRelayPoint = {
+      id: point.id,
+      name: point.name,
+      address: point.address,
+      postalCode: point.postalCode,
+      city: point.city,
+      country: point.country,
+      latitude: point.latitude,
+      longitude: point.longitude,
+    };
+
+    onSelect(selected);
+  }
 
   return (
     <div className="mr-picker-wrap">
       <div className="mr-picker-header">
         <p className="text-sm font-semibold text-purple-900">Choisir un point Mondial Relay</p>
-        <p className="text-xs text-gray-500">Code postal: {postalCode || 'Non renseigné'}</p>
+        <p className="text-xs text-gray-500">Code postal: {postalCode || 'Non renseigné'} · Adresse: {address || 'Non renseignée'}</p>
       </div>
 
       {!canInit && (
@@ -147,9 +94,47 @@ const MondialRelayPicker: React.FC<MondialRelayPickerProps> = ({
 
       {canInit && (
         <>
-          {isLoading && <div className="mr-picker-status">Chargement du widget Mondial Relay...</div>}
+          {isLoading && <div className="mr-picker-status">Chargement des points relais proches...</div>}
           {error && <div className="mr-picker-status text-red-600">{error}</div>}
-          <div ref={hostRef} className="mr-widget-host" />
+          {!isLoading && !error && points.length === 0 && (
+            <div className="mr-picker-status">Aucun point relais trouvé pour ce secteur.</div>
+          )}
+
+          {points.length > 0 && (
+            <div className="mr-points-list">
+              {points.map((point) => {
+                const isSelected = selectedPoint?.id === point.id;
+                return (
+                  <button
+                    key={point.id}
+                    type="button"
+                    onClick={() => handleSelect(point)}
+                    className={`mr-point-card ${isSelected ? 'is-selected' : ''}`}
+                  >
+                    <div className="mr-point-main">
+                      <p className="mr-point-name">{point.name}</p>
+                      <p className="mr-point-line">{point.address}</p>
+                      <p className="mr-point-line">{point.postalCode} {point.city}</p>
+                    </div>
+                    <div className="mr-point-side">
+                      <span className="mr-point-id">#{point.id}</span>
+                      {point.latitude && point.longitude && (
+                        <a
+                          href={`https://www.google.com/maps?q=${point.latitude},${point.longitude}`}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="mr-point-map-link"
+                          onClick={(event) => event.stopPropagation()}
+                        >
+                          Voir carte
+                        </a>
+                      )}
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          )}
         </>
       )}
 
