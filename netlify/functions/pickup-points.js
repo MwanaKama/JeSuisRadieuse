@@ -18,6 +18,29 @@ function normalizeText(input) {
   return String(input || '').trim();
 }
 
+function toNumber(input) {
+  const value = Number(input);
+  return Number.isFinite(value) ? value : undefined;
+}
+
+function distanceInKm(lat1, lon1, lat2, lon2) {
+  if (![lat1, lon1, lat2, lon2].every((v) => Number.isFinite(v))) {
+    return Number.POSITIVE_INFINITY;
+  }
+
+  const toRad = (deg) => (deg * Math.PI) / 180;
+  const earthRadiusKm = 6371;
+  const dLat = toRad(lat2 - lat1);
+  const dLon = toRad(lon2 - lon1);
+
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
+    Math.sin(dLon / 2) * Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return earthRadiusKm * c;
+}
+
 async function getCityFromPostalCode(postalCode) {
   try {
     const url = `https://geo.api.gouv.fr/communes?codePostal=${encodeURIComponent(postalCode)}&fields=nom,centre&format=json`;
@@ -41,6 +64,27 @@ async function getCityFromPostalCode(postalCode) {
     latitude: undefined,
     longitude: undefined,
   };
+}
+
+async function geocodeAddress({ address, postalCode }) {
+  const query = [normalizeText(address), normalizeText(postalCode)].filter(Boolean).join(' ');
+  if (!query) {
+    return { latitude: undefined, longitude: undefined };
+  }
+
+  try {
+    const url = `https://api-adresse.data.gouv.fr/search/?q=${encodeURIComponent(query)}&postcode=${encodeURIComponent(postalCode)}&limit=1`;
+    const payload = await fetchJson(url);
+    const first = Array.isArray(payload?.features) ? payload.features[0] : null;
+    const coordinates = first?.geometry?.coordinates || [];
+
+    return {
+      latitude: toNumber(coordinates[1]),
+      longitude: toNumber(coordinates[0]),
+    };
+  } catch {
+    return { latitude: undefined, longitude: undefined };
+  }
 }
 
 function mapNominatimToPickupPoint(result, fallbackPostalCode, fallbackCountry) {
@@ -115,6 +159,82 @@ async function searchMondialRelayPoints({ postalCode, city, country, limit }) {
   return collected;
 }
 
+function mapOverpassElementToPickupPoint(element, fallbackPostalCode, fallbackCity, fallbackCountry) {
+  const tags = element?.tags || {};
+  const latitude = toNumber(element?.lat ?? element?.center?.lat);
+  const longitude = toNumber(element?.lon ?? element?.center?.lon);
+
+  const houseNumber = normalizeText(tags['addr:housenumber']);
+  const street = normalizeText(tags['addr:street']);
+  const city = normalizeText(tags['addr:city']) || fallbackCity;
+  const postalCode = normalizeText(tags['addr:postcode']) || fallbackPostalCode;
+  const country = normalizeText(tags['addr:country']) || fallbackCountry;
+
+  const name = normalizeText(tags.name) || normalizeText(tags.brand) || 'Point Relais Mondial Relay';
+  const address = [houseNumber, street].filter(Boolean).join(' ').trim() || normalizeText(tags['addr:full']);
+
+  return {
+    id: `MR-${element?.type || 'node'}-${element?.id || Math.random().toString(36).slice(2)}`,
+    name,
+    address,
+    postalCode,
+    city,
+    country,
+    latitude,
+    longitude,
+  };
+}
+
+async function searchMondialRelayPointsNearby({ latitude, longitude, postalCode, city, country, limit }) {
+  if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
+    return [];
+  }
+
+  const radiusMeters = 25000;
+  const overpassQuery = `
+    [out:json][timeout:25];
+    (
+      node(around:${radiusMeters},${latitude},${longitude})["brand"~"Mondial Relay",i];
+      node(around:${radiusMeters},${latitude},${longitude})["name"~"Mondial Relay",i];
+      way(around:${radiusMeters},${latitude},${longitude})["brand"~"Mondial Relay",i];
+      way(around:${radiusMeters},${latitude},${longitude})["name"~"Mondial Relay",i];
+    );
+    out center tags;
+  `;
+
+  const response = await fetch('https://overpass-api.de/api/interpreter', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'text/plain',
+      'User-Agent': 'JeSuisRadieuse/1.0 (contact: support@jesuisradieuse.fr)'
+    },
+    body: overpassQuery,
+  });
+
+  if (!response.ok) {
+    return [];
+  }
+
+  const payload = await response.json().catch(() => ({ elements: [] }));
+  const elements = Array.isArray(payload?.elements) ? payload.elements : [];
+
+  const points = elements
+    .map((element) => mapOverpassElementToPickupPoint(element, postalCode, city, country))
+    .filter((point) => {
+      const lowerName = String(point.name || '').toLowerCase();
+      return lowerName.includes('mondial') || lowerName.includes('relay');
+    })
+    .map((point) => ({
+      ...point,
+      _distanceKm: distanceInKm(latitude, longitude, point.latitude, point.longitude)
+    }))
+    .sort((a, b) => a._distanceKm - b._distanceKm)
+    .slice(0, limit)
+    .map(({ _distanceKm, ...point }) => point);
+
+  return points;
+}
+
 export async function handler(event) {
   try {
     const query = getQuery(event);
@@ -134,8 +254,26 @@ export async function handler(event) {
       return badRequest('Code postal invalide.');
     }
 
-    const { city, latitude, longitude } = await getCityFromPostalCode(postalCode);
-    let pickupPoints = await searchMondialRelayPoints({ postalCode, city, country, limit });
+    const cityInfo = await getCityFromPostalCode(postalCode);
+    const geocoded = await geocodeAddress({ address, postalCode });
+
+    const latitude = geocoded.latitude ?? cityInfo.latitude;
+    const longitude = geocoded.longitude ?? cityInfo.longitude;
+    const city = cityInfo.city;
+
+    let pickupPoints = await searchMondialRelayPointsNearby({
+      latitude,
+      longitude,
+      postalCode,
+      city,
+      country,
+      limit,
+    });
+
+    if (pickupPoints.length === 0) {
+      pickupPoints = await searchMondialRelayPoints({ postalCode, city, country, limit });
+    }
+
     const hasExternalResults = pickupPoints.length > 0;
 
     // Fallback propre : on garde une ville réelle issue du code postal, sans "Ville proche".
