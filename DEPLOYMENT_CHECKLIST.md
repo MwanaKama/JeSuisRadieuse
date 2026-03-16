@@ -24,8 +24,8 @@ cp .env.example .env.local
 ADMIN_JWT_SECRET=<générer avec: openssl rand -base64 32>
 ADMIN_EMAIL=<votre email admin>
 ADMIN_PASSWORD=<mot de passe fort>
-STRIPE_SECRET_KEY=sk_test_... ou sk_live_...
-STRIPE_WEBHOOK_SECRET=whsec_...
+STRIPE_SECRET_KEY=<stripe_secret_key>
+STRIPE_WEBHOOK_SECRET=<stripe_webhook_signing_secret>
 PAYPAL_CLIENT_ID=...
 PAYPAL_CLIENT_SECRET=...
 PAYPAL_MODE=sandbox (ou live)
@@ -83,8 +83,8 @@ Click "Edit variables" et ajouter:
 ADMIN_JWT_SECRET = <votre_secret>
 ADMIN_EMAIL = admin@jesuisradieuse.fr
 ADMIN_PASSWORD = <mot_de_passe_fort>
-STRIPE_SECRET_KEY = sk_live_xxxxx
-STRIPE_WEBHOOK_SECRET = whsec_xxxxx
+STRIPE_SECRET_KEY = <stripe_secret_key>
+STRIPE_WEBHOOK_SECRET = <stripe_webhook_signing_secret>
 PAYPAL_CLIENT_ID = xxxxx
 PAYPAL_CLIENT_SECRET = xxxxx
 PAYPAL_MODE = live
@@ -116,10 +116,10 @@ Site settings → Deploys → "Trigger deploy" → "Deploy site"
    - ✓ `payment_intent.succeeded`
    - ✓ `charge.refunded`
 5. Click "Add endpoint"
-6. Copier le **Signing secret** (`whsec_...`)
+6. Copier le **Signing secret** (webhook signing secret Stripe)
 7. Ajouter à Netlify env variables:
    ```
-   STRIPE_WEBHOOK_SECRET = whsec_xxxxx
+   STRIPE_WEBHOOK_SECRET = <stripe_webhook_signing_secret>
    ```
 8. Redéployer
 

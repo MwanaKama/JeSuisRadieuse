@@ -260,8 +260,8 @@ cancelled → [TERMINAL]
    ADMIN_JWT_SECRET = (generate with: openssl rand -base64 32)
    ADMIN_EMAIL = admin@jesuisradieuse.fr
    ADMIN_PASSWORD = (strong password)
-   STRIPE_SECRET_KEY = sk_live_xxxx (from Stripe dashboard)
-   STRIPE_WEBHOOK_SECRET = whsec_xxxx (from Stripe webhooks)
+   STRIPE_SECRET_KEY = <stripe_secret_key> (from Stripe dashboard)
+   STRIPE_WEBHOOK_SECRET = <stripe_webhook_signing_secret> (from Stripe webhooks)
    PAYPAL_CLIENT_ID = (from PayPal developer)
    PAYPAL_CLIENT_SECRET = (from PayPal developer)
    PAYPAL_MODE = live
