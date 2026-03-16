@@ -1,18 +1,12 @@
 import React, { useState } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Menu, X, Calendar, ShoppingCart } from 'lucide-react';
-import { useCart } from '../hooks/useCart';
-import { storeProducts } from '../data/store';
-import CartDropdown from './CartDropdown';
+import { Link, useLocation } from 'react-router-dom';
+import { Menu, X, Calendar } from 'lucide-react';
 import Logo from '../images/Logo.png';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [showCalendly, setShowCalendly] = useState(false);
-  const [showCart, setShowCart] = useState(false);
   const location = useLocation();
-  const navigate = useNavigate();
-  const { itemCount } = useCart(storeProducts);
 
   const navigation = [
     { name: 'Accueil', href: '/' },
@@ -99,25 +93,6 @@ const Header = () => {
                 <span>Prendre RDV</span>
               </button>
 
-              <div className="relative">
-                <button
-                  onClick={() => setShowCart(!showCart)}
-                  className="relative bg-gradient-to-r from-purple-500 to-pink-400 hover:from-purple-600 hover:to-pink-500 text-white font-poppins font-semibold inline-flex items-center gap-2 transition-all hover:shadow-lg hover:scale-105 rounded-full px-4 py-2 text-sm"
-                  aria-label="Ouvrir le panier"
-                >
-                  <ShoppingCart className="h-4 w-4" />
-                  {itemCount > 0 && (
-                    <span className="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
-                      {itemCount}
-                    </span>
-                  )}
-                </button>
-                <CartDropdown
-                  isOpen={showCart}
-                  onClose={() => setShowCart(false)}
-                  onCheckout={() => { setShowCart(false); navigate('/boutique?checkout=1'); }}
-                />
-              </div>
             </div>
 
             {/* Mobile menu button */}
@@ -158,19 +133,6 @@ const Header = () => {
                     <Calendar className="h-5 w-5" />
                     <span>Prendre RDV</span>
                   </button>
-                  <Link
-                    to="/boutique"
-                    className="relative w-full block bg-gradient-to-r from-purple-500 to-pink-400 text-white font-poppins font-semibold inline-flex items-center justify-center space-x-2 transition-all hover:shadow-lg hover:scale-105 rounded-full px-6 py-3 text-base"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    <ShoppingCart className="h-5 w-5" />
-                    <span>Panier</span>
-                    {itemCount > 0 && (
-                      <span className="bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center ml-auto">
-                        {itemCount}
-                      </span>
-                    )}
-                  </Link>
                 </div>
               </div>
             </div>
