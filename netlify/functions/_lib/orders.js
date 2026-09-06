@@ -159,6 +159,12 @@ export async function createOrder(payload, providerReference) {
       paymentStatus: 'pending',
       paymentMethod: payload.paymentMethod,
       shippingMethodCode: payload.shippingMethodCode,
+      items: orderItems.map((item) => ({
+        productId: item.productId,
+        name: item.productName,
+        unitPriceCents: item.unitPriceCents,
+        quantity: item.quantity
+      })),
       providerReference
     };
   }
@@ -172,6 +178,8 @@ export async function createOrder(payload, providerReference) {
         payment_method, payment_status, order_status,
         shipping_method_code, shipping_carrier, shipping_service,
         shipping_pickup_point_id, shipping_pickup_point_label,
+        shipping_pickup_point_address, shipping_pickup_point_postal_code,
+        shipping_pickup_point_city, shipping_pickup_point_country,
         provider_reference
       )
       VALUES (
@@ -180,7 +188,8 @@ export async function createOrder(payload, providerReference) {
         $13,'pending','pending',
         $14,$15,$16,
         $17,$18,
-        $19
+        $19,$20,$21,$22,
+        $23
       )`,
       [
         orderNumber,
@@ -201,6 +210,10 @@ export async function createOrder(payload, providerReference) {
         shippingService,
         payload.pickupPointId || null,
         payload.pickupPointLabel || null,
+        payload.pickupPointAddress || null,
+        payload.pickupPointPostalCode || null,
+        payload.pickupPointCity || null,
+        payload.pickupPointCountry || null,
         providerReference || null
       ]
     );
@@ -295,7 +308,7 @@ export async function listOrders(filters = {}) {
 
   const result = await query(
     `SELECT order_number, customer_name, customer_email, total_cents, payment_method, payment_status,
-            order_status, shipping_method_code, tracking_number, created_at
+            order_status, shipping_method_code, tracking_number, tracking_url, created_at
      FROM orders
      ${whereClause}
      ORDER BY created_at DESC
@@ -313,6 +326,7 @@ export async function listOrders(filters = {}) {
     status: row.order_status,
     shippingMethodCode: row.shipping_method_code,
     trackingNumber: row.tracking_number || undefined,
+    trackingUrl: row.tracking_url || undefined,
     createdAt: row.created_at
   }));
 }
@@ -328,7 +342,7 @@ export async function updateOrderStatus(orderNumber, nextStatus, changedBy = 'ad
 
   const currentResult = await query(
     `SELECT order_number, customer_email, order_status, payment_status, total_cents, payment_method,
-            customer_name, shipping_method_code, tracking_number, created_at
+            customer_name, shipping_method_code, tracking_number, tracking_url, created_at
      FROM orders
      WHERE order_number = $1
      LIMIT 1`,
@@ -368,6 +382,7 @@ export async function updateOrderStatus(orderNumber, nextStatus, changedBy = 'ad
     status: nextStatus,
     shippingMethodCode: current.shipping_method_code,
     trackingNumber: current.tracking_number || undefined,
+    trackingUrl: current.tracking_url || undefined,
     createdAt: current.created_at
   };
 }
@@ -408,6 +423,98 @@ export async function markOrderPaidFromProvider(providerReference, providerName)
   );
 
   return row.order_number;
+}
+
+const CARRIER_TRACKING_URLS = {
+  colissimo: (num) => `https://www.laposte.fr/outils/suivre-vos-envois?code=${encodeURIComponent(num)}`,
+  chronopost: (num) => `https://www.chronopost.fr/fr/particulier/suivi?listeNumerosLT=${encodeURIComponent(num)}`,
+  mondialrelay: (num) => `https://www.mondialrelay.fr/suivi-de-colis?num=${encodeURIComponent(num)}`
+};
+
+export function buildTrackingUrl(carrier, trackingNumber) {
+  if (!trackingNumber) {
+    return null;
+  }
+  const builder = CARRIER_TRACKING_URLS[carrier];
+  return builder ? builder(trackingNumber) : null;
+}
+
+export async function getStockList() {
+  if (!usingDatabase()) {
+    return getProductsFallback();
+  }
+
+  const result = await query(
+    `SELECT id, slug, name, price_cents, image, category, stock, is_active
+     FROM products
+     ORDER BY category, name`
+  );
+
+  return result.rows.map((row) => ({
+    id: row.id,
+    slug: row.slug,
+    name: row.name,
+    price: Number((row.price_cents / 100).toFixed(2)),
+    image: row.image,
+    category: row.category,
+    stock: row.stock,
+    isActive: row.is_active
+  }));
+}
+
+export async function updateStock(productId, stock) {
+  if (!usingDatabase()) {
+    throw new Error('La gestion du stock necessite une base de donnees configuree.');
+  }
+
+  const parsed = Number(stock);
+  if (!Number.isInteger(parsed) || parsed < 0) {
+    throw new Error('Quantite de stock invalide.');
+  }
+
+  const result = await query(
+    `UPDATE products
+     SET stock = $1, updated_at = NOW()
+     WHERE id = $2
+     RETURNING id, slug, name, price_cents, image, category, stock, is_active`,
+    [parsed, productId]
+  );
+
+  if (result.rowCount === 0) {
+    throw new Error('Produit introuvable.');
+  }
+
+  const row = result.rows[0];
+  return {
+    id: row.id,
+    slug: row.slug,
+    name: row.name,
+    price: Number((row.price_cents / 100).toFixed(2)),
+    image: row.image,
+    category: row.category,
+    stock: row.stock,
+    isActive: row.is_active
+  };
+}
+
+export async function setOrderTracking(orderNumber, trackingNumber, trackingUrl) {
+  if (!usingDatabase()) {
+    throw new Error('Le suivi necessite une base de donnees configuree.');
+  }
+
+  const result = await query(
+    `UPDATE orders
+     SET tracking_number = $1, tracking_url = $2, updated_at = NOW()
+     WHERE order_number = $3
+     RETURNING order_number`,
+    [trackingNumber || null, trackingUrl || null, orderNumber]
+  );
+
+  if (result.rowCount === 0) {
+    throw new Error('Commande introuvable.');
+  }
+
+  return result.rows[0].order_number;
 }
 
 export function getStripeClient() {

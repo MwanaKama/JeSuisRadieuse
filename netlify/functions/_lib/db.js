@@ -5,8 +5,12 @@ import { storeProducts } from './catalog.js';
 let pool;
 let schemaReady = false;
 
+function databaseUrl() {
+  return process.env.DATABASE_URL || process.env.NETLIFY_DATABASE_URL || '';
+}
+
 function hasDatabase() {
-  return Boolean(process.env.DATABASE_URL);
+  return Boolean(databaseUrl());
 }
 
 export function getPool() {
@@ -16,7 +20,7 @@ export function getPool() {
 
   if (!pool) {
     pool = new Pool({
-      connectionString: process.env.DATABASE_URL,
+      connectionString: databaseUrl(),
       ssl: process.env.DATABASE_SSL === 'false' ? false : { rejectUnauthorized: false }
     });
   }
@@ -68,6 +72,10 @@ export async function ensureSchema() {
       shipping_service TEXT NOT NULL,
       shipping_pickup_point_id TEXT,
       shipping_pickup_point_label TEXT,
+      shipping_pickup_point_address TEXT,
+      shipping_pickup_point_postal_code TEXT,
+      shipping_pickup_point_city TEXT,
+      shipping_pickup_point_country TEXT,
       provider_reference TEXT,
       tracking_number TEXT,
       tracking_url TEXT,
@@ -105,6 +113,14 @@ export async function ensureSchema() {
     );
   `);
 
+  // Migrations rétro-compatibles pour les bases existantes (colonnes ajoutées après coup).
+  await db.query(`
+    ALTER TABLE orders ADD COLUMN IF NOT EXISTS shipping_pickup_point_address TEXT;
+    ALTER TABLE orders ADD COLUMN IF NOT EXISTS shipping_pickup_point_postal_code TEXT;
+    ALTER TABLE orders ADD COLUMN IF NOT EXISTS shipping_pickup_point_city TEXT;
+    ALTER TABLE orders ADD COLUMN IF NOT EXISTS shipping_pickup_point_country TEXT;
+  `);
+
   for (const product of storeProducts) {
     await db.query(
       `INSERT INTO products (id, slug, name, description, price_cents, image, category, stock, benefits, usage_instructions)
@@ -116,7 +132,6 @@ export async function ensureSchema() {
          price_cents=EXCLUDED.price_cents,
          image=EXCLUDED.image,
          category=EXCLUDED.category,
-         stock=GREATEST(products.stock, EXCLUDED.stock),
          benefits=EXCLUDED.benefits,
          usage_instructions=EXCLUDED.usage_instructions,
          updated_at=NOW()`,

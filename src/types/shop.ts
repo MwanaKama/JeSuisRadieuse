@@ -36,6 +36,13 @@ export interface PickupPoint {
   postalCode: string;
   city: string;
   country: string;
+  latitude?: number;
+  longitude?: number;
+}
+
+export interface MondialRelayPoint extends PickupPoint {
+  latitude?: number;
+  longitude?: number;
 }
 
 export interface CheckoutCustomer {
@@ -88,5 +95,6 @@ export interface AdminOrderSummary {
   status: OrderStatusCode;
   shippingMethodCode: ShippingMethodCode;
   trackingNumber?: string;
+  trackingUrl?: string;
   createdAt: string;
 }

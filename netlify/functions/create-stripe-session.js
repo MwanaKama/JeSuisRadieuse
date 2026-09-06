@@ -45,16 +45,23 @@ export async function handler(event) {
 
     const urls = buildUrls(order.orderNumber);
 
-    const lineItems = [
-      {
-        quantity: 1,
-        price_data: {
-          currency: 'eur',
-          unit_amount: Math.round(order.total * 100),
-          product_data: { name: `Commande ${order.orderNumber}` }
-        }
+    const lineItems = (order.items || []).map((item) => ({
+      quantity: item.quantity,
+      price_data: {
+        currency: 'eur',
+        unit_amount: item.unitPriceCents,
+        product_data: { name: item.name }
       }
-    ];
+    }));
+
+    lineItems.push({
+      quantity: 1,
+      price_data: {
+        currency: 'eur',
+        unit_amount: Math.round(order.shipping * 100),
+        product_data: { name: 'Livraison' }
+      }
+    });
 
     const session = await stripe.checkout.sessions.create({
       mode: 'payment',

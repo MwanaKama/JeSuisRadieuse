@@ -1,6 +1,22 @@
-import React, { useState } from 'react';
+import { FormEvent, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Calendar, Clock, MapPin, Users, Filter, Search } from 'lucide-react';
+
+type EventType = 'cercle' | 'atelier' | 'conference' | 'formation';
+
+interface Evenement {
+  id: number;
+  title: string;
+  date: Date;
+  endDate: Date;
+  location: string;
+  participants: number;
+  maxParticipants: number;
+  type: EventType;
+  status: 'passe' | 'a-venir';
+  description: string;
+  price: number;
+}
 
 const Evenements = () => {
   const [filter, setFilter] = useState('tous');
@@ -12,7 +28,7 @@ const Evenements = () => {
   const [subscriptionMessage, setSubscriptionMessage] = useState('');
 
   // Liste des événements
-  const events = [
+  const events: Evenement[] = [
     {
       id: 1,
       title: 'Cercle de Parole Post-partum',
@@ -63,7 +79,7 @@ const Evenements = () => {
   };
 
 // In your Evenements component
-const handleNewsletterSubscription = async (e) => {
+const handleNewsletterSubscription = async (e: FormEvent<HTMLFormElement>) => {
   e.preventDefault();
   
   if (!newsletterEmail) return;
@@ -108,8 +124,8 @@ const handleNewsletterSubscription = async (e) => {
   const upcomingEvents = filteredEvents.filter(event => event.status === 'a-venir');
   const pastEvents = filteredEvents.filter(event => event.status === 'passe');
 
-  const getEventTypeColor = (type) => {
-    const colors = {
+  const getEventTypeColor = (type: EventType): string => {
+    const colors: Record<EventType, string> = {
       'atelier': 'bg-purple-100 text-purple-800',
       'cercle': 'bg-pink-100 text-pink-800',
       'formation': 'bg-blue-100 text-blue-800',
@@ -118,10 +134,10 @@ const handleNewsletterSubscription = async (e) => {
     return colors[type] || 'bg-gray-100 text-gray-800';
   };
 
-  const formatDate = (date) => date.toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-  const formatTime = (date) => date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+  const formatDate = (date: Date) => date.toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+  const formatTime = (date: Date) => date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
 
-  const EventCard = ({ event }) => (
+  const EventCard = ({ event }: { event: Evenement }) => (
     <div className="bg-white rounded-xl md:rounded-2xl shadow-lg hover:shadow-xl transition-all p-4 md:p-6 border-l-4 border-purple-400">
       <div className="flex flex-col md:flex-row justify-between items-start mb-3 md:mb-4">
         <div className="flex-1 mb-3 md:mb-0">

@@ -124,3 +124,48 @@ export async function updateAdminOrderStatus(token: string, orderNumber: string,
     body: JSON.stringify({ orderNumber, status })
   });
 }
+
+export interface AdminStockItem {
+  id: string;
+  slug: string;
+  name: string;
+  price: number;
+  image: string;
+  category: string;
+  stock: number;
+  isActive: boolean;
+}
+
+export async function fetchAdminStock(token: string): Promise<AdminStockItem[]> {
+  const data = await request<{ products: AdminStockItem[] }>('admin-stock', {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  });
+  return data.products;
+}
+
+export async function updateAdminStock(token: string, productId: string, stock: number) {
+  return request<{ product: AdminStockItem }>('admin-stock', {
+    method: 'PATCH',
+    headers: {
+      Authorization: `Bearer ${token}`
+    },
+    body: JSON.stringify({ productId, stock })
+  });
+}
+
+export async function setOrderTracking(
+  token: string,
+  orderNumber: string,
+  trackingNumber: string,
+  shippingMethodCode: string
+) {
+  return request<{ orderNumber: string; trackingNumber: string; trackingUrl?: string }>('admin-tracking', {
+    method: 'PATCH',
+    headers: {
+      Authorization: `Bearer ${token}`
+    },
+    body: JSON.stringify({ orderNumber, trackingNumber, shippingMethodCode })
+  });
+}
