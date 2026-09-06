@@ -5,8 +5,8 @@ import { Heart, Star, ArrowRight, Baby, Sparkles, Loader } from 'lucide-react';
 import CalendlyButton from '../components/CalendlyButton';
 
 // Import images
-import Hero from '../images/accompagnement-bienveillant.png';
-import Choose from '../images/choisir-doula.png';
+import Hero from '../images/accompagnement-bienveillant.jpg';
+import Choose from '../images/choisir-doula.jpg';
 
 // Fallbacks
 const fallbackHero =

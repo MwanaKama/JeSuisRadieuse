@@ -1,8 +1,8 @@
 import { Helmet } from 'react-helmet-async';
 import { Baby, Heart, CheckCircle, Star } from 'lucide-react';
 import CalendlyButton from '../components/CalendlyButton';
-import Prenatale from '../images/prénatale.png';
-import PostPartum from '../images/post-partum.png';
+import Prenatale from '../images/prénatale.jpg';
+import PostPartum from '../images/post-partum.jpg';
 
 const Accompagnements = () => {
   const prenatalServices = [

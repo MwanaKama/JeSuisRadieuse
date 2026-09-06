@@ -8,7 +8,7 @@ export const storeProducts: Product[] = [
     description:
       'Une infusion douce aux plantes sélectionnées pour accompagner la grossesse avec chaleur, confort digestif et apaisement.',
     price: 15.9,
-    image: '/prénatale.png',
+    image: '/tisane-1.jpg',
     category: 'Tisanes',
     stock: 24,
     benefits: ['Apaise les inconforts digestifs', 'Favorise la détente', "Soutient l'hydratation au quotidien"],
@@ -21,7 +21,7 @@ export const storeProducts: Product[] = [
     description:
       "Une tisane rituel pensée pour le bien-être féminin global, au parfum floral et à l'équilibre végétal enveloppant.",
     price: 16.5,
-    image: '/accompagnement-bienveillant.png',
+    image: '/tisane-2.jpg',
     category: 'Tisanes',
     stock: 18,
     benefits: ["Favorise l'équilibre féminin", 'Soutient les temps de fatigue', 'Offre un moment de recentrage'],
@@ -34,7 +34,7 @@ export const storeProducts: Product[] = [
     description:
       'Un mélange de plantes traditionnelles pour accompagner les différentes phases du cycle avec douceur et régularité.',
     price: 15.9,
-    image: '/choisir-doula.png',
+    image: '/tisane-3.jpg',
     category: 'Tisanes',
     stock: 20,
     benefits: ['Accompagne le confort prémenstruel', "Soutient l'équilibre du cycle", 'Aide à relâcher les tensions'],
@@ -47,7 +47,7 @@ export const storeProducts: Product[] = [
     description:
       'Une formule réconfortante pour accompagner les transitions hormonales avec sérénité et chaleur intérieure.',
     price: 17.5,
-    image: '/rebozo.jpg',
+    image: '/tisane-4.jpg',
     category: 'Tisanes',
     stock: 16,
     benefits: ['Apaise les inconforts de transition', 'Soutient le sommeil', 'Invite au ralentissement'],
@@ -60,7 +60,7 @@ export const storeProducts: Product[] = [
     description:
       'Un mélange de plantes pour accompagner le post-partum dans une logique de confort, de repos et de rituel de soin.',
     price: 24.9,
-    image: '/post-partum.png',
+    image: '/post-partum.jpg',
     category: 'Yoni steam',
     stock: 12,
     benefits: ['Rituel de bien-être post-partum', 'Invite au relâchement', 'Accompagne le temps de récupération'],
@@ -73,7 +73,7 @@ export const storeProducts: Product[] = [
     description:
       "Une synergie végétale pour un rituel intime bien-être centré sur la sensation de fraîcheur et de confort.",
     price: 23.9,
-    image: '/yoni-steam.png',
+    image: '/yoni-steam.jpg',
     category: 'Yoni steam',
     stock: 14,
     benefits: ['Sensation de fraîcheur', 'Rituel féminin enveloppant', 'Moment de soin à domicile'],

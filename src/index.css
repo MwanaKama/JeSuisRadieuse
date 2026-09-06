@@ -2,6 +2,24 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Force un rendu clair des champs de formulaire (évite le mode sombre du navigateur) */
+:root {
+  color-scheme: light;
+}
+
+input,
+select,
+textarea {
+  color: #111827; /* text-gray-900 */
+  background-color: #ffffff;
+  caret-color: #7c3aed; /* curseur visible (violet) */
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #9ca3af; /* text-gray-400 */
+}
+
 /* Animations pour le popup */
 @keyframes fadeIn {
   from { opacity: 0; }

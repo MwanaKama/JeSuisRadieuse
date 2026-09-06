@@ -2,8 +2,8 @@ import { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
 import { Heart, Award, Users, Calendar, Star, BookOpen, ChevronDown, ChevronUp } from 'lucide-react';
-import MeImg from '../images/me.png';
-import Me1Img from '../images/me-1.png';
+import MeImg from '../images/me.jpg';
+import Me1Img from '../images/me-1.jpg';
 
 const About = () => {
   const [expandedYear, setExpandedYear] = useState<string | null>("2022");

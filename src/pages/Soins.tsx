@@ -6,7 +6,7 @@ import { useLocation } from 'react-router-dom';
 
 // Import correct des images
 import rebozoImg from '../images/rebozo.jpg';
-import yoniSteamImg from '../images/yoni-steam.png';
+import yoniSteamImg from '../images/yoni-steam.jpg';
 
 const Soins = () => {
   const location = useLocation();
