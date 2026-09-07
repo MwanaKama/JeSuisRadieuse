@@ -141,6 +141,7 @@ export interface AdminStockItem {
   category: string;
   stock: number;
   isActive: boolean;
+  available: boolean;
 }
 
 export async function fetchAdminStock(token: string): Promise<AdminStockItem[]> {
@@ -159,6 +160,16 @@ export async function updateAdminStock(token: string, productId: string, stock: 
       Authorization: `Bearer ${token}`
     },
     body: JSON.stringify({ productId, stock })
+  });
+}
+
+export async function updateAdminAvailability(token: string, productId: string, available: boolean) {
+  return request<{ product: AdminStockItem }>('admin-stock', {
+    method: 'PATCH',
+    headers: {
+      Authorization: `Bearer ${token}`
+    },
+    body: JSON.stringify({ productId, available })
   });
 }
 

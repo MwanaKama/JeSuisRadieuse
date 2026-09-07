@@ -1,4 +1,4 @@
-import { getStockList, updateStock } from './_lib/orders.js';
+import { getStockList, updateProductAvailability, updateStock } from './_lib/orders.js';
 import { badRequest, ok, parseBody, serverError, unauthorized } from './_lib/http.js';
 import { readBearerToken, verifyAdminToken } from './_lib/auth.js';
 
@@ -19,13 +19,20 @@ export async function handler(event) {
     if (event.httpMethod === 'PATCH') {
       const body = parseBody(event);
       const productId = (body.productId || '').trim();
-      const stock = body.stock;
 
-      if (!productId || stock === undefined || stock === null) {
-        return badRequest('productId et stock sont requis.');
+      if (!productId) {
+        return badRequest('productId est requis.');
       }
 
-      const product = await updateStock(productId, stock);
+      let product;
+      if (body.available !== undefined && body.available !== null) {
+        product = await updateProductAvailability(productId, body.available);
+      } else if (body.stock !== undefined && body.stock !== null) {
+        product = await updateStock(productId, body.stock);
+      } else {
+        return badRequest('stock ou available est requis.');
+      }
+
       return ok({ product });
     }
 

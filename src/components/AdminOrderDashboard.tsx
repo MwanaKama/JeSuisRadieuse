@@ -6,6 +6,7 @@ import {
   fetchAdminOrders,
   fetchAdminStock,
   setOrderTracking,
+  updateAdminAvailability,
   updateAdminOrderStatus,
   updateAdminStock,
   type AdminStockItem
@@ -219,6 +220,21 @@ const AdminOrderDashboard = () => {
       );
     } catch (error) {
       setErrorMessage(error instanceof Error ? error.message : 'Impossible de mettre à jour le stock.');
+    }
+  }
+
+  async function toggleAvailability(item: AdminStockItem) {
+    if (!token) {
+      return;
+    }
+    setErrorMessage('');
+    try {
+      const result = await updateAdminAvailability(token, item.id, !item.available);
+      setStockItems((current) =>
+        current.map((it) => (it.id === item.id ? result.product : it))
+      );
+    } catch (error) {
+      setErrorMessage(error instanceof Error ? error.message : 'Impossible de changer la disponibilité.');
     }
   }
 
@@ -472,6 +488,7 @@ const AdminOrderDashboard = () => {
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Catégorie</th>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Prix</th>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Stock</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Disponibilité</th>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Action</th>
                     </tr>
                   </thead>
@@ -500,6 +517,24 @@ const AdminOrderDashboard = () => {
                               }`}
                             >
                               {out ? 'Rupture' : `${item.stock} unités`}
+                            </span>
+                          </td>
+                          <td className="px-4 py-4 whitespace-nowrap">
+                            <button
+                              onClick={() => toggleAvailability(item)}
+                              className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors focus:outline-none ${
+                                item.available ? 'bg-green-500' : 'bg-gray-300'
+                              }`}
+                              title={item.available ? 'Cliquer pour passer en "Bientôt disponible"' : 'Cliquer pour rendre disponible'}
+                            >
+                              <span
+                                className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform ${
+                                  item.available ? 'translate-x-6' : 'translate-x-1'
+                                }`}
+                              />
+                            </button>
+                            <span className={`ml-2 text-xs font-medium ${item.available ? 'text-green-700' : 'text-purple-700'}`}>
+                              {item.available ? 'Disponible' : 'Bientôt'}
                             </span>
                           </td>
                           <td className="px-4 py-4">

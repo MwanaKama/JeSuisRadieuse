@@ -540,7 +540,7 @@ export async function getStockList() {
   }
 
   const result = await query(
-    `SELECT id, slug, name, price_cents, image, category, stock, is_active
+    `SELECT id, slug, name, price_cents, image, category, stock, is_active, is_available
      FROM products
      ORDER BY category, name`
   );
@@ -553,7 +553,8 @@ export async function getStockList() {
     image: row.image,
     category: row.category,
     stock: row.stock,
-    isActive: row.is_active
+    isActive: row.is_active,
+    available: row.is_available !== false
   }));
 }
 
@@ -571,7 +572,7 @@ export async function updateStock(productId, stock) {
     `UPDATE products
      SET stock = $1, updated_at = NOW()
      WHERE id = $2
-     RETURNING id, slug, name, price_cents, image, category, stock, is_active`,
+     RETURNING id, slug, name, price_cents, image, category, stock, is_active, is_available`,
     [parsed, productId]
   );
 
@@ -588,7 +589,39 @@ export async function updateStock(productId, stock) {
     image: row.image,
     category: row.category,
     stock: row.stock,
-    isActive: row.is_active
+    isActive: row.is_active,
+    available: row.is_available !== false
+  };
+}
+
+export async function updateProductAvailability(productId, available) {
+  if (!usingDatabase()) {
+    throw new Error('La gestion des produits necessite une base de donnees configuree.');
+  }
+
+  const result = await query(
+    `UPDATE products
+     SET is_available = $1, updated_at = NOW()
+     WHERE id = $2
+     RETURNING id, slug, name, price_cents, image, category, stock, is_active, is_available`,
+    [Boolean(available), productId]
+  );
+
+  if (result.rowCount === 0) {
+    throw new Error('Produit introuvable.');
+  }
+
+  const row = result.rows[0];
+  return {
+    id: row.id,
+    slug: row.slug,
+    name: row.name,
+    price: Number((row.price_cents / 100).toFixed(2)),
+    image: row.image,
+    category: row.category,
+    stock: row.stock,
+    isActive: row.is_active,
+    available: row.is_available !== false
   };
 }
 
