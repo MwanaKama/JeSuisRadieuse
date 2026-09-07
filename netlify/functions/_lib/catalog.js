@@ -62,10 +62,10 @@ export const storeProducts = [
     description:
       'Un mélange de plantes pour accompagner le post-partum dans une logique de confort, de repos et de rituel de soin.',
     priceCents: 2490,
-    image: '/post-partum.jpg',
-    category: 'Yoni steam',
+    image: '/tisane-4.jpg',
+    category: 'Tisanes',
     stock: 12,
-    available: true,
+    available: false,
     benefits: ['Rituel de bien-être post-partum', 'Invite au relâchement', 'Accompagne le temps de récupération'],
     usageInstructions: "Utiliser uniquement hors contre-indication, sur une durée courte, selon vos recommandations d'accompagnement."
   },
@@ -76,10 +76,10 @@ export const storeProducts = [
     description:
       "Une synergie végétale pour un rituel intime bien-être centré sur la sensation de fraîcheur et de confort.",
     priceCents: 2390,
-    image: '/yoni-steam.jpg',
-    category: 'Yoni steam',
+    image: '/tisane-4.jpg',
+    category: 'Tisanes',
     stock: 14,
-    available: true,
+    available: false,
     benefits: ['Sensation de fraîcheur', 'Rituel féminin enveloppant', 'Moment de soin à domicile'],
     usageInstructions: "1 à 2 utilisations par semaine maximum, en respectant les précautions d'usage et sans surchauffe."
   }
