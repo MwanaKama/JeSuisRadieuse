@@ -11,6 +11,7 @@ export interface Product {
   image: string;
   category: string;
   stock: number;
+  available: boolean;
   benefits: string[];
   usageInstructions: string;
 }

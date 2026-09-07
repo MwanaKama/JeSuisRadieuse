@@ -53,7 +53,7 @@ export async function getProducts() {
   }
 
   const result = await query(
-    `SELECT id, slug, name, description, price_cents, image, category, stock, benefits, usage_instructions
+    `SELECT id, slug, name, description, price_cents, image, category, stock, benefits, usage_instructions, is_available
      FROM products
      WHERE is_active = TRUE
      ORDER BY category, name`
@@ -68,6 +68,7 @@ export async function getProducts() {
     image: row.image,
     category: row.category,
     stock: row.stock,
+    available: row.is_available !== false,
     benefits: row.benefits,
     usageInstructions: row.usage_instructions
   }));
@@ -244,6 +245,12 @@ export async function createOrder(payload, providerReference) {
     paymentStatus: 'pending',
     paymentMethod: payload.paymentMethod,
     shippingMethodCode: payload.shippingMethodCode,
+    items: orderItems.map((item) => ({
+      productId: item.productId,
+      name: item.productName,
+      unitPriceCents: item.unitPriceCents,
+      quantity: item.quantity
+    })),
     providerReference
   };
 }

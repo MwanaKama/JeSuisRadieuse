@@ -47,6 +47,7 @@ export async function ensureSchema() {
       benefits JSONB NOT NULL,
       usage_instructions TEXT NOT NULL,
       is_active BOOLEAN NOT NULL DEFAULT TRUE,
+      is_available BOOLEAN NOT NULL DEFAULT TRUE,
       created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
       updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
     );
@@ -119,12 +120,13 @@ export async function ensureSchema() {
     ALTER TABLE orders ADD COLUMN IF NOT EXISTS shipping_pickup_point_postal_code TEXT;
     ALTER TABLE orders ADD COLUMN IF NOT EXISTS shipping_pickup_point_city TEXT;
     ALTER TABLE orders ADD COLUMN IF NOT EXISTS shipping_pickup_point_country TEXT;
+    ALTER TABLE products ADD COLUMN IF NOT EXISTS is_available BOOLEAN NOT NULL DEFAULT TRUE;
   `);
 
   for (const product of storeProducts) {
     await db.query(
-      `INSERT INTO products (id, slug, name, description, price_cents, image, category, stock, benefits, usage_instructions)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9::jsonb,$10)
+      `INSERT INTO products (id, slug, name, description, price_cents, image, category, stock, benefits, usage_instructions, is_available)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9::jsonb,$10,$11)
        ON CONFLICT (id) DO UPDATE SET
          slug=EXCLUDED.slug,
          name=EXCLUDED.name,
@@ -134,6 +136,7 @@ export async function ensureSchema() {
          category=EXCLUDED.category,
          benefits=EXCLUDED.benefits,
          usage_instructions=EXCLUDED.usage_instructions,
+         is_available=EXCLUDED.is_available,
          updated_at=NOW()`,
       [
         product.id,
@@ -145,7 +148,8 @@ export async function ensureSchema() {
         product.category,
         product.stock,
         JSON.stringify(product.benefits),
-        product.usageInstructions
+        product.usageInstructions,
+        product.available !== false
       ]
     );
   }

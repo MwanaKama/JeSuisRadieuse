@@ -57,18 +57,25 @@ const Boutique = () => {
     }, {});
   }, [items]);
 
-  const stockBadge = (stock: number) => {
-    if (stock <= 0) {
+  const stockBadge = (product: Product) => {
+    if (product.available === false) {
+      return (
+        <span className="bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-xs font-semibold">
+          Bientôt disponible
+        </span>
+      );
+    }
+    if (product.stock <= 0) {
       return (
         <span className="bg-red-100 text-red-700 px-3 py-1 rounded-full text-xs font-semibold">
           Rupture de stock
         </span>
       );
     }
-    if (stock <= 5) {
+    if (product.stock <= 5) {
       return (
         <span className="bg-amber-100 text-amber-800 px-3 py-1 rounded-full text-xs font-semibold">
-          Plus que {stock} en stock
+          Plus que {product.stock} en stock
         </span>
       );
     }
@@ -117,7 +124,7 @@ const Boutique = () => {
                   <Package className="h-6 w-6 md:h-8 md:w-8 text-blue-700" />
                 </div>
                 <h3 className="font-poppins text-base md:text-lg font-semibold text-purple-900 mb-2">
-                  Colissimo <span className="text-purple-600">6,90 €</span>
+                  Colissimo <span className="text-purple-600">5,90 €</span>
                 </h3>
                 <p className="font-inter text-gray-600 text-sm">Livraison à domicile en 48-72h</p>
               </div>
@@ -127,7 +134,7 @@ const Boutique = () => {
                   <Truck className="h-6 w-6 md:h-8 md:w-8 text-green-700" />
                 </div>
                 <h3 className="font-poppins text-base md:text-lg font-semibold text-purple-900 mb-2">
-                  Mondial Relay <span className="text-purple-600">4,90 €</span>
+                  Mondial Relay <span className="text-purple-600">4,40 €</span>
                 </h3>
                 <p className="font-inter text-gray-600 text-sm">Point relais économique, 3-5 jours</p>
               </div>
@@ -157,6 +164,7 @@ const Boutique = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 mb-12">
               {products.map((product) => {
                 const quantity = quantityById[product.id] || 0;
+                const isComingSoon = product.available === false;
                 const isOutOfStock = product.stock <= 0;
                 const reachedMax = quantity >= product.stock;
 
@@ -170,7 +178,7 @@ const Boutique = () => {
                         src={product.image}
                         alt={product.name}
                         loading="lazy"
-                        className={`w-full h-full object-cover transition-transform duration-500 ${isOutOfStock ? 'opacity-60' : 'hover:scale-110'}`}
+                        className={`w-full h-full object-cover transition-transform duration-500 ${isComingSoon || isOutOfStock ? 'opacity-60' : 'hover:scale-110'}`}
                       />
                       <div className="absolute top-4 left-4 z-10">
                         <span className="bg-purple-600 text-white px-3 py-1 rounded-full text-xs font-medium">
@@ -178,7 +186,7 @@ const Boutique = () => {
                         </span>
                       </div>
                       <div className="absolute top-4 right-4 z-10">
-                        {stockBadge(product.stock)}
+                        {stockBadge(product)}
                       </div>
                     </div>
 
@@ -214,7 +222,15 @@ const Boutique = () => {
                       </div>
 
                       <div className="mt-auto">
-                        {isOutOfStock ? (
+                        {isComingSoon ? (
+                          <button
+                            disabled
+                            className="w-full bg-purple-100 text-purple-700 py-3 rounded-full font-semibold flex items-center justify-center gap-2 cursor-not-allowed"
+                          >
+                            <Clock className="h-4 w-4" />
+                            <span>Bientôt disponible</span>
+                          </button>
+                        ) : isOutOfStock ? (
                           <button
                             disabled
                             className="w-full bg-gray-200 text-gray-500 py-3 rounded-full font-semibold flex items-center justify-center gap-2 cursor-not-allowed"

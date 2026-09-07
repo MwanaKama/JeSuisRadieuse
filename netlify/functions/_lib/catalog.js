@@ -6,9 +6,10 @@ export const storeProducts = [
     description:
       'Une infusion douce aux plantes sélectionnées pour accompagner la grossesse avec chaleur, confort digestif et apaisement.',
     priceCents: 1590,
-    image: '/tisane-1.jpg',
+    image: '/tisane-4.jpg',
     category: 'Tisanes',
     stock: 24,
+    available: false,
     benefits: ['Apaise les inconforts digestifs', 'Favorise la détente', "Soutient l'hydratation au quotidien"],
     usageInstructions: '1 à 2 tasses par jour. Laisser infuser 8 à 10 minutes dans une eau frémissante.'
   },
@@ -19,9 +20,10 @@ export const storeProducts = [
     description:
       "Une tisane rituel pensée pour le bien-être féminin global, au parfum floral et à l'équilibre végétal enveloppant.",
     priceCents: 1650,
-    image: '/tisane-2.jpg',
+    image: '/tisane-4.jpg',
     category: 'Tisanes',
     stock: 18,
+    available: false,
     benefits: ["Favorise l'équilibre féminin", 'Soutient les temps de fatigue', 'Offre un moment de recentrage'],
     usageInstructions: '1 tasse le matin et 1 le soir. Infusion 10 minutes dans une tasse couverte.'
   },
@@ -32,9 +34,10 @@ export const storeProducts = [
     description:
       'Un mélange de plantes traditionnelles pour accompagner les différentes phases du cycle avec douceur et régularité.',
     priceCents: 1590,
-    image: '/tisane-3.jpg',
+    image: '/tisane-4.jpg',
     category: 'Tisanes',
     stock: 20,
+    available: false,
     benefits: ['Accompagne le confort prémenstruel', "Soutient l'équilibre du cycle", 'Aide à relâcher les tensions'],
     usageInstructions: 'Commencer quelques jours avant les règles. 1 à 2 tasses par jour selon le besoin.'
   },
@@ -48,6 +51,7 @@ export const storeProducts = [
     image: '/tisane-4.jpg',
     category: 'Tisanes',
     stock: 16,
+    available: false,
     benefits: ['Apaise les inconforts de transition', 'Soutient le sommeil', 'Invite au ralentissement'],
     usageInstructions: "2 tasses par jour, plutôt en fin d'après-midi et en soirée."
   },
@@ -61,6 +65,7 @@ export const storeProducts = [
     image: '/post-partum.jpg',
     category: 'Yoni steam',
     stock: 12,
+    available: true,
     benefits: ['Rituel de bien-être post-partum', 'Invite au relâchement', 'Accompagne le temps de récupération'],
     usageInstructions: "Utiliser uniquement hors contre-indication, sur une durée courte, selon vos recommandations d'accompagnement."
   },
@@ -74,6 +79,7 @@ export const storeProducts = [
     image: '/yoni-steam.jpg',
     category: 'Yoni steam',
     stock: 14,
+    available: true,
     benefits: ['Sensation de fraîcheur', 'Rituel féminin enveloppant', 'Moment de soin à domicile'],
     usageInstructions: "1 à 2 utilisations par semaine maximum, en respectant les précautions d'usage et sans surchauffe."
   }
@@ -85,7 +91,7 @@ export const shippingOptions = [
     carrier: 'colissimo',
     label: 'Colissimo domicile',
     description: 'Livraison standard 48-72h à domicile',
-    priceCents: 690,
+    priceCents: 590,
     eta: '2 à 4 jours ouvrés',
     requiresPickupPoint: false
   },
@@ -94,7 +100,7 @@ export const shippingOptions = [
     carrier: 'mondialrelay',
     label: 'Mondial Relay point relais',
     description: 'Option économique en point relais',
-    priceCents: 490,
+    priceCents: 440,
     eta: '3 à 5 jours ouvrés',
     requiresPickupPoint: true
   },
@@ -119,6 +125,7 @@ export function toFrontendProduct(product) {
     image: product.image,
     category: product.category,
     stock: product.stock,
+    available: product.available !== false,
     benefits: product.benefits,
     usageInstructions: product.usageInstructions
   };
