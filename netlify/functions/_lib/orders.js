@@ -2,6 +2,7 @@ import Stripe from 'stripe';
 
 import { shippingOptions, storeProducts, toFrontendProduct, toFrontendShipping } from './catalog.js';
 import { query, usingDatabase, withTransaction } from './db.js';
+import { notifyDelivered, notifyPaymentConfirmed, notifyShipped, notifyTrackingAvailable } from './email.js';
 
 const ORDER_STATUSES = ['pending', 'paid', 'preparing', 'shipped', 'delivered', 'cancelled'];
 const PAYMENT_STATUSES = ['pending', 'paid', 'failed', 'refunded'];
@@ -379,6 +380,13 @@ export async function updateOrderStatus(orderNumber, nextStatus, changedBy = 'ad
     [orderNumber, current.order_status, nextStatus, changedBy]
   );
 
+  // Notifications client selon le nouveau statut
+  if (nextStatus === 'shipped') {
+    await notifyShipped(orderNumber, current.customer_email, current.customer_name, current.tracking_number || undefined, current.tracking_url || undefined);
+  } else if (nextStatus === 'delivered') {
+    await notifyDelivered(orderNumber, current.customer_email, current.customer_name);
+  }
+
   return {
     orderNumber: current.order_number,
     customerName: current.customer_name,
@@ -400,7 +408,7 @@ export async function markOrderPaidFromProvider(providerReference, providerName)
   }
 
   const result = await query(
-    `SELECT order_number, order_status, payment_status
+    `SELECT order_number, order_status, payment_status, customer_name, customer_email
      FROM orders
      WHERE provider_reference = $1
      LIMIT 1`,
@@ -428,6 +436,8 @@ export async function markOrderPaidFromProvider(providerReference, providerName)
      VALUES ($1, $2, 'paid', $3)`,
     [row.order_number, row.order_status, `webhook:${providerName}`]
   );
+
+  await notifyPaymentConfirmed(row.order_number, row.customer_email, row.customer_name);
 
   return row.order_number;
 }
@@ -513,7 +523,7 @@ export async function setOrderTracking(orderNumber, trackingNumber, trackingUrl)
     `UPDATE orders
      SET tracking_number = $1, tracking_url = $2, updated_at = NOW()
      WHERE order_number = $3
-     RETURNING order_number`,
+     RETURNING order_number, customer_email, customer_name`,
     [trackingNumber || null, trackingUrl || null, orderNumber]
   );
 
@@ -521,7 +531,10 @@ export async function setOrderTracking(orderNumber, trackingNumber, trackingUrl)
     throw new Error('Commande introuvable.');
   }
 
-  return result.rows[0].order_number;
+  const row = result.rows[0];
+  await notifyTrackingAvailable(orderNumber, row.customer_email, row.customer_name, trackingNumber, trackingUrl);
+
+  return row.order_number;
 }
 
 export function getStripeClient() {

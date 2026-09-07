@@ -1,5 +1,6 @@
 import { createOrder, getStripeClient } from './_lib/orders.js';
 import { badRequest, ok, parseBody, serverError } from './_lib/http.js';
+import { notifyOrderCreated } from './_lib/email.js';
 
 function validatePayload(payload) {
   if (!payload?.customer?.email || !payload?.customer?.firstName || !payload?.customer?.lastName) {
@@ -32,6 +33,9 @@ export async function handler(event) {
 
     const providerReference = `stripe_${Date.now()}`;
     const order = await createOrder(payload, providerReference);
+
+    // Email de confirmation de commande (client) + notification admin
+    await notifyOrderCreated(order, payload.customer);
 
     const stripe = getStripeClient();
     if (!stripe) {

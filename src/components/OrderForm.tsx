@@ -514,18 +514,13 @@ const OrderForm: React.FC<OrderFormProps> = ({ items, total, onClose, onSuccess 
                       <div className="text-sm text-gray-500">Paiement securise avec redirection Stripe Checkout</div>
                     </div>
                   </label>
-                  <label className="border border-gray-200 rounded-xl p-4 flex items-center gap-3 cursor-pointer">
-                    <input
-                      type="radio"
-                      checked={paymentMethod === 'paypal'}
-                      onChange={() => setPaymentMethod('paypal')}
-                    />
+                  <div className="border border-gray-200 rounded-xl p-4 flex items-center gap-3 opacity-50 cursor-not-allowed">
                     <Truck className="h-5 w-5 text-purple-700" />
                     <div>
                       <div className="font-medium text-gray-900">PayPal</div>
-                      <div className="text-sm text-gray-500">Validation via la page de paiement PayPal</div>
+                      <div className="text-sm text-gray-500">Bientôt disponible</div>
                     </div>
-                  </label>
+                  </div>
                 </div>
               </div>
 
