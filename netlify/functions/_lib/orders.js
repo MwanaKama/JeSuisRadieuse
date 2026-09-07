@@ -289,6 +289,57 @@ export async function getOrderForTracking(orderNumber, email) {
   };
 }
 
+// Récapitulatif de commande pour la page de confirmation (sans données sensibles).
+export async function getOrderSummary(orderNumber) {
+  if (!usingDatabase()) {
+    throw new Error('Le recap de commande necessite une base de donnees configuree.');
+  }
+
+  const orderResult = await query(
+    `SELECT order_number, customer_name, customer_email, order_status, payment_status,
+            subtotal_cents, shipping_cost_cents, total_cents, shipping_method_code,
+            tracking_number, tracking_url, created_at
+     FROM orders
+     WHERE order_number = $1
+     LIMIT 1`,
+    [orderNumber]
+  );
+
+  if (orderResult.rowCount === 0) {
+    return null;
+  }
+
+  const row = orderResult.rows[0];
+
+  const itemsResult = await query(
+    `SELECT product_name, unit_price_cents, quantity
+     FROM order_items
+     WHERE order_number = $1
+     ORDER BY id`,
+    [orderNumber]
+  );
+
+  return {
+    orderNumber: row.order_number,
+    customerName: row.customer_name,
+    customerEmail: row.customer_email,
+    status: row.order_status,
+    paymentStatus: row.payment_status,
+    subtotal: Number((row.subtotal_cents / 100).toFixed(2)),
+    shipping: Number((row.shipping_cost_cents / 100).toFixed(2)),
+    total: Number((row.total_cents / 100).toFixed(2)),
+    shippingMethodCode: row.shipping_method_code,
+    trackingNumber: row.tracking_number || undefined,
+    trackingUrl: row.tracking_url || undefined,
+    createdAt: row.created_at,
+    items: itemsResult.rows.map((item) => ({
+      name: item.product_name,
+      price: Number((item.unit_price_cents / 100).toFixed(2)),
+      quantity: item.quantity
+    }))
+  };
+}
+
 export async function listOrders(filters = {}) {
   if (!usingDatabase()) {
     return [];
@@ -339,6 +390,28 @@ export async function listOrders(filters = {}) {
   }));
 }
 
+// Annulation : restaure le stock des articles puis supprime la commande.
+async function cancelOrder(orderNumber, changedBy) {
+  await withTransaction(async (client) => {
+    const itemsResult = await client.query(
+      `SELECT product_id, quantity FROM order_items WHERE order_number = $1`,
+      [orderNumber]
+    );
+
+    for (const item of itemsResult.rows) {
+      await client.query(
+        `UPDATE products SET stock = stock + $1, updated_at = NOW() WHERE id = $2`,
+        [item.quantity, item.product_id]
+      );
+    }
+
+    // La suppression en cascade retire order_items + order_status_history.
+    await client.query(`DELETE FROM orders WHERE order_number = $1`, [orderNumber]);
+  });
+
+  return { orderNumber, cancelled: true };
+}
+
 export async function updateOrderStatus(orderNumber, nextStatus, changedBy = 'admin') {
   if (!usingDatabase()) {
     throw new Error('La mise a jour des statuts necessite une base de donnees configuree.');
@@ -365,6 +438,11 @@ export async function updateOrderStatus(orderNumber, nextStatus, changedBy = 'ad
   const allowedNextStatuses = transitions[current.order_status] || [];
   if (!allowedNextStatuses.includes(nextStatus)) {
     throw new Error('Transition de statut invalide.');
+  }
+
+  // Annulation : restauration du stock + suppression (pas de conservation).
+  if (nextStatus === 'cancelled') {
+    return await cancelOrder(orderNumber, changedBy);
   }
 
   await query(

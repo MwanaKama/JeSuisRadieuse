@@ -99,3 +99,25 @@ export interface AdminOrderSummary {
   trackingUrl?: string;
   createdAt: string;
 }
+
+export interface OrderSummaryItem {
+  name: string;
+  price: number;
+  quantity: number;
+}
+
+export interface OrderSummary {
+  orderNumber: string;
+  customerName: string;
+  customerEmail: string;
+  status: OrderStatusCode;
+  paymentStatus: 'pending' | 'paid' | 'failed' | 'refunded';
+  subtotal: number;
+  shipping: number;
+  total: number;
+  shippingMethodCode: ShippingMethodCode;
+  trackingNumber?: string;
+  trackingUrl?: string;
+  createdAt: string;
+  items: OrderSummaryItem[];
+}

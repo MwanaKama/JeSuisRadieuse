@@ -3,6 +3,7 @@ import type {
   AdminOrderSummary,
   CheckoutPayload,
   CheckoutResponse,
+  OrderSummary,
   PickupPoint,
   Product,
   ShippingMethodCode,
@@ -92,6 +93,12 @@ export async function trackOrder(orderNumber: string, email: string): Promise<Tr
   return request<TrackedOrder>(`track-order?${params.toString()}`);
 }
 
+export async function fetchOrderSummary(orderNumber: string): Promise<OrderSummary> {
+  const params = new URLSearchParams({ orderNumber });
+  const data = await request<{ order: OrderSummary }>(`order-confirmation?${params.toString()}`);
+  return data.order;
+}
+
 export async function adminLogin(email: string, password: string): Promise<{ token: string }> {
   return request<{ token: string }>('admin-login', {
     method: 'POST',
@@ -116,7 +123,7 @@ export async function fetchAdminOrders(token: string, filters: Partial<{ status:
 }
 
 export async function updateAdminOrderStatus(token: string, orderNumber: string, status: string) {
-  return request<{ order: AdminOrderSummary }>('admin-order-status', {
+  return request<{ order: AdminOrderSummary & { cancelled?: boolean } }>('admin-order-status', {
     method: 'PATCH',
     headers: {
       Authorization: `Bearer ${token}`

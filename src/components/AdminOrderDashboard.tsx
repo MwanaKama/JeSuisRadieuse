@@ -162,9 +162,14 @@ const AdminOrderDashboard = () => {
     setErrorMessage('');
     try {
       const result = await updateAdminOrderStatus(token, orderNumber, status);
-      setOrders((current) =>
-        current.map((order) => (order.orderNumber === orderNumber ? result.order : order))
-      );
+      if (result.order?.cancelled) {
+        // La commande a été annulée et supprimée : on la retire de la liste.
+        setOrders((current) => current.filter((order) => order.orderNumber !== orderNumber));
+      } else {
+        setOrders((current) =>
+          current.map((order) => (order.orderNumber === orderNumber ? result.order : order))
+        );
+      }
     } catch (error) {
       setErrorMessage(error instanceof Error ? error.message : 'Mise à jour impossible.');
     }
