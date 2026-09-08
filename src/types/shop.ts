@@ -97,6 +97,7 @@ export interface AdminOrderSummary {
   shippingMethodCode: ShippingMethodCode;
   trackingNumber?: string;
   trackingUrl?: string;
+  invoiceNumber?: string;
   createdAt: string;
 }
 
@@ -118,6 +119,7 @@ export interface OrderSummary {
   shippingMethodCode: ShippingMethodCode;
   trackingNumber?: string;
   trackingUrl?: string;
+  invoiceNumber?: string;
   createdAt: string;
   items: OrderSummaryItem[];
 }

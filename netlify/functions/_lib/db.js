@@ -80,6 +80,7 @@ export async function ensureSchema() {
       provider_reference TEXT,
       tracking_number TEXT,
       tracking_url TEXT,
+      invoice_number TEXT,
       created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
       updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
     );
@@ -121,6 +122,8 @@ export async function ensureSchema() {
     ALTER TABLE orders ADD COLUMN IF NOT EXISTS shipping_pickup_point_city TEXT;
     ALTER TABLE orders ADD COLUMN IF NOT EXISTS shipping_pickup_point_country TEXT;
     ALTER TABLE products ADD COLUMN IF NOT EXISTS is_available BOOLEAN NOT NULL DEFAULT TRUE;
+    ALTER TABLE orders ADD COLUMN IF NOT EXISTS invoice_number TEXT;
+    CREATE SEQUENCE IF NOT EXISTS invoice_number_seq;
   `);
 
   for (const product of storeProducts) {

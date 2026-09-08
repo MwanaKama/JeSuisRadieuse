@@ -298,7 +298,7 @@ export async function getOrderSummary(orderNumber) {
   const orderResult = await query(
     `SELECT order_number, customer_name, customer_email, order_status, payment_status,
             subtotal_cents, shipping_cost_cents, total_cents, shipping_method_code,
-            tracking_number, tracking_url, created_at,
+            tracking_number, tracking_url, invoice_number, created_at,
             address, city, postal_code, country
      FROM orders
      WHERE order_number = $1
@@ -332,6 +332,7 @@ export async function getOrderSummary(orderNumber) {
     shippingMethodCode: row.shipping_method_code,
     trackingNumber: row.tracking_number || undefined,
     trackingUrl: row.tracking_url || undefined,
+    invoiceNumber: row.invoice_number || undefined,
     createdAt: row.created_at,
     address: row.address,
     city: row.city,
@@ -372,7 +373,7 @@ export async function listOrders(filters = {}) {
 
   const result = await query(
     `SELECT order_number, customer_name, customer_email, total_cents, payment_method, payment_status,
-            order_status, shipping_method_code, tracking_number, tracking_url, created_at
+            order_status, shipping_method_code, tracking_number, tracking_url, invoice_number, created_at
      FROM orders
      ${whereClause}
      ORDER BY created_at DESC
@@ -391,6 +392,7 @@ export async function listOrders(filters = {}) {
     shippingMethodCode: row.shipping_method_code,
     trackingNumber: row.tracking_number || undefined,
     trackingUrl: row.tracking_url || undefined,
+    invoiceNumber: row.invoice_number || undefined,
     createdAt: row.created_at
   }));
 }
@@ -485,13 +487,20 @@ export async function updateOrderStatus(orderNumber, nextStatus, changedBy = 'ad
   };
 }
 
+async function generateInvoiceNumber() {
+  const year = new Date().getFullYear();
+  const seqResult = await query(`SELECT nextval('invoice_number_seq') AS seq`);
+  const seq = Number(seqResult.rows[0].seq);
+  return `F-${year}-${String(seq).padStart(4, '0')}`;
+}
+
 export async function markOrderPaidFromProvider(providerReference, providerName) {
   if (!usingDatabase()) {
     return null;
   }
 
   const result = await query(
-    `SELECT order_number, order_status, payment_status, customer_name, customer_email
+    `SELECT order_number, order_status, payment_status, customer_name, customer_email, invoice_number
      FROM orders
      WHERE provider_reference = $1
      LIMIT 1`,
@@ -519,6 +528,15 @@ export async function markOrderPaidFromProvider(providerReference, providerName)
      VALUES ($1, $2, 'paid', $3)`,
     [row.order_number, row.order_status, `webhook:${providerName}`]
   );
+
+  // Attribue un numéro de facture séquentiel (F-AAAA-NNNN) s'il n'existe pas déjà.
+  if (!row.invoice_number) {
+    const invoiceNumber = await generateInvoiceNumber();
+    await query(
+      `UPDATE orders SET invoice_number = $1, updated_at = NOW() WHERE order_number = $2`,
+      [invoiceNumber, row.order_number]
+    );
+  }
 
   // Récupère le récapitulatif complet pour générer et envoyer la facture.
   const fullOrder = await getOrderSummary(row.order_number);

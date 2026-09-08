@@ -1,8 +1,9 @@
 import { FormEvent, useEffect, useMemo, useState } from 'react';
-import { Filter, Loader2, Lock, Package, Search, Save, Boxes, ExternalLink } from 'lucide-react';
+import { Filter, Loader2, Lock, Package, Search, Save, Boxes, ExternalLink, FileText, Download } from 'lucide-react';
 
 import {
   adminLogin,
+  downloadInvoice,
   fetchAdminOrders,
   fetchAdminStock,
   setOrderTracking,
@@ -49,7 +50,7 @@ const AdminOrderDashboard = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
-  const [activeTab, setActiveTab] = useState<'orders' | 'stock'>('orders');
+  const [activeTab, setActiveTab] = useState<'orders' | 'stock' | 'invoices'>('orders');
   const [trackingInputs, setTrackingInputs] = useState<Record<string, string>>({});
   const [stockInputs, setStockInputs] = useState<Record<string, string>>({});
 
@@ -238,6 +239,18 @@ const AdminOrderDashboard = () => {
     }
   }
 
+  async function handleDownloadInvoice(order: AdminOrderSummary) {
+    if (!token) {
+      return;
+    }
+    setErrorMessage('');
+    try {
+      await downloadInvoice(token, order.orderNumber, order.invoiceNumber);
+    } catch (error) {
+      setErrorMessage(error instanceof Error ? error.message : 'Impossible de télécharger la facture.');
+    }
+  }
+
   function logout() {
     window.localStorage.removeItem('jsr-admin-token');
     setToken(null);
@@ -340,6 +353,19 @@ const AdminOrderDashboard = () => {
               <span className="inline-flex items-center gap-2">
                 <Boxes className="h-4 w-4" />
                 Stock
+              </span>
+            </button>
+            <button
+              onClick={() => setActiveTab('invoices')}
+              className={`px-5 py-2.5 rounded-full font-semibold transition ${
+                activeTab === 'invoices'
+                  ? 'bg-gradient-to-r from-purple-600 to-pink-500 text-white'
+                  : 'bg-white border border-gray-200 text-gray-700'
+              }`}
+            >
+              <span className="inline-flex items-center gap-2">
+                <FileText className="h-4 w-4" />
+                Factures ({orders.filter((o) => o.invoiceNumber).length})
               </span>
             </button>
           </div>
@@ -570,6 +596,56 @@ const AdminOrderDashboard = () => {
               {stockItems.length === 0 && (
                 <div className="p-8 text-center text-gray-500">
                   Aucun produit trouvé. Vérifiez que la base de données est configurée.
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* INVOICES TAB */}
+          {activeTab === 'invoices' && (
+            <div className="bg-white rounded-lg shadow overflow-hidden">
+              <div className="overflow-x-auto">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">N° Facture</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Commande</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Client</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Total TTC</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Télécharger</th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {orders.filter((order) => order.invoiceNumber).map((order) => (
+                      <tr key={order.orderNumber} className="hover:bg-gray-50">
+                        <td className="px-4 py-4 font-medium text-gray-900">{order.invoiceNumber}</td>
+                        <td className="px-4 py-4 text-sm text-gray-600">{order.orderNumber}</td>
+                        <td className="px-4 py-4">
+                          <div className="font-medium text-gray-900">{order.customerName}</div>
+                          <div className="text-sm text-gray-500">{order.customerEmail}</div>
+                        </td>
+                        <td className="px-4 py-4 text-sm text-gray-600">
+                          {new Date(order.createdAt).toLocaleDateString('fr-FR')}
+                        </td>
+                        <td className="px-4 py-4 font-semibold text-gray-900">{order.total.toFixed(2)}€</td>
+                        <td className="px-4 py-4">
+                          <button
+                            onClick={() => handleDownloadInvoice(order)}
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-purple-100 text-purple-700 hover:bg-purple-200 transition text-sm font-medium"
+                          >
+                            <Download className="h-4 w-4" />
+                            PDF
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              {orders.filter((order) => order.invoiceNumber).length === 0 && (
+                <div className="p-8 text-center text-gray-500">
+                  Aucune facture pour le moment. Les factures apparaissent dès qu'un paiement est confirmé.
                 </div>
               )}
             </div>

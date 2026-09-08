@@ -187,3 +187,26 @@ export async function setOrderTracking(
     body: JSON.stringify({ orderNumber, trackingNumber, shippingMethodCode })
   });
 }
+
+export async function downloadInvoice(token: string, orderNumber: string, invoiceNumber?: string): Promise<void> {
+  const params = new URLSearchParams({ orderNumber });
+  const res = await fetch(`${FUNCTIONS_BASE_URL}/get-invoice?${params.toString()}`, {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  });
+
+  if (!res.ok) {
+    throw new Error('Impossible de télécharger la facture.');
+  }
+
+  const blob = await res.blob();
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `facture-${invoiceNumber || orderNumber}.pdf`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}

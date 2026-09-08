@@ -56,7 +56,8 @@ export async function generateInvoicePdf(order) {
   y -= 34;
 
   const dateStr = new Date().toLocaleDateString('fr-FR');
-  line(`N° ${order.orderNumber}`, 50, 12, bold, DARK);
+  line(`N° ${order.invoiceNumber || order.orderNumber}`, 50, 12, bold, DARK);
+  line(`Référence commande : ${order.orderNumber}`, 50, 9, font, GRAY, 13);
   line(`Date d'émission : ${dateStr}`, 50, 10, font, GRAY);
   y -= 14;
 
