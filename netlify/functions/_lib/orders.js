@@ -2,7 +2,7 @@ import Stripe from 'stripe';
 
 import { shippingOptions, storeProducts, toFrontendProduct, toFrontendShipping } from './catalog.js';
 import { query, usingDatabase, withTransaction } from './db.js';
-import { notifyDelivered, notifyPaymentConfirmed, notifyShipped, notifyTrackingAvailable } from './email.js';
+import { notifyDelivered, notifyLowStock, notifyPaymentConfirmed, notifyShipped, notifyTrackingAvailable } from './email.js';
 
 const ORDER_STATUSES = ['pending', 'paid', 'preparing', 'shipped', 'delivered', 'cancelled'];
 const PAYMENT_STATUSES = ['pending', 'paid', 'failed', 'refunded'];
@@ -236,6 +236,20 @@ export async function createOrder(payload, providerReference) {
       [orderNumber]
     );
   });
+
+  // Alerte stock bas après décrément
+  try {
+    const threshold = Number(process.env.LOW_STOCK_THRESHOLD || 5);
+    const lowStock = await query(
+      `SELECT name, stock FROM products WHERE is_active = TRUE AND stock <= $1 ORDER BY stock ASC`,
+      [threshold]
+    );
+    if (lowStock.rows.length > 0) {
+      await notifyLowStock(lowStock.rows);
+    }
+  } catch (error) {
+    console.error('[stock] vérification stock bas échouée:', error.message);
+  }
 
   return {
     orderNumber,

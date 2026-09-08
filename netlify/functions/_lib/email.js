@@ -207,3 +207,23 @@ export async function notifyTrackingAvailable(orderNumber, customerEmail, custom
   `);
   await safeSend({ to: customerEmail, subject: `Suivi disponible — commande ${orderNumber}`, html });
 }
+
+// 6) Alerte stock bas (admin)
+export async function notifyLowStock(products) {
+  const lowProducts = (products || []).filter((p) => p.stock <= Number(process.env.LOW_STOCK_THRESHOLD || 5));
+  if (lowProducts.length === 0) {
+    return;
+  }
+
+  const rows = lowProducts
+    .map((p) => `<li>${p.name} — <strong>${p.stock} restant(s)</strong></li>`)
+    .join('');
+
+  const html = layout('Stock bas', `
+    <p>Attention, les produits suivants ont un stock faible :</p>
+    <ul style="padding-left:18px">${rows}</ul>
+    <p>Pensez à réapprovisionner pour éviter les ruptures.</p>
+  `);
+
+  await safeSend({ to: adminEmail(), subject: `⚠️ Stock bas — ${lowProducts.length} produit(s)`, html });
+}

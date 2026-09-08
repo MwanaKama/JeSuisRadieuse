@@ -251,6 +251,38 @@ const AdminOrderDashboard = () => {
     }
   }
 
+  function exportInvoicesCsv() {
+    const invoices = orders.filter((order) => order.invoiceNumber);
+    if (invoices.length === 0) {
+      setErrorMessage('Aucune facture à exporter.');
+      return;
+    }
+
+    const header = ['N° Facture', 'Commande', 'Client', 'Email', 'Date', 'Total TTC'];
+    const rows = invoices.map((order) => [
+      order.invoiceNumber || '',
+      order.orderNumber,
+      order.customerName,
+      order.customerEmail,
+      new Date(order.createdAt).toLocaleDateString('fr-FR'),
+      order.total.toFixed(2).replace('.', ',')
+    ]);
+
+    const csv = [header, ...rows]
+      .map((row) => row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(';'))
+      .join('\n');
+
+    const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'factures.csv';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  }
+
   function logout() {
     window.localStorage.removeItem('jsr-admin-token');
     setToken(null);
@@ -604,6 +636,18 @@ const AdminOrderDashboard = () => {
           {/* INVOICES TAB */}
           {activeTab === 'invoices' && (
             <div className="bg-white rounded-lg shadow overflow-hidden">
+              <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200">
+                <h3 className="font-semibold text-gray-900">
+                  {orders.filter((order) => order.invoiceNumber).length} facture(s)
+                </h3>
+                <button
+                  onClick={exportInvoicesCsv}
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-purple-600 text-white text-sm font-medium hover:bg-purple-700 transition"
+                >
+                  <Download className="h-4 w-4" />
+                  Exporter CSV
+                </button>
+              </div>
               <div className="overflow-x-auto">
                 <table className="min-w-full divide-y divide-gray-200">
                   <thead className="bg-gray-50">
