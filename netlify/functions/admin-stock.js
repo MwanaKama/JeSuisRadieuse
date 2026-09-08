@@ -1,4 +1,4 @@
-import { getStockList, updateProductAvailability, updateStock } from './_lib/orders.js';
+import { getStockList, updateProductAvailability, updateProductPrice, updateStock } from './_lib/orders.js';
 import { badRequest, ok, parseBody, serverError, unauthorized } from './_lib/http.js';
 import { readBearerToken, verifyAdminToken } from './_lib/auth.js';
 
@@ -27,10 +27,13 @@ export async function handler(event) {
       let product;
       if (body.available !== undefined && body.available !== null) {
         product = await updateProductAvailability(productId, body.available);
+      } else if (body.price !== undefined && body.price !== null) {
+        // Le prix est envoyé en euros (ex: 15.9) et converti en centimes.
+        product = await updateProductPrice(productId, Math.round(Number(body.price) * 100));
       } else if (body.stock !== undefined && body.stock !== null) {
         product = await updateStock(productId, body.stock);
       } else {
-        return badRequest('stock ou available est requis.');
+        return badRequest('stock, price ou available est requis.');
       }
 
       return ok({ product });

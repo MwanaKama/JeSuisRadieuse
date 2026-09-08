@@ -9,6 +9,7 @@ import {
   setOrderTracking,
   updateAdminAvailability,
   updateAdminOrderStatus,
+  updateAdminPrice,
   updateAdminStock,
   type AdminStockItem
 } from '../services/storeApi';
@@ -53,6 +54,7 @@ const AdminOrderDashboard = () => {
   const [activeTab, setActiveTab] = useState<'orders' | 'stock' | 'invoices'>('orders');
   const [trackingInputs, setTrackingInputs] = useState<Record<string, string>>({});
   const [stockInputs, setStockInputs] = useState<Record<string, string>>({});
+  const [priceInputs, setPriceInputs] = useState<Record<string, string>>({});
 
   useEffect(() => {
     if (token) {
@@ -108,11 +110,14 @@ const AdminOrderDashboard = () => {
   async function loadStock(authToken: string) {
     const data = await fetchAdminStock(authToken);
     setStockItems(data);
-    const inputs: Record<string, string> = {};
+    const stockValues: Record<string, string> = {};
+    const priceValues: Record<string, string> = {};
     data.forEach((item) => {
-      inputs[item.id] = String(item.stock);
+      stockValues[item.id] = String(item.stock);
+      priceValues[item.id] = item.price.toFixed(2).replace('.', ',');
     });
-    setStockInputs(inputs);
+    setStockInputs(stockValues);
+    setPriceInputs(priceValues);
   }
 
   async function refreshOrders() {
@@ -221,6 +226,28 @@ const AdminOrderDashboard = () => {
       );
     } catch (error) {
       setErrorMessage(error instanceof Error ? error.message : 'Impossible de mettre à jour le stock.');
+    }
+  }
+
+  async function savePrice(productId: string) {
+    if (!token) {
+      return;
+    }
+    const rawValue = (priceInputs[productId] || '').trim().replace(',', '.');
+    const price = Number(rawValue);
+    if (rawValue === '' || !Number.isFinite(price) || price <= 0) {
+      setErrorMessage('Veuillez saisir un prix valide (ex: 15,90).');
+      return;
+    }
+
+    setErrorMessage('');
+    try {
+      const result = await updateAdminPrice(token, productId, price);
+      setStockItems((current) =>
+        current.map((item) => (item.id === productId ? result.product : item))
+      );
+    } catch (error) {
+      setErrorMessage(error instanceof Error ? error.message : 'Impossible de mettre à jour le prix.');
     }
   }
 
@@ -567,7 +594,31 @@ const AdminOrderDashboard = () => {
                             </div>
                           </td>
                           <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-600">{item.category}</td>
-                          <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-600">{item.price.toFixed(2)}€</td>
+                          <td className="px-4 py-4 whitespace-nowrap">
+                            <div className="flex items-center gap-1.5">
+                              <input
+                                type="text"
+                                inputMode="decimal"
+                                value={priceInputs[item.id] ?? ''}
+                                onChange={(event) =>
+                                  setPriceInputs((current) => ({
+                                    ...current,
+                                    [item.id]: event.target.value
+                                  }))
+                                }
+                                className="w-20 px-2 py-1.5 border border-gray-300 rounded-lg text-sm"
+                                placeholder="0,00"
+                              />
+                              <span className="text-sm text-gray-500">€</span>
+                              <button
+                                onClick={() => savePrice(item.id)}
+                                className="p-1.5 rounded-lg bg-purple-100 text-purple-700 hover:bg-purple-200 transition"
+                                title="Mettre à jour le prix"
+                              >
+                                <Save className="h-4 w-4" />
+                              </button>
+                            </div>
+                          </td>
                           <td className="px-4 py-4 whitespace-nowrap">
                             <span
                               className={`px-2 py-1 rounded-full text-xs font-medium ${

@@ -173,6 +173,16 @@ export async function updateAdminAvailability(token: string, productId: string, 
   });
 }
 
+export async function updateAdminPrice(token: string, productId: string, price: number) {
+  return request<{ product: AdminStockItem }>('admin-stock', {
+    method: 'PATCH',
+    headers: {
+      Authorization: `Bearer ${token}`
+    },
+    body: JSON.stringify({ productId, price })
+  });
+}
+
 export async function setOrderTracking(
   token: string,
   orderNumber: string,

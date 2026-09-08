@@ -666,6 +666,42 @@ export async function updateProductAvailability(productId, available) {
   };
 }
 
+export async function updateProductPrice(productId, priceCents) {
+  if (!usingDatabase()) {
+    throw new Error('La gestion des produits necessite une base de donnees configuree.');
+  }
+
+  const parsed = Number(priceCents);
+  if (!Number.isFinite(parsed) || parsed < 0) {
+    throw new Error('Prix invalide.');
+  }
+
+  const result = await query(
+    `UPDATE products
+     SET price_cents = $1, updated_at = NOW()
+     WHERE id = $2
+     RETURNING id, slug, name, price_cents, image, category, stock, is_active, is_available`,
+    [Math.round(parsed), productId]
+  );
+
+  if (result.rowCount === 0) {
+    throw new Error('Produit introuvable.');
+  }
+
+  const row = result.rows[0];
+  return {
+    id: row.id,
+    slug: row.slug,
+    name: row.name,
+    price: Number((row.price_cents / 100).toFixed(2)),
+    image: row.image,
+    category: row.category,
+    stock: row.stock,
+    isActive: row.is_active,
+    available: row.is_available !== false
+  };
+}
+
 export async function setOrderTracking(orderNumber, trackingNumber, trackingUrl) {
   if (!usingDatabase()) {
     throw new Error('Le suivi necessite une base de donnees configuree.');
