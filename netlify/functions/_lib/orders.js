@@ -298,7 +298,8 @@ export async function getOrderSummary(orderNumber) {
   const orderResult = await query(
     `SELECT order_number, customer_name, customer_email, order_status, payment_status,
             subtotal_cents, shipping_cost_cents, total_cents, shipping_method_code,
-            tracking_number, tracking_url, created_at
+            tracking_number, tracking_url, created_at,
+            address, city, postal_code, country
      FROM orders
      WHERE order_number = $1
      LIMIT 1`,
@@ -332,6 +333,10 @@ export async function getOrderSummary(orderNumber) {
     trackingNumber: row.tracking_number || undefined,
     trackingUrl: row.tracking_url || undefined,
     createdAt: row.created_at,
+    address: row.address,
+    city: row.city,
+    postalCode: row.postal_code,
+    country: row.country,
     items: itemsResult.rows.map((item) => ({
       name: item.product_name,
       price: Number((item.unit_price_cents / 100).toFixed(2)),
@@ -515,7 +520,11 @@ export async function markOrderPaidFromProvider(providerReference, providerName)
     [row.order_number, row.order_status, `webhook:${providerName}`]
   );
 
-  await notifyPaymentConfirmed(row.order_number, row.customer_email, row.customer_name);
+  // Récupère le récapitulatif complet pour générer et envoyer la facture.
+  const fullOrder = await getOrderSummary(row.order_number);
+  if (fullOrder) {
+    await notifyPaymentConfirmed(fullOrder);
+  }
 
   return row.order_number;
 }

@@ -1,3 +1,5 @@
+import { generateInvoicePdf } from './invoice.js';
+
 const BREVO_URL = 'https://api.brevo.com/v3/smtp/email';
 
 const BRAND_NAME = 'Je Suis Radieuse';
@@ -14,7 +16,7 @@ function hasEmailConfig() {
   return Boolean(process.env.BREVO_API_KEY);
 }
 
-async function sendMail({ to, subject, html }) {
+async function sendMail({ to, subject, html, attachments }) {
   const apiKey = process.env.BREVO_API_KEY;
   if (!apiKey) {
     console.warn('[email] BREVO_API_KEY manquant — email ignoré.');
@@ -27,6 +29,10 @@ async function sendMail({ to, subject, html }) {
     subject,
     htmlContent: html
   };
+
+  if (Array.isArray(attachments) && attachments.length > 0) {
+    payload.attachment = attachments;
+  }
 
   const res = await fetch(BREVO_URL, {
     method: 'POST',
@@ -128,14 +134,38 @@ export async function notifyOrderCreated(order, customer) {
   await safeSend({ to: adminEmail(), subject: `🛒 Nouvelle commande ${order.orderNumber}`, html: adminHtml });
 }
 
-// 2) Paiement confirmé (client)
-export async function notifyPaymentConfirmed(orderNumber, customerEmail, customerName) {
+// 2) Paiement confirmé (client) — avec facture PDF en pièce jointe
+export async function notifyPaymentConfirmed(order) {
+  const orderNumber = order?.orderNumber;
+  const customerEmail = order?.customerEmail;
+  const customerName = order?.customerName;
+
+  if (!orderNumber || !customerEmail) {
+    return;
+  }
+
   const html = layout('Paiement confirmé', `
     <p>Bonjour ${customerName || ''},</p>
     <p>Votre paiement pour la commande <strong>${orderNumber}</strong> a bien été confirmé.</p>
+    <p>Votre facture est jointe à cet email (PDF).</p>
     <p>Nous préparons maintenant votre colis avec soin. Vous recevrez un email avec le numéro de suivi dès son expédition.</p>
   `);
-  await safeSend({ to: customerEmail, subject: `Paiement confirmé — commande ${orderNumber}`, html });
+
+  // Génère la facture PDF et l'attache à l'email.
+  let attachments = [];
+  try {
+    const pdfBase64 = await generateInvoicePdf(order);
+    attachments = [{ content: pdfBase64, name: `facture-${orderNumber}.pdf` }];
+  } catch (error) {
+    console.error('[email] génération facture échouée:', error.message);
+  }
+
+  await safeSend({
+    to: customerEmail,
+    subject: `Paiement confirmé — commande ${orderNumber}`,
+    html,
+    attachments
+  });
 }
 
 // 3) Commande expédiée (client)
